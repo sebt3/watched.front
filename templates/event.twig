@@ -1,0 +1,92 @@
+{% extends "core.twig" %}
+{% block title %} {{ e.agent_name }} {{ e.res_name }} {{ e.event_type }} {{ e.id }} {% endblock %}
+{% block contentHeader %}
+        Watched
+        <small>{{ e.agent_name }} {{ e.res_name }} {{ e.event_type }} {{ e.id }}</small>
+{% endblock %}
+{% block content %}
+      <div class="row">
+        <div class="col-md-4">
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title">Event Properties</h3>
+            </div>
+            <div class="box-body table-responsive">
+	      <table class="table table-striped table-hover"><tbody>
+               <tr>
+                <th>id</th>
+                <td class="pull-right">{{ e.id }}</td>
+               </tr>
+               <tr>
+                <th>type</th>
+                <td class="pull-right">{{ e.event_type }}</td>
+               </tr>
+	       <tr>
+		<th>agent</th>
+		<td class="pull-right"><a href="{{ path_for('agent', { 'id': e.agent_id }) }}">{{ e.agent_name }}</a></td>
+               </tr>
+               <tr>
+                <th>ressource type</th>
+                <td class="pull-right">{{ e.res_type }}</td>
+               </tr>
+               <tr>
+                <th>ressource</th>
+                <td class="pull-right"><a href="{{ path_for('ressource', { 'aid': e.agent_id, 'rid': e.res_id }) }}">{{ e.res_name }}</td>
+               </tr>
+               <tr>
+                <th>property</th>
+                <td class="pull-right">{{ e.property }}</td>
+               </tr>
+               <tr>
+                <th>value</th>
+                <td class="pull-right">{{ e.current_value }}</td>
+               </tr>
+               <tr>
+                <th>rule</th>
+                <td class="pull-right">{{ e.oper|e }}{{ e.value }}</td>
+               </tr>
+               <tr>
+                <th>start</th>
+                <td class="pull-right">{{ e.start_time }}</td>
+               </tr>
+               <tr>
+                <th>end</th>
+                <td class="pull-right">{{ e.end_time }}</td>
+               </tr>
+	      </tbody>
+	     </table>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title">Graphics</h3>
+            </div>
+            <div class="box-body">
+	     <div class="chart">
+	      <div id="morrisChart"></div>
+	     </div>
+            </div>
+          </div>
+        </div>
+      </div>
+{% endblock %}
+{% block scripts %}
+<script>
+$.getJSON( "{{ path_for('apiRessource', { 'aid': e.agent_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", function( data ) {
+	ykeys = [];
+	$.each(data[0], function(index, value) {
+		if (index!='timestamp' && (index.match(/\_{{ e.property }}/)!=null || index=="{{ e.property }}" ))
+			ykeys.push(index);
+	});
+	graph = new Morris.Line({
+		element: 'morrisChart',  
+		data: data, 
+		xkey: 'timestamp', 
+		pointSize:0,fillOpacity:0.3,behaveLikeLine:true, 
+		ykeys: ykeys, labels: ykeys
+	});
+});
+</script>
+{% endblock %}

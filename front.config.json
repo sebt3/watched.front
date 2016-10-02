@@ -1,0 +1,11 @@
+{
+	"db" : 
+	{
+		"host"   : "localhost",
+		"dbname" : "sebtest",
+		"user"   : "seb",
+		"pass"   : "seb"
+	},
+	"displayErrorDetails" : true,
+	"addContentLengthHeader" : false
+}
