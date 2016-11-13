@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %} {{ e.agent_name }} {{ e.res_name }} {{ e.event_type }} {{ e.id }} {% endblock %}
+{% block title %} {{ e.host_name }} {{ e.res_name }} {{ e.event_type }} {{ e.id }} {% endblock %}
 {% block contentHeader %}
         Watched
-        <small>{{ e.agent_name }} {{ e.res_name }} {{ e.event_type }} {{ e.id }}</small>
+        <small>{{ e.host_name }} {{ e.res_name }} {{ e.event_type }} {{ e.id }}</small>
 {% endblock %}
 {% block content %}
       <div class="row">
@@ -22,8 +22,8 @@
                 <td class="pull-right">{{ e.event_type }}</td>
                </tr>
 	       <tr>
-		<th>agent</th>
-		<td class="pull-right"><a href="{{ path_for('agent', { 'id': e.agent_id }) }}">{{ e.agent_name }}</a></td>
+		<th>Host</th>
+		<td class="pull-right"><a href="{{ path_for('host', { 'id': e.host_id }) }}">{{ e.host_name }}</a></td>
                </tr>
                <tr>
                 <th>ressource type</th>
@@ -31,7 +31,7 @@
                </tr>
                <tr>
                 <th>ressource</th>
-                <td class="pull-right"><a href="{{ path_for('ressource', { 'aid': e.agent_id, 'rid': e.res_id }) }}">{{ e.res_name }}</td>
+                <td class="pull-right"><a href="{{ path_for('ressource', { 'aid': e.host_id, 'rid': e.res_id }) }}">{{ e.res_name }}</td>
                </tr>
                <tr>
                 <th>property</th>
@@ -74,7 +74,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-$.getJSON( "{{ path_for('apiRessource', { 'aid': e.agent_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", function( data ) {
+$.getJSON( "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", function( data ) {
 	ykeys = [];
 	$.each(data[0], function(index, value) {
 		if (index!='timestamp' && (index.match(/\_{{ e.property }}/)!=null || index=="{{ e.property }}" ))

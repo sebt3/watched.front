@@ -67,16 +67,16 @@ $app->group('/api', function () use ($app) {
 });
 
 $app->get('/', function (Request $request, Response $response) {
-	return $response->withRedirect($this->router->pathFor('agents'), 302);
+	return $response->withRedirect($this->router->pathFor('hosts'), 302);
 })->setName('home');
 
-$app->group('/agents', function () use ($app) {
-	$app->get('', '\Agent:agents')->setName('agents');
-	$app->get('/{id:[0-9]+}', '\Agent:agent')->setName('agent');
-	$app->get('/{id:[0-9]+}/ressource[s]', '\Agent:ressources')->setName('ressources');
-	$app->get('/{aid:[0-9]+}/ressources/{rid:[0-9]+}', '\Agent:ressource')->setName('ressource');
+$app->group('/hosts', function () use ($app) {
+	$app->get('', '\Host:hosts')->setName('hosts');
+	$app->get('/{id:[0-9]+}', '\Host:host')->setName('host');
+	$app->get('/{id:[0-9]+}/ressource[s]', '\Host:ressources')->setName('ressources');
+	$app->get('/{aid:[0-9]+}/ressources/{rid:[0-9]+}', '\HostRessource:ressource')->setName('ressource');
 })->add(function ($request, $response, $next) use ($container) {
-	// TODO: add permission checks for agent access here
+	// TODO: add permission checks for Host access here
 	$response = $next($request, $response);
 	if (404 === $response->getStatusCode() && 0 === $response->getBody()->getSize()) {
 		$h = $container['notFoundHandler'];

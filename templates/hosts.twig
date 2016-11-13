@@ -1,13 +1,13 @@
 {% extends "core.twig" %}
-{% block title %}Agents{% endblock %}
+{% block title %}Hosts{% endblock %}
 {% block contentHeader %}
         Watched
-        <small>Agents</small>
+        <small>Hosts</small>
 {% endblock %}
 {% block content %}
           <div class="box box-default">
             <div class="box-header with-border">
-              <h3 class="box-title">Available agents</h3>
+              <h3 class="box-title">Available Hosts</h3>
             </div>
             <div class="box-body table-responsive">
 	      <table class="table table-striped table-hover">
@@ -17,9 +17,9 @@
                <th>current events</th>
                <th>ressources</th>
 	      </tr></thead><tbody>
-    {% for a in agents %}
+    {% for a in hosts %}
                <tr>
-                <td><a href="{{ path_for('agent', { 'id': a.id }) }}">{{ a.host }}</a></td>
+                <td><a href="{{ path_for('host', { 'id': a.id }) }}">{{ a.host }}</a></td>
                 <td>{{ a.monitor_items }}</td>
                 <td>{{ a.events }}</td>
                 <td><a href="{{ path_for('ressources', { 'id': a.id }) }}">{{ a.ressources }}</a></td>

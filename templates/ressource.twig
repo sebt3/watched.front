@@ -235,7 +235,7 @@ function setPeriod(p) {
 	var url;
 	switch(p) {
 	case "all": url=baseurl;break;
-	case "week": url=baseurl+"/"+(Math.floor(Date.now()/(3600000*24*7))*(3600000*24*7));break;
+	case "week": url=baseurl+"/"+(Math.floor(Date.now())-(3600000*24*7));break;
 	case "yesterday": url=baseurl+"/"+((Math.floor(Date.now()/(3600000*24))-1)*(3600000*24))+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
 	case "today": url=baseurl+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
 	case "hour": url=baseurl+"/"+(Math.floor(Date.now()/(3600000))*(3600000));break;

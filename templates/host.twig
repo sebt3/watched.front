@@ -1,5 +1,5 @@
 {% extends "core.twig" %}
-{% block title %}Agent {{ agent.host }} {% endblock %}
+{% block title %}Host {{ host.host }} {% endblock %}
 {% block meta %}
 <style>
 table.table-hover tr td a {
@@ -11,7 +11,7 @@ table.table-hover tr td a {
 {% endblock %}
 {% block contentHeader %}
         Watched
-        <small>Agent {{ agent.host }}</small>
+        <small>Host {{ host.host }}</small>
 {% endblock %}
 {% block content %}
       <div class="row">
@@ -129,7 +129,7 @@ table.table-hover tr td a {
             </div>
             <div class="box-body">
     {% for s in cpuUsage %}
-		<a href="{{ path_for('ressource', { 'aid': s.agent_id, 'rid': s.res_id }) }}">
+		<a href="{{ path_for('ressource', { 'aid': s.host_id, 'rid': s.res_id }) }}">
                   <div class="clearfix">
                     <span class="pull-left">{{ s.decode }}</span>
                     <small class="pull-right">{{ s.pctused }}%</small>
@@ -167,7 +167,7 @@ table.table-hover tr td a {
             </div>
             <div class="box-body">
     {% for s in storageStatus %}
-		<a href="{{ path_for('ressource', { 'aid': s.agent_id, 'rid': s.res_id }) }}">
+		<a href="{{ path_for('ressource', { 'aid': s.host_id, 'rid': s.res_id }) }}">
                   <div class="clearfix">
                     <span class="pull-left">{{ s.decode }}</span>
                     <small class="pull-right">{{ s.pctused }}%</small>
@@ -191,7 +191,7 @@ table.table-hover tr td a {
             </div>
             <div class="box-body">
     {% for s in stats %}
-		<a href="{{ path_for('ressource', { 'aid': s.agent_id, 'rid': s.res_id }) }}">
+		<a href="{{ path_for('ressource', { 'aid': s.host_id, 'rid': s.res_id }) }}">
                   <div class="clearfix">
                     <span class="pull-left">{{ s.name }}</span>
                   </div>
@@ -211,7 +211,7 @@ table.table-hover tr td a {
             </div>
             <div class="box-body">
     {% for s in ressources %}
-		<a href="{{ path_for('ressource', { 'aid': s.agent_id, 'rid': s.res_id }) }}">
+		<a href="{{ path_for('ressource', { 'aid': s.host_id, 'rid': s.res_id }) }}">
                   <div class="clearfix">
                     <span class="pull-left">{{ s.name }}</span>
                   </div>
@@ -270,7 +270,7 @@ Morris.Bar({
   element: 'memory-usage',
   data: [
     {% for m in memoryUsage %}
-      { type: '{{ m.name }}', used: {{ m.used }}, free: {{ m.free }}, url: "{{ path_for('ressource', { 'aid': m.agent_id, 'rid': m.res_id }) }}" },
+      { type: '{{ m.name }}', used: {{ m.used }}, free: {{ m.free }}, url: "{{ path_for('ressource', { 'aid': m.host_id, 'rid': m.res_id }) }}" },
     {% endfor %}
   ],
   xkey: 'type',

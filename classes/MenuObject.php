@@ -9,7 +9,7 @@ class MenuObject {
 		$container = $app->getContainer();
 		$db = $container->get('db');
 		$this->domains = array();
-		$stmt = $db->query("SELECT id, name from domains");
+		/*$stmt = $db->query("SELECT id, name from domains");
 		while($row = $stmt->fetch()) {
 			$res = array();
 			$stm2 = $db->prepare("SELECT host as name, id from agents where domain_id = :id");
@@ -20,9 +20,9 @@ class MenuObject {
 			}
 			if(count($res)>0)
 				array_push($this->domains, array("name" => $row["name"], "hosts" => $res));
-		}
+		}*/
 		$lst=array();
-		$stm3 = $db->query("SELECT host as name, id from agents where domain_id is null");
+		$stm3 = $db->query("SELECT name, id from hosts");
 		while($r = $stm3->fetch()) {
 			array_push($lst, $r);
 		}

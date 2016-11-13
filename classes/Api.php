@@ -13,7 +13,7 @@ class Api {
 	
 	public function ressources($request, $response, $args) {
 		$name = $request->getAttribute('name');
-		$agent_id = $request->getAttribute('aid');
+		$host_id = $request->getAttribute('aid');
 		$res_id = $request->getAttribute('rid');
 		$params = explode('/', $request->getAttribute('params'));
 		if (!haveTable($this->ci->db,$name)) {
@@ -25,9 +25,9 @@ class Api {
 		else if (isset($params[0]))
 			$sql = " and timestamp >= :mint";
 
-		$stmt = $this->ci->db->prepare("SELECT count(timestamp) as cnt from ah\$$name where agent_id = :aid and res_id = :rid".$sql);
+		$stmt = $this->ci->db->prepare("SELECT count(timestamp) as cnt from ah\$$name where host_id = :aid and res_id = :rid".$sql);
 		$stmt->bindParam(':rid', $res_id, PDO::PARAM_INT);
-		$stmt->bindParam(':aid', $agent_id, PDO::PARAM_INT);
+		$stmt->bindParam(':aid', $host_id, PDO::PARAM_INT);
 		if (isset($params[1])) {
 			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
 			$stmt->bindParam(':maxt', $params[1], PDO::PARAM_INT);
@@ -45,9 +45,9 @@ class Api {
 			$prefix = "am\$";
 
 		
-		$stmt = $this->ci->db->prepare("SELECT * from $prefix$name where agent_id = :aid and res_id = :rid".$sql);
+		$stmt = $this->ci->db->prepare("SELECT * from $prefix$name where host_id = :aid and res_id = :rid".$sql);
 		$stmt->bindParam(':rid', $res_id, PDO::PARAM_INT);
-		$stmt->bindParam(':aid', $agent_id, PDO::PARAM_INT);
+		$stmt->bindParam(':aid', $host_id, PDO::PARAM_INT);
 		if (isset($params[1])) {
 			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
 			$stmt->bindParam(':maxt', $params[1], PDO::PARAM_INT);
@@ -57,7 +57,7 @@ class Api {
 		$stmt->execute();
 		$ret = [];
 		while($row = $stmt->fetch()) {
-			unset($row["agent_id"]);
+			unset($row["host_id"]);
 			unset($row["res_id"]);
 			foreach($row as $i => $k)
 				$row[$i] = floatval($k);

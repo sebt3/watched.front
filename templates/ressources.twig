@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %}Agent {{ agent.host }} {% endblock %}
+{% block title %}Host {{ host.host }} {% endblock %}
 {% block contentHeader %}
         Watched
-        <small>Ressources for agent {{ agent.host }}</small>
+        <small>Ressources for Host {{ host.host }}</small>
 {% endblock %}
 {% block content %}
           <div class="box box-default">
@@ -18,7 +18,7 @@
 	      </tr></thead><tbody>
     {% for r in ressources %}
                <tr>
-                <td><a href="{{ path_for('ressource', { 'aid': agent.id , 'rid': r.id }) }}">{{ r.name }}</a></td>
+                <td><a href="{{ path_for('ressource', { 'aid': host.id , 'rid': r.id }) }}">{{ r.name }}</a></td>
                 <td>{{ r.monitors }}</td>
                 <td>{{ r.events }}</td>
                </tr>

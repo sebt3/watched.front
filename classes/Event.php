@@ -19,7 +19,7 @@ class Event {
 
 	public function event (Request $request, Response $response) {
 		$id = $request->getAttribute('id');
-		$stmt = $this->ci->db->prepare("select e.id, et.name as event_type, et.id as event_type_id, e.res_id, r.name as res_name, r.type as res_type, e.agent_id, a.host as agent_name, e.start_time, e.end_time, e.property, e.current_value, e.oper, round(e.value) as value, concat(round(start_time-(1200000)), case when end_time is not null then concat('/',round(end_time+(1200000))) else '' end) as params from events e, agents a, ressources r, event_types et where e.id=:id and e.agent_id=a.id and e.res_id=r.id and e.event_type = et.id");
+		$stmt = $this->ci->db->prepare("select e.id, et.name as event_type, et.id as event_type_id, e.res_id, r.name as res_name, r.type as res_type, e.host_id, a.name as host_name, e.start_time, e.end_time, e.property, e.current_value, e.oper, round(e.value) as value, concat(round(start_time-(1200000)), case when end_time is not null then concat('/',round(end_time+(1200000))) else '' end) as params from res_events e, hosts a, ressources r, event_types et where e.id=:id and e.host_id=a.id and e.res_id=r.id and e.event_type = et.id");
 		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
 		$event = $stmt->fetch();

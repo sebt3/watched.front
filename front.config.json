@@ -2,9 +2,9 @@
 	"db" : 
 	{
 		"host"   : "localhost",
-		"dbname" : "sebtest",
-		"user"   : "seb",
-		"pass"   : "seb"
+		"dbname" : "watcheddb",
+		"user"   : "watched",
+		"pass"   : "watched"
 	},
 	"displayErrorDetails" : true,
 	"addContentLengthHeader" : false

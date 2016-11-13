@@ -12,7 +12,7 @@
           </a>
           <ul class="treeview-menu">
   {% for h in d.hosts %}
-            <li><a href="{{ path_for('agent', { 'id': h.id|e }) }}"><i class="fa fa-circle-o"></i>{{ h.name }}</a></li>
+            <li><a href="{{ path_for('host', { 'id': h.id|e }) }}"><i class="fa fa-circle-o"></i>{{ h.name }}</a></li>
   {% endfor %}
           </ul>
 {% endfor %}
