@@ -1,0 +1,36 @@
+{% extends "core.twig" %}
+{% block title %}Events{% endblock %}
+{% block contentHeader %}
+        Watched
+        <small>Events</small>
+{% endblock %}
+{% block content %}
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title">Current Events</h3>
+            </div>
+            <div class="box-body table-responsive">
+	      <table class="table table-striped table-hover">
+	      <thead><tr>
+               <th>host name</th>
+               <th>ressource name</th>
+               <th>type</th>
+               <th>property</th>
+               <th>status</th>
+               <th>since</th>
+	      </tr></thead><tbody>
+    {% for a in events %}
+               <tr>
+                <td><a href="{{ path_for('host', { 'id': a.host_id }) }}">{{ a.host_name }}</a></td>
+                <td><a href="{{ path_for('ressource', { 'rid': a.res_id, 'aid': a.host_id }) }}">{{ a.name }}</a></td>
+                <td class="{{ a.color }}">{{ a.type }}</td>
+                <td><a href="{{ path_for('event', { 'id': a.id }) }}">{{ a.property }}</a></td>
+		<td><a href="{{ path_for('event', { 'id': a.id }) }}">{{ a.current_value }} {{ a.oper }} {{ a.value }}</a></td>
+                <td><a href="{{ path_for('event', { 'id': a.id }) }}">{{ a.start_time }}</a></td>
+               </tr>
+    {% endfor %}
+	      </tbody>
+	     </table>
+            </div>
+          </div>
+{% endblock %}

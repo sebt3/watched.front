@@ -53,7 +53,7 @@ function haveTable($db, $table) {
 }
 
 // adding routes ------------------------------------------------------------------------------------------------------
-// add the login group here
+// TODO: add the login group here
 $app->group('/api', function () use ($app) {
 	$app->get('/ressources/{name}/{aid:[0-9]+}/{rid:[0-9]+}[/{params:.*}]', '\Api:ressources')->setName('apiRessource');
 })->add(function ($request, $response, $next) use ($container) {
@@ -73,6 +73,8 @@ $app->get('/', function (Request $request, Response $response) {
 $app->group('/hosts', function () use ($app) {
 	$app->get('', '\Host:hosts')->setName('hosts');
 	$app->get('/{id:[0-9]+}', '\Host:host')->setName('host');
+	$app->get('/{id:[0-9]+}/services', '\HostService:hostServices')->setName('services');
+	$app->get('/{hid:[0-9]+}/services/{sid:[0-9]+}', '\HostService:hostService')->setName('service');
 	$app->get('/{id:[0-9]+}/ressource[s]', '\Host:ressources')->setName('ressources');
 	$app->get('/{aid:[0-9]+}/ressources/{rid:[0-9]+}', '\HostRessource:ressource')->setName('ressource');
 })->add(function ($request, $response, $next) use ($container) {

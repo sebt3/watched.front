@@ -16,13 +16,15 @@
                <th>monitor items</th>
                <th>current events</th>
                <th>ressources</th>
+               <th>services</th>
 	      </tr></thead><tbody>
     {% for a in hosts %}
                <tr>
                 <td><a href="{{ path_for('host', { 'id': a.id }) }}">{{ a.host }}</a></td>
                 <td>{{ a.monitor_items }}</td>
-                <td>{{ a.events }}</td>
+                <td>{{ a.events+a.failed }}</td>
                 <td><a href="{{ path_for('ressources', { 'id': a.id }) }}">{{ a.ressources }}</a></td>
+                <td><a href="{{ path_for('services', { 'id': a.id }) }}">{{ a.services }}</a></td>
                </tr>
     {% endfor %}
 	      </tbody>

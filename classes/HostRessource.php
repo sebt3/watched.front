@@ -3,58 +3,9 @@ use Interop\Container\ContainerInterface;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-class HostRessource {
-
-	protected $ci;
-
+class HostRessource extends CorePage {
 	public function __construct(ContainerInterface $ci) { 
-		$this->ci = $ci;
-	}
-
-	public function getHost($id) {
-		$stmt = $this->ci->db->prepare("SELECT a.id, a.name as host from hosts a where a.id = :id");
-		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
-		$stmt->execute();
-		return $stmt->fetch();
-	}
-	public function getRessource($id) {
-		$stmt = $this->ci->db->prepare("SELECT id, name, type from ressources where id = :id");
-		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
-		$stmt->execute();
-		return $stmt->fetch();
-	}
-
-	public function getEventColor($name) {
-		switch($name) {
-		case "Ok":
-			return "#00a65a";
-		case "Critical":
-			return "#dd4b39";
-		case "Error":
-			return "#ff851b";
-		case "Warning":
-			return "#f39c12";
-		case "Notice":
-			return "#0073b7";
-		default:
-			return "#3c8dbc";
-		}
-	}
-	public function getEventTextColor($name) {
-		switch($name) {
-		case "Ok":
-			return "text-green";
-		case "Critical":
-			return "text-red";
-		case "Error":
-			return "text-orange";
-		case "Warning":
-			return "text-yellow";
-		case "Notice":
-			return "text-blue";
-		default:
-			return "text-light-blue";
-		}
+		parent::__construct($ci);
 	}
 
 	public function haveMonitoring($aid, $rid) {
@@ -138,13 +89,9 @@ class HostRessource {
 			$r5["value"] = round($r5["value"]);
 			$r5["current_value"] = round($r5["current_value"]);
 			$r5["encode"] = urldecode($r5["oper"]);
-			$date = new DateTime();
-			$date->setTimestamp(round($r5["start_time"]/1000));
-			$r5["start_time"] = $date->format('Y-m-d H:i:s');
-			if ($r5["end_time"] != null) {
-				$date->setTimestamp(round($r5["end_time"]/1000));
-				$r5["end_time"] = $date->format('Y-m-d H:i:s');
-			}
+			$r5["start_time"] = $this->formatTimestamp($r5["start_time"]);
+			if ($r5["end_time"] != null)
+				$r5["end_time"] = $this->formatTimestamp($r5["end_time"]);
 			$ret[] = $r5;
 		}
 		return $ret;
@@ -163,6 +110,7 @@ class HostRessource {
 
 		// Monitoring stuff
 
+		$this->ci->view["menu"]->activateHost($agent["host"]);
 		$this->ci->view["menu"]->breadcrumb = array(
 			array("name" => "host", "icon" => "fa fa-server", "url" => $this->ci->router->pathFor('hosts')), 
 			array("name" => $agent["host"], "url" => $this->ci->router->pathFor('host', array('id' => $aid))), 

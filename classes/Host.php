@@ -3,65 +3,22 @@ use Interop\Container\ContainerInterface;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-class Host {
-
-	protected $ci;
-
+class Host extends CorePage {
 	public function __construct(ContainerInterface $ci) { 
-		$this->ci = $ci;
+		parent::__construct($ci);
 	}
 
 	public function getList() {
 		$results = [];
-		$stmt = $this->ci->db->query("select a.id, a.name as host, ifnull(m.cnt, 0) as monitor_items, ifnull(e.cnt, 0) as events, ifnull(r.cnt, 0) as ressources from hosts a left join (select host_id, count(*) as cnt from monitoring_items group by host_id) m on a.id=m.host_id left join (select host_id, count(*) as cnt from res_events where end_time is null group by host_id) e on a.id=e.host_id left join (select host_id, count(*) as cnt from host_ressources group by host_id) r on a.id=r.host_id order by events desc");
+		$stmt = $this->ci->db->query("select a.id, a.name as host, ifnull(m.cnt, 0)+ifnull(p.cnt, 0)+ifnull(o.cnt, 0) as monitor_items, ifnull(fo.cnt, 0)+ifnull(fp.cnt, 0) as failed, ifnull(e.cnt, 0) as events, ifnull(r.cnt, 0) as ressources, ifnull(s.cnt, 0) as services from hosts a left join (select host_id, count(*) as cnt from monitoring_items group by host_id) m on a.id=m.host_id left join (select host_id, count(*) as cnt from res_events where end_time is null group by host_id) e on a.id=e.host_id left join (select host_id, count(*) as cnt from host_ressources group by host_id) r on a.id=r.host_id left join (select host_id, count(*) as cnt from services group by host_id) s on a.id=s.host_id left join (select host_id, count(status) as cnt from services z, serviceProcess y where z.id = y.serv_id group by host_id) p on a.id=p.host_id left join (select host_id, count(status) as cnt from services v, serviceSockets w where v.id = w.serv_id group by host_id) o on a.id=o.host_id left join (select host_id, count(*) as cnt from services z, serviceProcess y where z.id = y.serv_id and status not like 'ok%' group by host_id) fp on a.id=fp.host_id left join (select host_id, count(*) as cnt from services z, serviceSockets y where z.id = y.serv_id and status not like 'ok%' group by host_id) fo on a.id=fo.host_id order by events+failed desc");
 		while($row = $stmt->fetch())
 			$results[] = $row;
 		return $results;
 	}
 
-	public function getHost($id) {
-		$stmt = $this->ci->db->prepare("SELECT a.id, a.name as host from hosts a where a.id = :id");
-		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
-		$stmt->execute();
-		return $stmt->fetch();
-	}
-
-	public function getEventColor($name) {
-		switch($name) {
-		case "Ok":
-			return "#00a65a";
-		case "Critical":
-			return "#dd4b39";
-		case "Error":
-			return "#ff851b";
-		case "Warning":
-			return "#f39c12";
-		case "Notice":
-			return "#0073b7";
-		default:
-			return "#3c8dbc";
-		}
-	}
-	public function getEventTextColor($name) {
-		switch($name) {
-		case "Ok":
-			return "text-green";
-		case "Critical":
-			return "text-red";
-		case "Error":
-			return "text-orange";
-		case "Warning":
-			return "text-yellow";
-		case "Notice":
-			return "text-blue";
-		default:
-			return "text-light-blue";
-		}
-	}
-
 	public function getMonitoringStatus($id) {
 		$ret = [];
-		$s1 = $this->ci->db->prepare("select 'Ok' as name, 0 as id, t.cnt - m.cnt as cnt from (select count(*) as cnt from monitoring_items where host_id=:id) t, (select count(*) as cnt from res_events e where e.host_id=:id and e.end_time is null) m union all select et.name, et.id, count(e.id) as cnt from event_types et left join (select * from  res_events s where s.host_id=:id and s.end_time is null) e on et.id = e.event_type group by et.name order by id");
+		$s1 = $this->ci->db->prepare("select 'Ok' as name, 0 as id, t.cnt+po.cnt+so.cnt - m.cnt as cnt from (select count(*) as cnt from serviceProcess where serv_id in (select id from services where host_id=:id) and (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and status like 'ok%') po,(select count(*) as cnt from serviceSockets where serv_id in (select id from services where host_id=:id) and (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and  status like 'ok%') so, (select count(*) as cnt from monitoring_items where host_id=:id) t, (select count(*) as cnt from res_events e where e.host_id=:id and e.end_time is null) m union all select 'Failed' as name, 0 as id, po.cnt+so.cnt as cnt from (select count(*) as cnt from serviceProcess where serv_id in (select id from services where host_id=:id) and (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and status not like 'ok%') po,(select count(*) as cnt from serviceSockets where serv_id in (select id from services where host_id=:id) and (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and  status not like 'ok%') so union all select et.name, et.id, count(e.id) as cnt from event_types et left join (select * from  res_events s where s.host_id=:id and s.end_time is null) e on et.id = e.event_type group by et.name order by id");
 		$s1->bindParam(':id', $id, PDO::PARAM_INT);
 		$s1->execute();
 		while($r1 = $s1->fetch()) {
@@ -90,7 +47,7 @@ class Host {
 
 	public function getMonitoringItems($id) {
 		$ret = [];
-		$s3 = $this->ci->db->prepare("select et.name, et.id, ifnull(e.cnt,0) as cnt from event_types et left join (select event_type, count(*) as cnt from monitoring_items where host_id=:id group by event_type) e on et.id = e.event_type group by et.name order by id");
+		$s3 = $this->ci->db->prepare("select et.name, et.id, ifnull(e.cnt,0) as cnt from event_types et left join (select event_type, count(*) as cnt from monitoring_items where host_id=:id group by event_type) e on et.id = e.event_type group by et.name union all select 'Failed' as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt from (select count(*) as cnt from services z, serviceProcess y where z.id = y.serv_id and host_id=:id) fp, (select count(*) as cnt from services z, serviceSockets y where z.id = y.serv_id and host_id=:id) fo order by id");
 		$s3->bindParam(':id', $id, PDO::PARAM_INT);
 		$s3->execute();
 		while($r3 = $s3->fetch()) {
@@ -111,13 +68,9 @@ class Host {
 			$r5["value"] = round($r5["value"]);
 			$r5["current_value"] = round($r5["current_value"]);
 			$r5["encode"] = urldecode($r5["oper"]);
-			$date = new DateTime();
-			$date->setTimestamp(round($r5["start_time"]/1000));
-			$r5["start_time"] = $date->format('Y-m-d H:i:s');
-			if ($r5["end_time"] != null) {
-				$date->setTimestamp(round($r5["end_time"]/1000));
-				$r5["end_time"] = $date->format('Y-m-d H:i:s');
-			}
+			$r5["start_time"] = $this->formatTimestamp($r5["start_time"]);
+			if ($r5["end_time"] != null)
+				$r5["end_time"] = $this->formatTimestamp($r5["end_time"]);
 			$r5["decode"] = urldecode($r5["res_name"]);
 			$ret[] = $r5;
 		}
@@ -193,6 +146,19 @@ class Host {
 		return $results;
 	}
 
+	public function getServices($id) {
+		$ret = [];
+		$s   = $this->ci->db->prepare("select max(late_sec) as late_sec, count(distinct status) as cnt_stat, min(status) as status, x.serv_id, s.name from (select (UNIX_TIMESTAMP()*1000-min(timestamp))/1000 as late_sec, status, serv_id from serviceSockets group by status, serv_id union select (UNIX_TIMESTAMP()*1000-min(timestamp))/1000 as late_sec, status, serv_id from serviceProcess group by status, serv_id) x, services s where x.serv_id = s.id and s.host_id=:id group by x.serv_id, s.name");
+		$s->bindParam(':id', $id, PDO::PARAM_INT);
+		$s->execute();
+		while($r = $s->fetch()) {
+			$r["color"]	= $this->getStatusColor($r["status"], $r["late_sec"]);
+			$ret[] = $r;
+		}
+		return $ret;
+	}
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Pages
 	public function Hosts (Request $request, Response $response) {
@@ -208,6 +174,7 @@ class Host {
 		if ($host == false)
 			return $response->withStatus(404);
 
+		$this->ci->view["menu"]->activateHost($host["host"]);
 		$this->ci->view["menu"]->breadcrumb = array(
 			array("name" => "hosts", "icon" => "fa fa-server", "url" => $this->ci->router->pathFor('hosts') ), 
 			array("name" => $host["host"], "url" => $this->ci->router->pathFor('host', array('id' => $id)) ));
@@ -221,6 +188,7 @@ class Host {
 			'cpuUsage'	 => $this->getCPUusage($id),
 			'memoryUsage'	 => $this->getMemoryUsage($id),
 			'stats'		 => $this->getStats($id),
+			'services'	 => $this->getServices($id),
 			'ressources' 	 => $this->getOtherRessources($id)
 			]);
 	}
@@ -231,6 +199,7 @@ class Host {
 		$host = $this->getHost($id);
 		if ($host == false)
 			return  $response->withStatus(404);
+		$this->ci->view["menu"]->activateHost($host["host"]);
 		$this->ci->view["menu"]->breadcrumb = array(
 			array("name" => "hosts", "icon" => "fa fa-server", "url" => $this->ci->router->pathFor('hosts') ), 
 			array("name" => $host["host"], "url" => $this->ci->router->pathFor('host', array('id' => $id)) ), 

@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %} {{ e.host_name }} {{ e.res_name }} {{ e.event_type }} {{ e.id }} {% endblock %}
+{% block title %}  {{ e.event_type }} on {{ e.res_name }} from {{ e.host_name }} {% endblock %}
 {% block contentHeader %}
         Watched
-        <small>{{ e.host_name }} {{ e.res_name }} {{ e.event_type }} {{ e.id }}</small>
+        <small>{{ e.event_type }} on {{ e.res_name }} from {{ e.host_name }}</small>
 {% endblock %}
 {% block content %}
       <div class="row">
@@ -19,7 +19,7 @@
                </tr>
                <tr>
                 <th>type</th>
-                <td class="pull-right">{{ e.event_type }}</td>
+                <td class="pull-right {{ e.color }}">{{ e.event_type }}</td>
                </tr>
 	       <tr>
 		<th>Host</th>
@@ -84,6 +84,7 @@ $.getJSON( "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e,
 		element: 'morrisChart',  
 		data: data, 
 		xkey: 'timestamp', 
+		hideHover: true,
 		pointSize:0,fillOpacity:0.3,behaveLikeLine:true, 
 		ykeys: ykeys, labels: ykeys
 	});

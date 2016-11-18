@@ -1,8 +1,8 @@
 <!-- TODO: gestion du tag "active" -->
       <ul class="sidebar-menu">
         <li class="header">Hosts</li>
-        <li class="treeview">
 {% for d in menu.domains %}
+        <li class="treeview {% if d.active == true %}active{% endif %}">
           <a href="#">
             <i class="fa fa-pie-chart"></i>
             <span>{{ d.name }}</span>
@@ -12,9 +12,9 @@
           </a>
           <ul class="treeview-menu">
   {% for h in d.hosts %}
-            <li><a href="{{ path_for('host', { 'id': h.id|e }) }}"><i class="fa fa-circle-o"></i>{{ h.name }}</a></li>
+            <li {% if h.active == true %}class="active"{% endif %}><a href="{{ path_for('host', { 'id': h.id|e }) }}"><i class="fa fa-circle-o"></i>{{ h.name }}</a></li>
   {% endfor %}
           </ul>
-{% endfor %}
         </li>
+{% endfor %}
       </ul>

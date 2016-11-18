@@ -1,0 +1,42 @@
+{% extends "core.twig" %}
+{% block title %}{{ h.host }} Service{% endblock %}
+{% block contentHeader %}
+        Watched
+        <small>{{ h.host }} Services</small>
+{% endblock %}
+{% block content %}
+      <div class="row">
+    {% for a in services %}
+        <div class="col-md-6">
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title">Service {{ a.name }} </h3>
+            </div>
+	    <div class="box-body">
+	     <div class="row">
+	      <div class="col-md-6">
+		<ul class="list-unstyled">
+        {% for p in a.process %}
+		  <li><a class="{{ p.color }}" href="{{ path_for('service', { 'hid': h.id, 'sid': a.id }) }}">{{ p.process_name }}</a></li>
+        {% endfor %}
+		</ul>
+	      </div>
+	      <div class="col-md-6">
+		<ul class="list-unstyled">
+        {% for o in a.sockets %}
+		  <li><a class="{{ o.color }}" href="{{ path_for('service', { 'hid': h.id, 'sid': a.id }) }}">{{ o.socket_name }}</a></li>
+        {% endfor %}
+		</ul>
+	      </div>
+	     </div>
+	    </div>
+          </div>
+        </div>
+	{% if  loop.index % 2 == 0 %}
+      </div>
+      <div class="row">
+	{% endif %}
+    {% endfor %}
+      </div>
+
+{% endblock %}
