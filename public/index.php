@@ -66,9 +66,7 @@ $app->group('/api', function () use ($app) {
 	return $response ;
 });
 
-$app->get('/', function (Request $request, Response $response) {
-	return $response->withRedirect($this->router->pathFor('hosts'), 302);
-})->setName('home');
+$app->get('/', '\Dashboard:dashboard')->setName('home');
 
 $app->group('/hosts', function () use ($app) {
 	$app->get('', '\Host:hosts')->setName('hosts');

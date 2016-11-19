@@ -21,7 +21,7 @@ class CorePage {
 		$stmt->execute();
 		return $stmt->fetch();
 	}
-	
+
 	public function formatTimestamp($ts) {
 		$date = new DateTime();
 		$date->setTimestamp(round($ts/1000));
@@ -41,6 +41,38 @@ class CorePage {
 		}
 	}
 
+	public function getDomainTextColor($name) {
+		switch($name) {
+		case "Production":
+			return "text-red";
+		case "Qualification":
+			return "text-orange";
+		case "Testing":
+			return "text-yellow";
+		case "Developpement":
+			return "text-blue";
+		case "unset":
+			return "text-green";
+		default:
+			return "text-light-blue";
+		}
+	}
+	public function getDomainColor($name) {
+		switch($name) {
+		case "Production":
+			return "#dd4b39";
+		case "Qualification":
+			return "#ff851b";
+		case "Testing":
+			return "#f39c12";
+		case "Developpement":
+			return "#0073b7";
+		case "unset":
+			return "#00a65a";
+		default:
+			return "#3c8dbc";
+		}
+	}
 	public function getEventColor($name) {
 		switch($name) {
 		case "Ok":
@@ -63,6 +95,7 @@ class CorePage {
 		case "Ok":
 			return "text-green";
 		case "Failed":
+		case "failed":
 		case "Critical":
 			return "text-red";
 		case "Error":
