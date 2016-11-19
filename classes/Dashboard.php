@@ -22,15 +22,16 @@ class Dashboard extends CorePage {
 
 	public function getActivesEvents() {
 		$ret = [];
-		$s2 = $this->ci->db->prepare("select h.name as host_name, e.id, r.name, et.name as type, e.property, e.current_value, e.oper, e.value, e.start_time from hosts h, res_events e, ressources r, event_types et where h.id = e.host_id and e.res_id=r.id and et.id=e.event_type and e.end_time is null order by et.id");
-		$s2->execute();
-		while($r2 = $s2->fetch()) {
-			$r2["color"] = $this->getEventTextColor($r2["type"]);
-			$r2["current_value"] = round($r2["current_value"]);
-			$r2["value"] = round($r2["value"]);
-			$r2["decode"] = urldecode($r2["name"]);
-			$r2["encode"] = urldecode($r2["oper"]);
-			$ret[] = $r2;
+		$s = $this->ci->db->prepare("select h.name as host_name, e.id, r.name, et.name as type, e.property, e.current_value, e.oper, e.value, e.start_time from hosts h, res_events e, ressources r, event_types et where h.id = e.host_id and e.res_id=r.id and et.id=e.event_type and e.end_time is null order by et.id");
+		$s->execute();
+		while($r = $s->fetch()) {
+			$r["color"] = $this->getEventTextColor($r["type"]);
+			$r["current_value"] = round($r["current_value"]);
+			$r["value"] = round($r["value"]);
+			$r["decode"] = urldecode($r["name"]);
+			$r["encode"] = urldecode($r["oper"]);
+			$r["start_time"] = $this->formatTimestamp($r["start_time"]);
+			$ret[] = $r;
 		}
 		return $ret;
 	}
@@ -49,12 +50,12 @@ class Dashboard extends CorePage {
 
 	public function getMonitoringItems() {
 		$ret = [];
-		$s3 = $this->ci->db->prepare("select et.name, et.id, ifnull(e.cnt,0) as cnt from event_types et left join (select event_type, count(*) as cnt from monitoring_items group by event_type) e on et.id = e.event_type group by et.name union all select 'Failed' as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt from (select count(*) as cnt from services z, serviceProcess y where z.id = y.serv_id) fp, (select count(*) as cnt from services z, serviceSockets y where z.id = y.serv_id) fo order by id");
-		$s3->execute();
-		while($r3 = $s3->fetch()) {
-			$r3["color"] = $this->getEventColor($r3["name"]);
-			$r3["text"]  = $this->getEventTextColor($r3["name"]);
-			$ret[] = $r3;
+		$s = $this->ci->db->prepare("select et.name, et.id, ifnull(e.cnt,0) as cnt from event_types et left join (select event_type, count(*) as cnt from monitoring_items group by event_type) e on et.id = e.event_type group by et.name union all select 'Failed' as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt from (select count(*) as cnt from services z, serviceProcess y where z.id = y.serv_id) fp, (select count(*) as cnt from services z, serviceSockets y where z.id = y.serv_id) fo order by id");
+		$s->execute();
+		while($r = $s->fetch()) {
+			$r["color"] = $this->getEventColor($r["name"]);
+			$r["text"]  = $this->getEventTextColor($r["name"]);
+			$ret[] = $r;
 		}
 		return $ret;
 	}
