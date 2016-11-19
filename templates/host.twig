@@ -10,8 +10,8 @@ table.table-hover tr td a {
 </style>
 {% endblock %}
 {% block contentHeader %}
-        Watched
-        <small>Host {{ host.host }}</small>
+        Host
+        <small>{{ host.host }}</small>
 {% endblock %}
 {% block content %}
       <div class="row">
@@ -43,7 +43,7 @@ table.table-hover tr td a {
             <div class="box-footer no-padding">
               <ul class="nav nav-pills nav-stacked">
     {% for e in activeEvent %}
-                <li><a href="{{ path_for('event', { 'id': e.id|e }) }}">{{ e.decode }}.{{ e.property }}
+                <li><a class="{{ e.color }}" href="{{ path_for('event', { 'id': e.id|e }) }}">{{ e.decode }}.{{ e.property }}
                   <span class="pull-right {{ e.color }}">{{ e.current_value }}{{ e.encode }}{{ e.value }}</span></a></li>
     {% endfor %}
             </div>

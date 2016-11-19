@@ -35,7 +35,7 @@ class Host extends CorePage {
 		$s2->bindParam(':id', $id, PDO::PARAM_INT);
 		$s2->execute();
 		while($r2 = $s2->fetch()) {
-			$r2["color"] = $this->getEventTextColor($r2["name"]);
+			$r2["color"] = $this->getEventTextColor($r2["type"]);
 			$r2["current_value"] = round($r2["current_value"]);
 			$r2["value"] = round($r2["value"]);
 			$r2["decode"] = urldecode($r2["name"]);

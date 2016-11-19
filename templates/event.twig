@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
 {% block title %}  {{ e.event_type }} on {{ e.res_name }} from {{ e.host_name }} {% endblock %}
 {% block contentHeader %}
-        Watched
-        <small>{{ e.event_type }} on {{ e.res_name }} from {{ e.host_name }}</small>
+        {{ e.event_type }}
+        <small>on {{ e.res_name }} from {{ e.host_name }}</small>
 {% endblock %}
 {% block content %}
       <div class="row">
