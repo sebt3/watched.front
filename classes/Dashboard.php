@@ -10,7 +10,7 @@ class Dashboard extends CorePage {
 
 	public function getMonitoringStatus() {
 		$ret = [];
-		$s1 = $this->ci->db->prepare("select 'Ok' as name, 0 as id, t.cnt+po.cnt+so.cnt - m.cnt as cnt from (select count(*) as cnt from serviceProcess where (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and status like 'ok%') po, (select count(*) as cnt from serviceSockets where (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and  status like 'ok%') so, (select count(*) as cnt from monitoring_items) t, (select count(*) as cnt from res_events e where e.end_time is null) m union all select 'Failed' as name, 0 as id, po.cnt+so.cnt as cnt from (select count(*) as cnt from serviceProcess where (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and status not like 'ok%') po, (select count(*) as cnt from serviceSockets where (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and  status not like 'ok%') so union all select et.name, et.id, count(e.id) as cnt from event_types et left join (select * from  res_events s where s.end_time is null) e on et.id = e.event_type group by et.name order by id");
+		$s1 = $this->ci->db->prepare("select 'Ok' as name, 0 as id, t.cnt+po.cnt+so.cnt - m.cnt as cnt from (select count(*) as cnt from serviceProcess where (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and status like 'ok%') po, (select count(*) as cnt from serviceSockets where (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and  status like 'ok%') so, (select count(*) as cnt from monitoring_items) t, (select count(*) as cnt from res_events e where e.end_time is null) m union all select 'Failed' as name, 0 as id, po.cnt+so.cnt as cnt from (select count(*) as cnt from serviceProcess where (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and status not like 'ok%') po, (select count(*) as cnt from serviceSockets where (UNIX_TIMESTAMP()*1000-timestamp)/1000<60*15 and  status not like 'ok%') so union all select 'Missing' as name, 2 as id, po.cnt+so.cnt as cnt from (select count(*) as cnt from serviceProcess where (UNIX_TIMESTAMP()*1000-timestamp)/1000>60*15) po, (select count(*) as cnt from serviceSockets where (UNIX_TIMESTAMP()*1000-timestamp)/1000>60*15) so union all select et.name, et.id, count(e.id) as cnt from event_types et left join (select * from  res_events s where s.end_time is null) e on et.id = e.event_type group by et.name order by id");
 		$s1->execute();
 		while($r1 = $s1->fetch()) {
 			$r1["color"] = $this->getEventColor($r1["name"]);
@@ -61,10 +61,10 @@ class Dashboard extends CorePage {
 	}
 	public function getFailedServices() {
 		$ret = [];
-		$s = $this->ci->db->prepare("select h.id as host_id, s.id as serv_id, f.status, s.name as service, h.name as host, f.timestamp from failed_services f, services s, hosts h where f.serv_id = s.id and s.host_id = h.id");
+		$s = $this->ci->db->prepare("select (UNIX_TIMESTAMP()*1000-f.timestamp)/1000 as late_sec, h.id as host_id, s.id as serv_id, f.status, s.name as service, h.name as host, f.timestamp from failed_services f, services s, hosts h where f.serv_id = s.id and s.host_id = h.id order by status, late_sec desc");
 		$s->execute();
 		while($r = $s->fetch()) {
-			$r["color"]  = $this->getEventTextColor($r["status"]);
+			$r["color"]  = $this->getStatusColor($r["status"],$r["late_sec"]);
 			$r["timestamp"] = $this->formatTimestamp($r["timestamp"]);
 			$ret[] = $r;
 		}

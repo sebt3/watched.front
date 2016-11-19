@@ -80,6 +80,7 @@ class CorePage {
 		case "Failed":
 		case "Critical":
 			return "#dd4b39";
+		case "Missing":
 		case "Error":
 			return "#ff851b";
 		case "Warning":
@@ -98,6 +99,7 @@ class CorePage {
 		case "failed":
 		case "Critical":
 			return "text-red";
+		case "Missing":
 		case "Error":
 			return "text-orange";
 		case "Warning":

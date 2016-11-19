@@ -162,15 +162,17 @@ table.table-hover tr td a {
             <div class="box-body table-responsive">
 	      <table class="table table-striped table-hover">
 	      <thead><tr>
-               <th>since</th>
                <th>host</th>
                <th>service</th>
+               <th>since</th>
+               <th>status</th>
 	      </tr></thead><tbody>
     {% for h in services %}
                <tr class="{{ h.color }}">
-		<td><a  class="{{ h.color }}" href="{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}">{{ h.timestamp }}</a></td>
                 <td><a  class="{{ h.color }}" href="{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}">{{ h.host }}</a></td>
                 <td><a  class="{{ h.color }}" href="{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}">{{ h.service }}</a></td>
+		<td><a  class="{{ h.color }}" href="{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}">{{ h.timestamp }}</a></td>
+                <td><a  class="{{ h.color }}" href="{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}">{{ h.status }}</a></td>
                </tr>
     {% endfor %}
 	      </tbody>
