@@ -3,19 +3,49 @@ use Interop\Container\ContainerInterface;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 
-class Api {
-
-	protected $ci;
-
+class Api extends CorePage {
 	public function __construct(ContainerInterface $ci) { 
-		$this->ci = $ci;
+		parent::__construct($ci);
 	}
 	
+	public function services($request, $response, $args) {
+		$serv_id = $request->getAttribute('id');
+		$params  = explode('/', $request->getAttribute('params'));
+		$ret     = [];
+
+		$sql = "";
+		if (isset($params[1]))
+			$sql = " and timestamp >= :mint and timestamp <= :maxt";
+		else if (isset($params[0]))
+			$sql = " and timestamp >= :mint";
+
+		$stmt = $this->ci->db->prepare("select timestamp,failed,missing,ok from serviceHistory where serv_id=:id".$sql);
+		$stmt->bindParam(':id', $serv_id, PDO::PARAM_INT);
+		if (isset($params[1])) {
+			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
+			$stmt->bindParam(':maxt', $params[1], PDO::PARAM_INT);
+		}
+		else if (isset($params[0]))
+			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
+		$stmt->execute();
+		while($row = $stmt->fetch()) {
+			$row["timestamp"]	= floatval($row["timestamp"]);
+			$row["failed"]		= floatval($row["failed"]);
+			$row["missing"]		= floatval($row["missing"]);
+			$row["ok"]		= floatval($row["ok"]);
+			$ret[] = $row;
+		}
+
+
+		$response->getBody()->write(json_encode($ret));
+		return $response;
+	}
+
 	public function ressources($request, $response, $args) {
-		$name = $request->getAttribute('name');
+		$name    = $request->getAttribute('name');
 		$host_id = $request->getAttribute('aid');
-		$res_id = $request->getAttribute('rid');
-		$params = explode('/', $request->getAttribute('params'));
+		$res_id  = $request->getAttribute('rid');
+		$params  = explode('/', $request->getAttribute('params'));
 		if (!haveTable($this->ci->db,$name)) {
 			return $response->withStatus(404);
 		}
@@ -63,9 +93,8 @@ class Api {
 				$row[$i] = floatval($k);
 			$ret[] = $row;
 		}
-		
-		$response->getBody()->write(json_encode($ret));
 
+		$response->getBody()->write(json_encode($ret));
 		return $response;
 	}
 }

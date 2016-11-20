@@ -56,6 +56,7 @@ function haveTable($db, $table) {
 // TODO: add the login group here
 $app->group('/api', function () use ($app) {
 	$app->get('/ressources/{name}/{aid:[0-9]+}/{rid:[0-9]+}[/{params:.*}]', '\Api:ressources')->setName('apiRessource');
+	$app->get('/services/{id:[0-9]+}[/{params:.*}]', '\Api:services')->setName('apiService');
 })->add(function ($request, $response, $next) use ($container) {
 	// TODO: add permission checks for api access here
 	$response = $next($request, $response);

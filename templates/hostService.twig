@@ -59,7 +59,85 @@
 	     </div>
 	    </div>
           </div>
-        </div>
       </div>
 
+      <div class="row">
+        <div class="col-md-12">
+          <div class="box box-default">
+            <div class="box-header with-border">
+              <h3 class="box-title">Availability</h3>
+	      <div class="box-tools">
+		<!-- TODO: add a dropdown to select the period -->
+                    <div class="btn-group">
+                      <div class="btn-group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                          Period <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a onclick="setPeriod('all')">All</a></li>
+                          <li><a onclick="setPeriod('week')">Last week</a></li>
+                          <li><a onclick="setPeriod('yesterday')">Yesterday</a></li>
+                          <li><a onclick="setPeriod('today')">Today</a></li>
+                          <li><a onclick="setPeriod('hour')">Last hour</a></li>
+                        </ul>
+                      </div>
+                    </div>
+	      </div>
+            </div>
+            <div class="box-body">
+	     <div class="chart">
+	      <div id="morrisChart"></div>
+	     </div>
+            </div>
+          </div>
+        </div>
+      </div>
 {% endblock %}
+
+{% block scripts %}
+<script>
+if (!Date.now) {
+    Date.now = function() { return new Date().getTime(); }
+}
+
+$.getJSON( "{{ path_for('apiService', { 'id': service.id }) }}", function( data ) {
+	var ykeys = [];
+	$.each(data[0], function(index, value) {
+		if (index!='timestamp')
+			ykeys.push(index);
+	});
+	graph = new Morris.Line({
+		element: 'morrisChart',  
+		data: data, 
+		hideHover: true,
+		xkey: 'timestamp', 
+		pointSize:0,fillOpacity:0.3,
+		ykeys: ['missing','failed','ok'], labels: ['missing','failed','ok'], lineColors: ['#ff851b','#dd4b39','#00a65a']
+	});
+});
+
+function updateLiveGraph(url) {
+  $.getJSON(url, function(results) {
+	graph.setData(results); 
+  });
+}
+
+function setPeriod(p) {
+	var baseurl="{{ path_for('apiService', { 'id': service.id }) }}";
+	var url;
+	switch(p) {
+	case "all": url=baseurl;break;
+	case "week": url=baseurl+"/"+(Math.floor(Date.now())-(3600000*24*7));break;
+	case "yesterday": url=baseurl+"/"+((Math.floor(Date.now()/(3600000*24))-1)*(3600000*24))+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
+	case "today": url=baseurl+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
+	case "hour": url=baseurl+"/"+(Math.floor(Date.now()/(3600000))*(3600000));break;
+	default:
+		return false
+	}
+	updateLiveGraph(url)
+	return true
+}
+
+</script>
+{% endblock %}
+

@@ -75,7 +75,11 @@ class HostService extends CorePage {
 			$ret[] = $this->getService($r["id"]);
 		return $ret;
 	}
-	
+
+/*
+overall availability :
+select ok*100/(failed+ok+missing) as avail from (select sum(failed) as failed, sum(missing) as missing, sum(ok) as ok from serviceHistory where serv_id=11) x
+*/
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Pages
