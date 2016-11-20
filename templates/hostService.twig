@@ -106,7 +106,7 @@ $.getJSON( "{{ path_for('apiService', { 'id': service.id }) }}", function( data 
 		if (index!='timestamp')
 			ykeys.push(index);
 	});
-	graph = new Morris.Line({
+	graph = new Morris.Area({
 		element: 'morrisChart',  
 		data: data, 
 		hideHover: true,
