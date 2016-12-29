@@ -256,7 +256,7 @@ select 'Failed' as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
 		$s6->bindParam(':id', $id, PDO::PARAM_INT);
 		$s6->execute();
 		while($r6 = $s6->fetch()) {
-			$r6["decode"] = urldecode(substr($r6["res_name"], 17));
+			$r6["decode"] = urldecode(substr($r6["res_name"], 10));
 			$r6["color"]  = $this->getPctColor($r6["pctused"]);
 			$ret[] = $r6;
 		}
@@ -283,7 +283,7 @@ select 'Failed' as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
 		$s7->bindParam(':id', $id, PDO::PARAM_INT);
 		$s7->execute();
 		while($r7 = $s7->fetch()) {
-			$r7["decode"] = substr($r7["res_name"], 14);
+			$r7["decode"] = substr($r7["res_name"], 7);
 			$ret[] = $r7;
 		}
 		return $ret;
@@ -330,7 +330,6 @@ select s.host_id, s.res_id, 'swap' as name, s.used/1024 as used, s.free/1024 as 
 		$s9->bindParam(':id', $id, PDO::PARAM_INT);
 		$s9->execute();
 		while($r9 = $s9->fetch()) {
-			$r9["name"] = substr($r9["name"], 7);
 			$ret[] = $r9;
 		}
 		return $ret;
@@ -347,7 +346,6 @@ select s.host_id, s.res_id, 'swap' as name, s.used/1024 as used, s.free/1024 as 
 		$s10->bindParam(':id', $id, PDO::PARAM_INT);
 		$s10->execute();
 		while($r10 = $s10->fetch()) {
-			$r10["name"] = substr($r10["name"], 7);
 			$ret[] = $r10;
 		}
 		return $ret;
