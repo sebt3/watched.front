@@ -244,7 +244,7 @@ select 'Failed' as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
 	 group by host_id, res_id
   ) t
  where ar.res_id=r.id
-   and r.type='disk_usage'
+   and r.data_type='disk_usage'
    and ar.host_id=d.host_id
    and ar.res_id=d.res_id
    and d.host_id=t.host_id
@@ -275,7 +275,7 @@ select 'Failed' as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
    and u.res_id = cu.res_id
    and u.timestamp = cu.ts
    and ar.res_id=r.id
-   and r.type='cpu_usage'
+   and r.data_type='cpu_usage'
    and ar.host_id=u.host_id
    and ar.res_id=u.res_id
    and ar.host_id=:id
@@ -324,7 +324,7 @@ select s.host_id, s.res_id, 'swap' as name, s.used/1024 as used, s.free/1024 as 
 		$ret = [];
 		$s9 = $this->ci->db->prepare("select r.name, ar.host_id, ar.res_id
   from c\$ressources r, h\$ressources ar
- where r.type like '%stat%'
+ where r.data_type like '%stat%'
    and ar.res_id=r.id
    and ar.host_id=:id");
 		$s9->bindParam(':id', $id, PDO::PARAM_INT);
@@ -340,8 +340,8 @@ select s.host_id, s.res_id, 'swap' as name, s.used/1024 as used, s.free/1024 as 
 		$ret = [];
 		$s10 = $this->ci->db->prepare("select r.name, ar.host_id, ar.res_id
   from c\$ressources r, h\$ressources ar
- where r.type not in ('disk_usage', 'cpu_usage', 'memory_usage', 'swap_usage')
-   and r.type not like '%stat%'
+ where r.data_type not in ('disk_usage', 'cpu_usage', 'memory_usage', 'swap_usage')
+   and r.data_type not like '%stat%'
    and ar.res_id=r.id
    and ar.host_id=:id");
 		$s10->bindParam(':id', $id, PDO::PARAM_INT);

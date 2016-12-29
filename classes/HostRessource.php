@@ -169,7 +169,7 @@ select et.name, et.id, count(e.id) as cnt
 		if($this->haveMonitoring($aid, $rid))
 			return $this->ci->view->render($response, 'ressource.twig', [ 
 				'a'		=> $agent,
-				'r'		=> array("id" => $res["id"], "type" => $res["type"], "name" => urldecode($res["name"])),
+				'r'		=> array("id" => $res["id"], "type" => $res["data_type"], "name" => urldecode($res["name"])),
 				'monitorStatus' => $this->getMonitoringStatus($aid, $rid),
 				'activeEvent'	=> $this->getActivesEvents($aid, $rid),
 				'monitorItems'	=> $this->getMonitoringItems($aid, $rid),

@@ -16,7 +16,7 @@ class CorePage {
 		return $stmt->fetch();
 	}
 	public function getRessource($id) {
-		$stmt = $this->ci->db->prepare("SELECT id, name, type from c\$ressources where id = :id");
+		$stmt = $this->ci->db->prepare("SELECT id, name, data_type from c\$ressources where id = :id");
 		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
 		return $stmt->fetch();
