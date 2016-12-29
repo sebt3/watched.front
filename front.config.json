@@ -2,7 +2,7 @@
 	"db" : 
 	{
 		"host"   : "localhost",
-		"dbname" : "watcheddb",
+		"dbname" : "test",
 		"user"   : "watched",
 		"pass"   : "watched"
 	},

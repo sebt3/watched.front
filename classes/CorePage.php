@@ -10,13 +10,13 @@ class CorePage {
 	}
 
 	public function getHost($id) {
-		$stmt = $this->ci->db->prepare("SELECT a.id, a.name as host from hosts a where a.id = :id");
+		$stmt = $this->ci->db->prepare("SELECT a.id, a.name as host from h\$hosts a where a.id = :id");
 		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
 		return $stmt->fetch();
 	}
 	public function getRessource($id) {
-		$stmt = $this->ci->db->prepare("SELECT id, name, type from ressources where id = :id");
+		$stmt = $this->ci->db->prepare("SELECT id, name, type from c\$ressources where id = :id");
 		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
 		return $stmt->fetch();
@@ -39,6 +39,12 @@ class CorePage {
 		default:
 			return "text-green";
 		}
+	}
+	public function getPctColor($pct) {
+		if ($pct>90)	  return "red";
+		else if ($pct>70) return "yellow";
+		else if ($pct<20) return "blue";
+		return "green";
 	}
 
 	public function getDomainTextColor($name) {

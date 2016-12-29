@@ -34,7 +34,10 @@ class HostService extends CorePage {
 
 	public function getSockets($id) {
 		$ret = [];
-		$s   = $this->ci->db->prepare("select sp.serv_id, s.name as serv_name, sp.name as socket_name, sp.status, sp.timestamp, (UNIX_TIMESTAMP()*1000-sp.timestamp)/1000 as late_sec from services s, serviceSockets sp where s.id=:id and s.id = sp.serv_id");
+		$s   = $this->ci->db->prepare("select sp.serv_id, s.name as serv_name, sp.name as socket_name, sp.status, sp.timestamp, (UNIX_TIMESTAMP()*1000-sp.timestamp)/1000 as late_sec 
+  from s\$services s, s\$sockets sp 
+ where s.id=:id
+   and s.id = sp.serv_id");
 		$s->bindParam(':id', $id, PDO::PARAM_INT);
 		$s->execute();
 		while($r = $s->fetch()) {
@@ -47,7 +50,10 @@ class HostService extends CorePage {
 
 	public function getProcess($id) {
 		$ret = [];
-		$s   = $this->ci->db->prepare("select sp.serv_id, s.name as serv_name, sp.name as process_name, sp.full_path, sp.cwd, sp.username, sp.pid, sp.status, sp.timestamp, (UNIX_TIMESTAMP()*1000-sp.timestamp)/1000 as late_sec from services s, serviceProcess sp where s.id=:id and s.id = sp.serv_id");
+		$s   = $this->ci->db->prepare("select sp.serv_id, s.name as serv_name, sp.name as process_name, sp.full_path, sp.cwd, sp.username, sp.pid, sp.status, sp.timestamp, (UNIX_TIMESTAMP()*1000-sp.timestamp)/1000 as late_sec
+  from s\$services s, s\$process sp
+ where s.id=:id
+   and s.id = sp.serv_id");
 		$s->bindParam(':id', $id, PDO::PARAM_INT);
 		$s->execute();
 		while($r = $s->fetch()) {
@@ -68,7 +74,7 @@ class HostService extends CorePage {
 
 	public function getHostServices($id) {
 		$ret = [];
-		$s   = $this->ci->db->prepare("select id, name from services where host_id=:id");
+		$s   = $this->ci->db->prepare("select id, name from s\$services where host_id=:id");
 		$s->bindParam(':id', $id, PDO::PARAM_INT);
 		$s->execute();
 		while($r = $s->fetch())

@@ -45,7 +45,7 @@ $container['notFoundHandler'] = function ($c) {
 // TODO: ajouter les handler pour 405 et erreurs
 
 function haveTable($db, $table) {
-	$stmt = $db->prepare("SELECT count(table_name) as cnt from live_tables where table_name = :tbid");
+	$stmt = $db->prepare("SELECT count(table_name) as cnt from c\$data_tables where table_name = :tbid");
 	$stmt->bindParam(':tbid', $table);
         $stmt->execute();
         $row = $stmt->fetch();

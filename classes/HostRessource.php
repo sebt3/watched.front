@@ -9,7 +9,7 @@ class HostRessource extends CorePage {
 	}
 
 	public function haveMonitoring($aid, $rid) {
-		$s0 = $this->ci->db->prepare("select count(*) as cnt from monitoring_items where host_id=:aid and res_id=:rid");
+		$s0 = $this->ci->db->prepare("select count(*) as cnt from h\$monitoring_items where host_id=:aid and res_id=:rid");
 		$s0->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s0->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s0->execute();
@@ -19,7 +19,30 @@ class HostRessource extends CorePage {
 
 	public function getMonitoringStatus($aid, $rid) {
 		$ret = [];
-		$s1  = $this->ci->db->prepare("select 'Ok' as name, 0 as id, t.cnt - m.cnt as cnt from (select count(*) as cnt from monitoring_items where host_id=:aid and res_id=:rid) t, (select count(*) as cnt from res_events e where e.host_id=:aid and e.res_id=:rid and e.end_time is null) m union all select et.name, et.id, count(e.id) as cnt from event_types et left join (select * from  res_events s where s.host_id=:aid and s.res_id=:rid and s.end_time is null) e on et.id = e.event_type group by et.name order by id");
+		$s1  = $this->ci->db->prepare("select 'Ok' as name, 0 as id, t.cnt - m.cnt as cnt 
+  from (
+	select count(*) as cnt 
+	  from h\$monitoring_items 
+	 where host_id=:aid and res_id=:rid
+  ) t, (
+	select count(*) as cnt 
+	  from h\$res_events e 
+	 where e.host_id=:aid 
+	   and e.res_id=:rid
+	   and e.end_time is null
+  ) m
+union all 
+select et.name, et.id, count(e.id) as cnt 
+  from c\$event_types et 
+  left join (
+	select * 
+	  from h\$res_events s 
+	 where s.host_id=:aid 
+	   and s.res_id=:rid 
+	   and s.end_time is null
+  ) e on et.id = e.event_type 
+ group by et.name
+ order by id");
 		$s1->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s1->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s1->execute();
@@ -33,7 +56,13 @@ class HostRessource extends CorePage {
 
 	public function getActivesEvents($aid, $rid) {
 		$ret = [];
-		$s2  = $this->ci->db->prepare("select e.id, r.name, et.name as type, e.property, e.current_value, e.oper, e.value, e.start_time from res_events e, ressources r, event_types et where e.host_id=:aid and e.res_id=:rid and e.res_id=r.id and et.id=e.event_type and e.end_time is null");
+		$s2  = $this->ci->db->prepare("select e.id, r.name, et.name as type, e.property, e.current_value, e.oper, e.value, e.start_time
+  from h\$res_events e, c\$ressources r, c\$event_types et 
+ where e.host_id=:aid
+   and e.res_id=:rid
+   and e.res_id=r.id
+   and et.id=e.event_type
+   and e.end_time is null");
 		$s2->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s2->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s2->execute();
@@ -50,7 +79,17 @@ class HostRessource extends CorePage {
 
 	public function getMonitoringItems($aid, $rid) {
 		$ret = [];
-		$s3  = $this->ci->db->prepare("select et.name, et.id, ifnull(e.cnt,0) as cnt from event_types et left join (select event_type, count(*) as cnt from monitoring_items where host_id=:aid and res_id=:rid group by event_type) e on et.id = e.event_type group by et.name order by id");
+		$s3  = $this->ci->db->prepare("select et.name, et.id, ifnull(e.cnt,0) as cnt 
+  from c\$event_types et 
+  left join (
+	select event_type, count(*) as cnt 
+	  from h\$monitoring_items 
+	 where host_id=:aid
+	   and res_id=:rid
+	 group by event_type
+) e on et.id = e.event_type 
+ group by et.name
+ order by id");
 		$s3->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s3->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s3->execute();
@@ -64,7 +103,11 @@ class HostRessource extends CorePage {
 
 	public function getMonitoringList($aid, $rid) {
 		$ret = [];
-		$s4  = $this->ci->db->prepare("select res_name, res_type, event_name, property, oper, value from monitoring_items where host_id=:aid and res_id=:rid order by property, event_type");
+		$s4  = $this->ci->db->prepare("select res_name, res_type, event_name, property, oper, value 
+  from h\$monitoring_items
+ where host_id=:aid 
+   and res_id=:rid 
+ order by property, event_type");
 		$s4->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s4->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s4->execute();
@@ -80,7 +123,14 @@ class HostRessource extends CorePage {
 
 	public function getMonitoringHistory($aid, $rid) {
 		$ret = [];
-		$s5  = $this->ci->db->prepare("select e.id, e.start_time, e.end_time, e.property, e.current_value, e.oper, e.value, et.name as event_name from res_events e, event_types et where e.end_time is not null and e.event_type=et.id and host_id=:aid and res_id=:rid order by start_time desc limit 8");
+		$s5  = $this->ci->db->prepare("select e.id, e.start_time, e.end_time, e.property, e.current_value, e.oper, e.value, et.name as event_name 
+  from h\$res_events e, c\$event_types et 
+ where e.end_time is not null 
+   and e.event_type=et.id
+   and host_id=:aid
+   and res_id=:rid
+ order by start_time desc
+ limit 8");
 		$s5->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s5->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s5->execute();

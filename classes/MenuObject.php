@@ -20,10 +20,10 @@ class MenuObject {
 		$container = $app->getContainer();
 		$db = $container->get('db');
 		$this->domains = array();
-		$stmt = $db->query("SELECT id, name from domains");
+		$stmt = $db->query("SELECT id, name from c\$domains");
 		while($row = $stmt->fetch()) {
 			$res = array();
-			$stm2 = $db->prepare("SELECT name, id from hosts where domain_id = :id");
+			$stm2 = $db->prepare("SELECT name, id from h\$hosts where domain_id = :id");
 			$stm2->bindParam(':id', $row["id"], PDO::PARAM_INT);
 			$stm2->execute();
 			while($l = $stm2->fetch()) {
@@ -33,7 +33,7 @@ class MenuObject {
 				array_push($this->domains, array("name" => $row["name"], "hosts" => $res));
 		}
 		$lst=array();
-		$stm3 = $db->query("SELECT name, id from hosts where domain_id is null");
+		$stm3 = $db->query("SELECT name, id from h\$hosts where domain_id is null");
 		while($r = $stm3->fetch()) {
 			array_push($lst, $r);
 		}

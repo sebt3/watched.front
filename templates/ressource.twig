@@ -138,6 +138,7 @@ table.table-hover tr td a {
                           <li><a onclick="setPeriod('yesterday')">Yesterday</a></li>
                           <li><a onclick="setPeriod('today')">Today</a></li>
                           <li><a onclick="setPeriod('hour')">Last hour</a></li>
+			  <!--<li><a onclick="setPeriod('test')">test</a></li>-->
                         </ul>
                       </div>
                     </div>
@@ -207,7 +208,7 @@ $.getJSON( "{{ path_for('apiRessource', { 'aid': a.id, 'rid': r.id, 'name': r.ty
 		if (index!='timestamp' && index.match(/^min/)==null && index.match(/^max/)==null)
 			ykeys.push(index);
 	});
-	graph = new Morris.Line({
+	graph = new Morris.Area({
 		element: 'morrisChart',  
 		data: data, 
 		hideHover: true,
@@ -238,7 +239,8 @@ function setPeriod(p) {
 	case "week": url=baseurl+"/"+(Math.floor(Date.now())-(3600000*24*7));break;
 	case "yesterday": url=baseurl+"/"+((Math.floor(Date.now()/(3600000*24))-1)*(3600000*24))+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
 	case "today": url=baseurl+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
-	case "hour": url=baseurl+"/"+(Math.floor(Date.now()/(3600000))*(3600000));break;
+	case "hour": url=baseurl+"/"+(Date.now()-3600000);break;
+	case "test": url=baseurl+"/"+(Date.now()-6*3600000-4*600000)+"/"+(Date.now()-5*3600000+60000);break;
 	default:
 		return false
 	}

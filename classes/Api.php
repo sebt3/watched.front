@@ -19,7 +19,7 @@ class Api extends CorePage {
 		else if (isset($params[0]))
 			$sql = " and timestamp >= :mint";
 
-		$stmt = $this->ci->db->prepare("select timestamp,failed,missing,ok from serviceHistory where serv_id=:id".$sql);
+		$stmt = $this->ci->db->prepare("select timestamp,failed,missing,ok from s\$history where serv_id=:id".$sql);
 		$stmt->bindParam(':id', $serv_id, PDO::PARAM_INT);
 		if (isset($params[1])) {
 			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
@@ -66,7 +66,7 @@ class Api extends CorePage {
 			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
 		$stmt->execute();
 		$row = $stmt->fetch();
-		$prefix = "";
+		$prefix = "d\$";
 		/*if ($row["cnt"]+0 <= 0) {
 			return $response->withStatus(404);
 		} else*/ if ($row["cnt"]+0>5)

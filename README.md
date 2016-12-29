@@ -15,14 +15,21 @@ This project is based on the following projects :
 
 
 ## Other componants
-* [watched.back](https://github.com/sebt3/watched.back) the backend. Centralize the agents metric and monitor them.
-* [watched.agent](https://github.com/sebt3/watched.agent) the agent. Provide a REST api to the collected metrics.
+* [watched.back](https://github.com/sebt3/watched.back) Centralize the agents metric and monitor them.
+* [watched.agent](https://github.com/sebt3/watched.agent) Collect metrics and monitor services forwarding the information over a REST api.
 
 ## Running instruction
     composer install
     php -S 0.0.0.0:8080 -t public/
 
+Complete instructions [here](https://sebt3.github.io/watched/doc/install/#the-frontend).
+
 ## Current status
-This is the very early days.
-* Display the performance metric.
-* Display monitoring status.
+So far, this is just a front-end to the collected data. Most of the planned features are still missing. Yet it's already good enough as a data front-end. Features :
+* Global dashboard
+* Synthetic host display
+* Metrics history graphs
+* Monitoring status for metrics and services
+
+
+
