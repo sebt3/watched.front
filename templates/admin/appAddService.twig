@@ -1,0 +1,38 @@
+{% extends "core.twig" %}
+{% block title %}{{ name }} application - Add a service{% endblock %}
+{% block contentHeader %}
+        {{ name }} application
+        <small>Add a service</small>
+{% endblock %}
+{% block content %}
+      <div class="row">
+	<div class="col-md-2"></div>
+        <div class="col-md-8">
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Add a service to the {{ name }} application</h3>
+            </div>
+            <form class="form-horizontal" action="{{ path_for('admin.apps.addService', {'id': app_id}) }}" method="post">
+              <div class="box-body">
+
+                <div class="form-group">
+                  <label for="ssl" class="col-sm-2 control-label">Available services</label>
+                  <div class="col-sm-10">
+		    <select class="form-control" name='sid'>
+    {% for a in services %}
+			<option {% if hid==a.id %} selected="selected"{% endif %} value={{ a.id }}>{{ a.domain_name }}_{{ a.host_name }}_{{ a.name }}</option>
+    {% endfor %}
+		    </select>
+                  </div>
+                </div>
+
+              <div class="box-footer">
+                <a href="{{ path_for('admin.apps.change', {'id': app_id}) }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> Cancel</a>
+                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-plus"></i> Add</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+{% endblock %}
+

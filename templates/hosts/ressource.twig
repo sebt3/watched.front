@@ -189,7 +189,7 @@ if (!Date.now) {
     segmentShowStroke: true,
     segmentStrokeColor: "#fff",
     segmentStrokeWidth: 1,
-    percentageInnerCutout: 50, // This is 0 for Pie charts
+    percentageInnerCutout: 50, /* This is 0 for Pie charts*/
     animationSteps: 100,
     animationEasing: "easeOutBounce",
     animateRotate: true,
@@ -242,10 +242,10 @@ function setPeriod(p) {
 	case "hour": url=baseurl+"/"+(Date.now()-3600000);break;
 	case "test": url=baseurl+"/"+(Date.now()-6*3600000-4*600000)+"/"+(Date.now()-5*3600000+60000);break;
 	default:
-		return false
+		return false;
 	}
-	updateLiveGraph(url)
-	return true
+	updateLiveGraph(url);
+	return true;
 }
 
 </script>

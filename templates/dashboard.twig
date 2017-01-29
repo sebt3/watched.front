@@ -150,6 +150,7 @@ table.table-hover tr td a {
             </div>
           </div>
         </div>
+{% if menu.isAuth %}
         <div class="col-md-5">
           <div class="box box-default">
             <div class="box-header with-border">
@@ -180,6 +181,7 @@ table.table-hover tr td a {
             </div>
           </div>
         </div>
+{% endif %}
       </div>
 
      </div>
@@ -227,7 +229,7 @@ table.table-hover tr td a {
     segmentShowStroke: true,
     segmentStrokeColor: "#fff",
     segmentStrokeWidth: 1,
-    percentageInnerCutout: 50, // This is 0 for Pie charts
+    percentageInnerCutout: 50,
     animationSteps: 100,
     animationEasing: "easeOutBounce",
     animateRotate: true,

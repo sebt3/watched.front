@@ -10,10 +10,12 @@
   <link rel="stylesheet" href="/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/AdminLTE.min.css">
   <link rel="stylesheet" href="/css/skins/skin-blue.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
   <link rel="stylesheet" href="/css/morris.css">
-  
+  <link rel="stylesheet" href="/css/squareblue.css">
+  <link rel="stylesheet" href="/css/watched.css">
+
   <!-- iCheck
   <link rel="stylesheet" href="/adminlte/plugins/iCheck/flat/blue.css">
   <!-- jvectormap
@@ -30,6 +32,7 @@
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 </head>
+{% block body %}
 <body class="hold-transition skin-blue sidebar-mini">
 <div class="wrapper">
 
@@ -39,27 +42,20 @@
       <span class="logo-lg"><b>Watched</b></span>
     </a>
     <nav class="navbar navbar-static-top">
-      <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-        <span class="sr-only">Toggle navigation</span>
-      </a>
-      <div class="navbar-custom-menu">
-        <ul class="nav navbar-nav">
-	  <!-- include other top buttons here -->
-          <li>
-            <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
-          </li>
-        </ul>
-      </div>
+  {% block topBar %}
+    {{ include('bars/topbar.twig') }}
+  {% endblock %}
     </nav>
   </header>
   <aside class="main-sidebar">
     <section class="sidebar">
   {% block leftBar %}
-    {{ include('leftbar.twig') }}
+    {{ include('bars/leftbar.twig') }}
   {% endblock %}
     </section>
   </aside>
   <div class="content-wrapper">
+{{ include('bars/flashs.twig') }}
 {% block contentWrapper %}
     <section class="content-header">
       <h1>
@@ -86,21 +82,13 @@
 {% endblock %}
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> 0.1.0
+      <b>Version</b> 0.2.0
     </div>
-    <strong>Copyright &copy; 2016 <a href="https://github.com/sebt3">Sébastien Huss</a>.</strong> All rights
-    reserved.
+    <strong>Copyright &copy; 2016-2017 <a href="https://github.com/sebt3">Sébastien Huss</a>.</strong>
   </footer>
   <aside class="control-sidebar control-sidebar-dark">
   {% block rightBar %}
-    <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
-      <li><a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a></li>
-      <!-- add more tab header here -->
-    </ul>
-    <div class="tab-content">
-      <div class="tab-pane" id="control-sidebar-home-tab"></div>
-      <!-- add more tab Content here -->
-    </div>
+    {{ include('bars/rightbar.twig') }}
   {% endblock %}
   </aside>
   <div class="control-sidebar-bg"></div>
@@ -140,4 +128,5 @@
 <!-- AdminLTE App -->
 {% block scripts %}{% endblock %}
 </body>
+{% endblock %}
 </html>

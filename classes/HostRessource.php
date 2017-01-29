@@ -8,47 +8,49 @@ class HostRessource extends CorePage {
 		parent::__construct($ci);
 	}
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Model
 	public function haveMonitoring($aid, $rid) {
-		$s0 = $this->ci->db->prepare("select count(*) as cnt from h\$monitoring_items where host_id=:aid and res_id=:rid");
+		$s0 = $this->db->prepare('select count(*) as cnt from h$monitoring_items where host_id=:aid and res_id=:rid');
 		$s0->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s0->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s0->execute();
 		$c = $s0->fetch();
-		return ($c["cnt"] > 0);
+		return ($c['cnt'] > 0);
 	}
 
 	public function getMonitoringStatus($aid, $rid) {
 		$ret = [];
-		$s1  = $this->ci->db->prepare("select 'Ok' as name, 0 as id, t.cnt - m.cnt as cnt 
+		$s1  = $this->db->prepare('select "Ok" as name, 0 as id, t.cnt - m.cnt as cnt 
   from (
 	select count(*) as cnt 
-	  from h\$monitoring_items 
+	  from h$monitoring_items 
 	 where host_id=:aid and res_id=:rid
   ) t, (
 	select count(*) as cnt 
-	  from h\$res_events e 
+	  from h$res_events e 
 	 where e.host_id=:aid 
 	   and e.res_id=:rid
 	   and e.end_time is null
   ) m
 union all 
 select et.name, et.id, count(e.id) as cnt 
-  from c\$event_types et 
+  from c$event_types et 
   left join (
 	select * 
-	  from h\$res_events s 
+	  from h$res_events s 
 	 where s.host_id=:aid 
 	   and s.res_id=:rid 
 	   and s.end_time is null
   ) e on et.id = e.event_type 
  group by et.name
- order by id");
+ order by id');
 		$s1->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s1->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s1->execute();
 		while($r1 = $s1->fetch()) {
-			$r1["color"] = $this->getEventColor($r1["name"]);
-			$r1["text"]  = $this->getEventTextColor($r1["name"]);
+			$r1['color'] = $this->getEventColor($r1['name']);
+			$r1['text']  = $this->getEventTextColor($r1['name']);
 			$ret[] = $r1;
 		}
 		return $ret;
@@ -56,22 +58,22 @@ select et.name, et.id, count(e.id) as cnt
 
 	public function getActivesEvents($aid, $rid) {
 		$ret = [];
-		$s2  = $this->ci->db->prepare("select e.id, r.name, et.name as type, e.property, e.current_value, e.oper, e.value, e.start_time
-  from h\$res_events e, c\$ressources r, c\$event_types et 
+		$s2  = $this->db->prepare('select e.id, r.name, et.name as type, e.property, e.current_value, e.oper, e.value, e.start_time
+  from h$res_events e, c$ressources r, c$event_types et 
  where e.host_id=:aid
    and e.res_id=:rid
    and e.res_id=r.id
    and et.id=e.event_type
-   and e.end_time is null");
+   and e.end_time is null');
 		$s2->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s2->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s2->execute();
 		while($r2 = $s2->fetch()) {
-			$r2["color"]  = $this->getEventTextColor($r2["type"]);
-			$r2["current_value"] = round($r2["current_value"]);
-			$r2["value"] = round($r2["value"]);
-			$r2["decode"] = urldecode($r2["name"]);
-			$r2["encode"] = urldecode($r2["oper"]);
+			$r2['color']  = $this->getEventTextColor($r2['type']);
+			$r2['current_value'] = round($r2['current_value']);
+			$r2['value'] = round($r2['value']);
+			$r2['decode'] = urldecode($r2['name']);
+			$r2['encode'] = urldecode($r2['oper']);
 			$ret[] = $r2;
 		}
 		return $ret;
@@ -79,23 +81,23 @@ select et.name, et.id, count(e.id) as cnt
 
 	public function getMonitoringItems($aid, $rid) {
 		$ret = [];
-		$s3  = $this->ci->db->prepare("select et.name, et.id, ifnull(e.cnt,0) as cnt 
-  from c\$event_types et 
+		$s3  = $this->db->prepare('select et.name, et.id, ifnull(e.cnt,0) as cnt 
+  from c$event_types et 
   left join (
 	select event_type, count(*) as cnt 
-	  from h\$monitoring_items 
+	  from h$monitoring_items 
 	 where host_id=:aid
 	   and res_id=:rid
 	 group by event_type
 ) e on et.id = e.event_type 
  group by et.name
- order by id");
+ order by id');
 		$s3->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s3->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s3->execute();
 		while($r3 = $s3->fetch()) {
-			$r3["color"] = $this->getEventColor($r3["name"]);
-			$r3["text"]  = $this->getEventTextColor($r3["name"]);
+			$r3['color'] = $this->getEventColor($r3['name']);
+			$r3['text']  = $this->getEventTextColor($r3['name']);
 			$ret[] = $r3;
 		}
 		return $ret;
@@ -103,19 +105,19 @@ select et.name, et.id, count(e.id) as cnt
 
 	public function getMonitoringList($aid, $rid) {
 		$ret = [];
-		$s4  = $this->ci->db->prepare("select res_name, res_type, event_name, property, oper, value 
-  from h\$monitoring_items
+		$s4  = $this->db->prepare('select res_name, res_type, event_name, property, oper, value 
+  from h$monitoring_items
  where host_id=:aid 
    and res_id=:rid 
- order by property, event_type");
+ order by property, event_type');
 		$s4->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s4->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s4->execute();
 		while($r4 = $s4->fetch()) {
-			$r4["color"]  = $this->getEventTextColor($r4["event_name"]);
-			$r4["value"] = round($r4["value"]);
-			$r4["decode"] = urldecode($r4["res_name"]);
-			$r4["encode"] = urldecode($r4["oper"]);
+			$r4['color']  = $this->getEventTextColor($r4['event_name']);
+			$r4['value'] = round($r4['value']);
+			$r4['decode'] = urldecode($r4['res_name']);
+			$r4['encode'] = urldecode($r4['oper']);
 			$ret[] = $r4;
 		}
 		return $ret;
@@ -123,53 +125,54 @@ select et.name, et.id, count(e.id) as cnt
 
 	public function getMonitoringHistory($aid, $rid) {
 		$ret = [];
-		$s5  = $this->ci->db->prepare("select e.id, e.start_time, e.end_time, e.property, e.current_value, e.oper, e.value, et.name as event_name 
-  from h\$res_events e, c\$event_types et 
+		$s5  = $this->db->prepare('select e.id, e.start_time, e.end_time, e.property, e.current_value, e.oper, e.value, et.name as event_name 
+  from h$res_events e, c$event_types et 
  where e.end_time is not null 
    and e.event_type=et.id
    and host_id=:aid
    and res_id=:rid
  order by start_time desc
- limit 8");
+ limit 8');
 		$s5->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s5->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s5->execute();
 		while($r5 = $s5->fetch()) {
-			$r5["color"]  = $this->getEventTextColor($r5["event_name"]);
-			$r5["value"] = round($r5["value"]);
-			$r5["current_value"] = round($r5["current_value"]);
-			$r5["encode"] = urldecode($r5["oper"]);
-			$r5["start_time"] = $this->formatTimestamp($r5["start_time"]);
-			if ($r5["end_time"] != null)
-				$r5["end_time"] = $this->formatTimestamp($r5["end_time"]);
+			$r5['color']  = $this->getEventTextColor($r5['event_name']);
+			$r5['value'] = round($r5['value']);
+			$r5['current_value'] = round($r5['current_value']);
+			$r5['encode'] = urldecode($r5['oper']);
+			$r5['start_time'] = $this->formatTimestamp($r5['start_time']);
+			if ($r5['end_time'] != null)
+				$r5['end_time'] = $this->formatTimestamp($r5['end_time']);
 			$ret[] = $r5;
 		}
 		return $ret;
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// Pages
+// Controlers
 	public function ressource (Request $request, Response $response) {
 		$aid = $request->getAttribute('aid');
 		$rid = $request->getAttribute('rid');
-		$this->ci->logger->addInfo("Ressource $aid - $rid");
+		//$this->logger->addInfo("Ressource $aid - $rid");
 		$agent = $this->getHost($aid);
 		$res = $this->getRessource($rid);
 		if ($agent == false || $res == false)
-			return  $response->withStatus(404);
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($aid, $request, $response);
 
 		// Monitoring stuff
 
-		$this->ci->view["menu"]->activateHost($agent["host"]);
-		$this->ci->view["menu"]->breadcrumb = array(
-			array("name" => "host", "icon" => "fa fa-server", "url" => $this->ci->router->pathFor('hosts')), 
-			array("name" => $agent["host"], "url" => $this->ci->router->pathFor('host', array('id' => $aid))), 
-			array("name" => "resources", "icon" => "fa fa-area-chart", "url" => $this->ci->router->pathFor('ressources', array('id' => $aid))),
-			array("name" => urldecode($res["name"]), "url" => $this->ci->router->pathFor('ressource', array('aid' => $aid, 'rid' => $rid))));
+		$this->menu->activateHost($agent["host"]);
+		$this->menu->breadcrumb = array(
+			array('name' => 'host', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
+			array('name' => $agent['host'], 'url' => $this->router->pathFor('host', array('id' => $aid))), 
+			array('name' => 'resources', 'icon' => 'fa fa-area-chart', 'url' => $this->router->pathFor('ressources', array('id' => $aid))),
+			array('name' => urldecode($res['name']), 'url' => $this->router->pathFor('ressource', array('aid' => $aid, 'rid' => $rid))));
 		if($this->haveMonitoring($aid, $rid))
-			return $this->ci->view->render($response, 'ressource.twig', [ 
+			return $this->view->render($response, 'hosts/ressource.twig', [ 
 				'a'		=> $agent,
-				'r'		=> array("id" => $res["id"], "type" => $res["data_type"], "name" => urldecode($res["name"])),
+				'r'		=> array('id' => $res['id'], 'type' => $res['data_type'], 'name' => urldecode($res['name'])),
 				'monitorStatus' => $this->getMonitoringStatus($aid, $rid),
 				'activeEvent'	=> $this->getActivesEvents($aid, $rid),
 				'monitorItems'	=> $this->getMonitoringItems($aid, $rid),
@@ -177,9 +180,9 @@ select et.name, et.id, count(e.id) as cnt
 				'monitorHistory' => $this->getMonitoringHistory($aid, $rid)
 				]);
 		else
-			return $this->ci->view->render($response, 'ressource.twig', [ 
+			return $this->view->render($response, 'hosts/ressource.twig', [ 
 				'a'		=> $agent,
-				'r'		=> array("id" => $res["id"], "type" => $res["type"], "name" => urldecode($res["name"]))
+				'r'		=> array('id' => $res['id'], 'type' => $res['data_type'], 'name' => urldecode($res['name']))
 				]);
 	}
 }

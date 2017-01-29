@@ -1,0 +1,60 @@
+{% extends "core.twig" %}
+{% block title %}{{ name }} application - Update alerting{% endblock %}
+{% block contentHeader %}
+        {{ name }} application
+        <small>Update alerting</small>
+{% endblock %}
+{% block content %}
+      <div class="row">
+	<div class="col-md-2"></div>
+        <div class="col-md-8">
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Update alerting for team {{ team.name }} on {{ name }} application</h3>
+            </div>
+            <form class="form-horizontal" action="{{ path_for('admin.apps.changeTeam', {'id': app_id, 'rid': role.id, 'tid': team.id}) }}" method="post">
+              <div class="box-body">
+
+                <div class="form-group">
+                  <label for="ssl" class="col-sm-2 control-label">Application</label>
+                  <div class="col-sm-10">
+		    <input type='hidden' name='did' value='{{ app_id }}'/>
+		    <div class="form-control">{{ name }}</div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="ssl" class="col-sm-2 control-label">Team</label>
+                  <div class="col-sm-10">
+		    <input type='hidden' name='tid' value='{{ team.id }}'/>
+		    <div class="form-control">{{ team.name }}</div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="ssl" class="col-sm-2 control-label">Role</label>
+                  <div class="col-sm-10">
+		    <input type='hidden' name='rid' value='{{ role.id }}'/>
+		    <div class="form-control">{{ role.name }}</div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="ssl" class="col-sm-2 control-label">Should alert</label>
+                  <div class="col-sm-10">
+		    <select class="form-control" name='alert'>
+			<option {% if alert==1 %} selected="selected"{% endif %} value=1>Yes</option>
+			<option {% if alert==0 %} selected="selected"{% endif %} value=0>No</option>
+		    </select>
+                  </div>
+                </div>
+
+              <div class="box-footer">
+                <a href="{{ path_for('admin.apps.change', {'id': app_id}) }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> Cancel</a>
+                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-check"></i> Update</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+{% endblock %}

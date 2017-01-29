@@ -1,0 +1,38 @@
+{% extends "core.twig" %}
+{% block title %}{{ name }} domain - Add an host{% endblock %}
+{% block contentHeader %}
+        {{ name }} domain
+        <small>Add an host</small>
+{% endblock %}
+{% block content %}
+      <div class="row">
+	<div class="col-md-2"></div>
+        <div class="col-md-8">
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Add an host to the {{ name }} domain</h3>
+            </div>
+            <form class="form-horizontal" action="{{ path_for('admin.domains.addHost', {'id': domain_id}) }}" method="post">
+              <div class="box-body">
+
+                <div class="form-group">
+                  <label for="ssl" class="col-sm-2 control-label">Available hosts</label>
+                  <div class="col-sm-10">
+		    <select class="form-control" name='hid'>
+    {% for a in hosts %}
+			<option {% if hid==a.id %} selected="selected"{% endif %} value={{ a.id }}>{{ a.name }}</option>
+    {% endfor %}
+		    </select>
+                  </div>
+                </div>
+
+              <div class="box-footer">
+                <a href="{{ path_for('admin.domains.change', {'id': domain_id}) }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> Cancel</a>
+                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-plus"></i> Add</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+{% endblock %}
+

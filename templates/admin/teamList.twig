@@ -1,0 +1,56 @@
+{% extends "core.twig" %}
+{% block title %}Teams{% endblock %}
+{% block contentHeader %}
+        Teams 
+        <small>list</small>
+{% endblock %}
+{% block content %}
+<a class="btn btn-default btn-flat" href="{{ path_for('admin.teams.add') }}">
+  <i class="fa fa-plus" aria-hidden="true"></i> Add team
+</a>
+          <div class="box box-default">
+            <div class="box-body table-responsive">
+	      <table class="table table-striped table-hover">
+	      <thead><tr>
+               <th>name</th>
+               <th>Hosts</th>
+               <th>Services</th>
+               <th class='pull-right'>Actions</th>
+	      </tr></thead><tbody>
+    {% for a in teams %}
+               <tr>
+		<td><a href="{{ path_for('admin.teams.change', { 'id': a.id }) }}">{% if a.superadmin == true %}<i class="fa fa-adn"></i> {% endif %}{{ a.name }}</a></td>
+                <td><a href="{{ path_for('admin.teams.change', { 'id': a.id }) }}">{{ a.hosts }}</a></td>
+                <td><a href="{{ path_for('admin.teams.change', { 'id': a.id }) }}">{{ a.services }}</a></td>
+                <td class='pull-right'><a href="{{ path_for('admin.teams.change', { 'id': a.id }) }}"><i class="fa fa-wrench"></i></a>&nbsp;
+      {% if a.name != 'public' and a.name != 'admin'  %}
+		    <a data-toggle="modal" data-target="#delete{{ a.id }}"><i class="fa fa-trash"></i></a>
+<div class="modal fade modal-warning" id="delete{{ a.id }}" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Delete team</h4>
+      </div>
+      <div class="modal-body">
+	      <p>Are you sure you want to delete this team :</p>
+	      <p>{{ a.name }}</p>
+      </div>
+      <div class="modal-footer">
+	<form action="{{ path_for('admin.teams.delete', { 'id': a.id }) }}" method="post">
+          <button type="submit" class="btn btn-outline">Confirm</button>
+	</form>
+      </div>
+    </div>
+  </div>
+</div>
+      {% endif %}
+		</td>
+               </tr>
+    {% endfor %}
+	      </tbody>
+	     </table>
+            </div>
+          </div>
+{% endblock %}
+
