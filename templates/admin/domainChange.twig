@@ -45,9 +45,9 @@
 	      </tr></thead><tbody>
     {% for a in teams %}
                <tr>
-		<td><a href="{{ path_for('admin.domains.changeTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id  }) }}">{{ a.team_name }}</a></td>
-		<td><a href="{{ path_for('admin.domains.changeTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}">{{ a.role_name }}</a></td>
-		<td><a href="{{ path_for('admin.domains.changeTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}">{{ a.send }}</a></td>
+		<td><a href="{{ path_for('admin.teams.change', { 'id': a.team_id  }) }}">{{ a.team_name }}</a></td>
+		<td><a href="{{ path_for('admin.roles.change', { 'id': a.role_id }) }}">{{ a.role_name }}</a></td>
+		<td>{{ a.send }}</td>
                 <td class='pull-right'><a href="{{ path_for('admin.domains.changeTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}"><i class="fa fa-wrench"></i></a>&nbsp;
 		    <a data-toggle="modal" data-target="#deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}"><i class="fa fa-trash"></i></a>
 <div class="modal fade modal-warning" id="deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}" tabindex="-1" role="dialog">
@@ -132,6 +132,4 @@
           </div>
         </div>
       </div>
-
-
 {% endblock %}

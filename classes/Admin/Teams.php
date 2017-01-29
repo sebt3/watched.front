@@ -71,6 +71,15 @@ order by superadmin desc, hosts desc, services desc, name asc');
 		return true;
 	}
 
+	private function isLastAdmin($user_id, $team_id) {
+		$stmt = $this->db->prepare('select count(*) as cnt from p$users_admin where team_id!=:tid and user_id=:uid');
+		$stmt->bindParam(':uid', $user_id,  PDO::PARAM_INT);
+		$stmt->bindParam(':tid', $team_id,  PDO::PARAM_INT);
+		$stmt->execute();
+		$r = $stmt->fetch(); // only one line
+		return $r['cnt']==0;
+	}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
@@ -130,7 +139,12 @@ order by superadmin desc, hosts desc, services desc, name asc');
 	}
 
 	public function del($request, $response, $args) {
-		if ($this->delete($request->getAttribute('id'))) {
+		$team_id = $request->getAttribute('id');
+		if($this->isLastAdmin($this->auth->getUserId(), $team_id)) {
+			$this->flash->addMessage('error', 'Cannot delete your last superadmin team');
+			return $response->withRedirect($this->router->pathFor('admin.teams.list'));
+		}
+		if ($this->delete($team_id)) {
 			$this->flash->addMessage('success', 'Team deleted successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.teams.list'));
 		} else {

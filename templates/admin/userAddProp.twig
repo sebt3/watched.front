@@ -1,0 +1,45 @@
+{% extends "core.twig" %}
+{% block title %}{{ user.firstname }} {{ user.lastname }} - Add an alerting property{% endblock %}
+{% block contentHeader %}
+        {{ user.firstname }} {{ user.lastname }}
+        <small>Add an alerting property</small>
+{% endblock %}
+{% block content %}
+      <div class="row">
+	<div class="col-md-2"></div>
+        <div class="col-md-8">
+          <div class="box box-info">
+            <div class="box-header with-border">
+              <h3 class="box-title">Add a property to {{ user.firstname }} {{ user.lastname }}</h3>
+            </div>
+            <form class="form-horizontal" action="{{ path_for('admin.users.addProp', {'id': user.id}) }}" method="post">
+              <div class="box-body">
+
+                <div class="form-group">
+                  <label for="ssl" class="col-sm-2 control-label">Property</label>
+                  <div class="col-sm-10">
+		    <select class="form-control" name='pid'>
+    {% for a in properties %}
+			<option {% if hid==a.id %} selected="selected"{% endif %} value={{ a.id }}>{{ a.name }}</option>
+    {% endfor %}
+		    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="value" class="col-sm-2 control-label">Value</label>
+
+                  <div class="col-sm-10">
+                    <input type="value" class="form-control" id="value" name="value" placeholder="Value" {% if username %} value="{{value}}" {% endif %}>
+                  </div>
+                </div>
+
+              <div class="box-footer">
+                <a href="{{ path_for('admin.users.change', {'id': user.id}) }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> Cancel</a>
+                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-plus"></i> Add</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+{% endblock %}

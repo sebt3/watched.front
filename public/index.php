@@ -72,6 +72,16 @@ $app->group('/admin', function () use ($app) {
 		$app->get('/{id:[0-9]+}', '\Users:user')->setName('admin.users.change');
 		$app->post('/{id:[0-9]+}', '\Users:change');
 		$app->post('/{id:[0-9]+}/delete', '\Users:del')->setName('admin.users.delete');
+		// user <-> team
+		$app->get('/{id:[0-9]+}/addTeam', '\Users:addTeam')->setName('admin.users.addTeam');
+		$app->post('/{id:[0-9]+}/addTeam', '\Users:postTeam');
+		$app->post('/{id:[0-9]+}/team/{tid:[0-9]+}/delete', '\Users:deleteTeam')->setName('admin.users.deleteTeam');
+		// user <-> properties
+		$app->get('/{id:[0-9]+}/addProperty', '\Users:addProp')->setName('admin.users.addProp');
+		$app->post('/{id:[0-9]+}/addProperty', '\Users:postProp');
+		$app->get('/{id:[0-9]+}/properties/{pid:[0-9]+}', '\Users:changeProp')->setName('admin.users.changeProp');
+		$app->post('/{id:[0-9]+}/properties/{pid:[0-9]+}', '\Users:updateProp');
+		$app->post('/{id:[0-9]+}/properties/{pid:[0-9]+}/delete', '\Users:deleteProp')->setName('admin.users.deleteProp');
 	});
 	$app->group('/teams', function () use ($app) {
 		$app->get('', '\Teams:listAll')->setName('admin.teams.list');
@@ -134,7 +144,9 @@ $app->group('/admin', function () use ($app) {
 		$app->post('/{id:[0-9]+}/hosts/{hid:[0-9]+}/delete', '\Domains:deleteHost')->setName('admin.domains.deleteHost');
 	});
 	$app->group('/clean', function () use ($app) {
-		$app->get('', '\Teams:listAll')->setName('admin.clean');
+		$app->get('', '\Clean:listAll')->setName('admin.clean');
+		$app->post('/service/{id:[0-9]+}/delete', '\Clean:deleteService')->setName('admin.clean.deleteService');
+		$app->post('/host/{id:[0-9]+}/delete', '\Clean:deleteHost')->setName('admin.clean.deleteHost');
 	});
 })->add(function ($request, $response, $next) {
     $this->auth->assertAdmin($request, $response);

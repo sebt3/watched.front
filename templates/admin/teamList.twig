@@ -23,7 +23,7 @@
                 <td><a href="{{ path_for('admin.teams.change', { 'id': a.id }) }}">{{ a.hosts }}</a></td>
                 <td><a href="{{ path_for('admin.teams.change', { 'id': a.id }) }}">{{ a.services }}</a></td>
                 <td class='pull-right'><a href="{{ path_for('admin.teams.change', { 'id': a.id }) }}"><i class="fa fa-wrench"></i></a>&nbsp;
-      {% if a.name != 'public' and a.name != 'admin'  %}
+      {% if a.name != 'public' %}
 		    <a data-toggle="modal" data-target="#delete{{ a.id }}"><i class="fa fa-trash"></i></a>
 <div class="modal fade modal-warning" id="delete{{ a.id }}" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">

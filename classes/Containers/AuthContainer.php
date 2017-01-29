@@ -110,6 +110,10 @@ class AuthContainer extends core {
 		return $r['firstname'].' '.$r['lastname'];
 	}
 
+	public function getUserId() {
+		return $this->user_id;
+	}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Permission management (this could have it's own container)
 	public function isAdmin() {
