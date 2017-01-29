@@ -7,7 +7,7 @@ class Apps extends CorePage {
 	public function __construct(ContainerInterface $ci) { 
 		parent::__construct($ci);
 	}
-
+// TODO: add support for groups en utilisant getGroups
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Model
 	private function getList() {
@@ -21,7 +21,9 @@ order by name asc');
 	}
 
 	private function getApp($appid) {
-		$s = $this->db->prepare('select name from a$apps where id=:id');
+		$s = $this->db->prepare('select a.name, a.id, a.group_id, g.name as group_name from a$apps a 
+  left join g$groups g on g.id=a.group_id
+where a.id=:id');
 		$s->bindParam(':id', $appid,  PDO::PARAM_INT);
 		$s->execute();
 		return $s->fetch(); // only one line
@@ -39,10 +41,18 @@ order by name asc');
 		return true;
 	}
 
-	private function changeApp($app_id, $appname) {
-		$s = $this->db->prepare('update a$apps set name=:uname where id=:id');
+	private function changeApp($app_id, $appname, $group_id) {
+		$sql = 'update a$apps set name=:uname, ';
+		if (isset($group_id) && $group_id>0)
+			$sql.='group_id=:gid';
+		else
+			$sql.='group_id=null';
+		$sql.=' where id=:id';
+		$s = $this->db->prepare($sql);
 		$s->bindParam(':id', $app_id,  PDO::PARAM_INT);
 		$s->bindParam(':uname', $appname,  PDO::PARAM_STR);
+		if (isset($group_id) && $group_id>0)
+			$s->bindParam(':gid', $group_id,  PDO::PARAM_INT);
 		try {
 			$s->execute();
 		} catch (Exception $e) {
@@ -240,6 +250,16 @@ order by name asc');
 		return $r['alert'];
 	}
 
+	private function getGroups() {
+		$results = [];
+		$stmt = $this->db->query('select id, name from g$groups
+order by name asc');
+		while($row = $stmt->fetch()) {
+			$results[] = $row;
+		}
+		return $results;
+	}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
@@ -262,7 +282,9 @@ order by name asc');
 		$this->menu->activateAdmin('Apps');
 		return $this->view->render($response, 'admin/appChange.twig', [
 				'app_id'	=> $app_id,
+				'app'		=> $u,
 				'name'		=> $u['name'],
+				'group'		=> $this->getGroups(),
 				'teams'		=> $this->getTeams($app_id),
 				'services'	=> $this->getServices($app_id),
 			]);
@@ -356,7 +378,7 @@ order by name asc');
 
 	public function change($request, $response, $args) {
 		$app_id = $request->getAttribute('id');
-		if ($this->changeApp($app_id,$request->getParam('name'))) {
+		if ($this->changeApp($app_id,$request->getParam('name'),$request->getParam('group_id'))) {
 			$this->flash->addMessage('success', 'App '.$request->getParam('name').' updated successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.apps.list'));
 		} else {

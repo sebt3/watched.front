@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %}Apps - Add{% endblock %}
+{% block title %}Groups - Add{% endblock %}
 {% block contentHeader %}
-        Apps
-        <small>Create an application</small>
+        Groups
+        <small>Create a group</small>
 {% endblock %}
 {% block content %}
       <div class="row">
@@ -10,9 +10,9 @@
         <div class="col-md-8">
           <div class="box box-info">
             <div class="box-header with-border">
-              <h3 class="box-title">Create an application</h3>
+              <h3 class="box-title">Create a group</h3>
             </div>
-            <form class="form-horizontal" action="{{ path_for('admin.apps.add') }}" method="post">
+            <form class="form-horizontal" action="{{ path_for('admin.groups.add') }}" method="post">
               <div class="box-body">
 
                 <div class="form-group">
@@ -23,7 +23,7 @@
                   </div>
                 </div>
               <div class="box-footer">
-                <a href="{{ path_for('admin.apps.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> Cancel</a>
+                <a href="{{ path_for('admin.groups.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> Cancel</a>
                 <button type="submit" class="btn btn-info pull-right"><i class="fa fa-plus"></i> Add</button>
               </div>
             </form>

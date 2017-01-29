@@ -125,6 +125,24 @@ $app->group('/admin', function () use ($app) {
 		$app->post('/{id:[0-9]+}/addService', '\Apps:postService');
 		$app->post('/{id:[0-9]+}/service/{sid:[0-9]+}/delete', '\Apps:deleteService')->setName('admin.apps.deleteService');
 	});
+	$app->group('/groups', function () use ($app) {
+		$app->get('', '\Groups:listAll')->setName('admin.groups.list');
+		$app->get('/new', '\Groups:add')->setName('admin.groups.add');
+		$app->post('/new', '\Groups:addPost');
+		$app->get('/{id:[0-9]+}', '\Groups:group')->setName('admin.groups.change');
+		$app->post('/{id:[0-9]+}', '\Groups:change');
+		$app->post('/{id:[0-9]+}/delete', '\Groups:del')->setName('admin.groups.delete');
+		// groups <-> team
+		$app->get('/{id:[0-9]+}/addTeam', '\Groups:addTeam')->setName('admin.groups.addTeam');
+		$app->post('/{id:[0-9]+}/addTeam', '\Groups:postTeam');
+		$app->get('/{id:[0-9]+}/team/{tid:[0-9]+}/{rid:[0-9]+}', '\Groups:team')->setName('admin.groups.changeTeam');
+		$app->post('/{id:[0-9]+}/team/{tid:[0-9]+}/{rid:[0-9]+}', '\Groups:changeTeam');
+		$app->post('/{id:[0-9]+}/team/{tid:[0-9]+}/{rid:[0-9]+}/delete', '\Groups:deleteTeam')->setName('admin.groups.deleteTeam');
+		// groups <-> app
+		$app->get('/{id:[0-9]+}/addApp', '\Groups:addApp')->setName('admin.groups.addApp');
+		$app->post('/{id:[0-9]+}/addApp', '\Groups:postApp');
+		$app->post('/{id:[0-9]+}/application/{aid:[0-9]+}/delete', '\Groups:deleteApp')->setName('admin.groups.deleteApp');
+	});
 	$app->group('/domains', function () use ($app) {
 		$app->get('', '\Domains:listAll')->setName('admin.domains.list');
 		$app->get('/new', '\Domains:add')->setName('admin.domains.add');

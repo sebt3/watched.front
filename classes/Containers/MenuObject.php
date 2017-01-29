@@ -65,6 +65,7 @@ class MenuObject extends core {
 				array('name' => 'Agents', 'icon' => 'fa fa-id-badge', 'page' => 'admin.agents.list'),
 				array('name' => 'Domains', 'icon' => 'fa fa-object-group', 'page' => 'admin.domains.list'),
 				array('name' => 'Apps', 'icon' => 'fa fa-rocket', 'page' => 'admin.apps.list'),
+				array('name' => 'Groups', 'icon' => 'fa fa-briefcase', 'page' => 'admin.groups.list'),
 				array('name' => 'Clean', 'icon' => 'fa fa-eraser', 'page' => 'admin.clean')
 				
 			)));
