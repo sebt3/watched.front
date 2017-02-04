@@ -10,6 +10,12 @@ class Admin extends CorePage {
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Model
+	private function getGroup() {
+		$stmt = $this->db->query('select count(*) as cnt from g$groups');
+		$row = $stmt->fetch();
+		return $row['cnt'];
+	}
+
 	private function getAgent() {
 		$stmt = $this->db->query('select count(*) as cnt from c$agents');
 		$row = $stmt->fetch();
@@ -29,9 +35,10 @@ class Admin extends CorePage {
 	}
 
 	private function getClean() {
-		/*$stmt = $this->db->query('select count(*) as cnt from c$agents');
-		$row = $stmt->fetch();*/
-		return 0;
+		$stmt = $this->db->query('select count(*) as cnt from s$missing s');
+		$row = $stmt->fetch();
+		//TODO: add count for agent and host missing
+		return $row['cnt'];
 	}
 
 	private function getUser() {
@@ -64,6 +71,7 @@ class Admin extends CorePage {
 			'clean'		=> $this->getClean(),
 			'users'		=> $this->getUser(),
 			'teams'		=> $this->getTeam(),
+			'groups'	=> $this->getGroup(),
 			'roles'		=> $this->getRole(),
 		]);
 	}

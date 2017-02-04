@@ -117,7 +117,7 @@ order by superadmin desc, hosts desc, services desc, name asc');
 
 	public function addPost($request, $response, $args) {
 		if ($this->addTeam($request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Team '.$request->getParam('name').' added successfully.');
+			$this->flash->addMessage('success', 'Team added successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.teams.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to add team');
@@ -130,7 +130,7 @@ order by superadmin desc, hosts desc, services desc, name asc');
 	public function change($request, $response, $args) {
 		$team_id = $request->getAttribute('id');
 		if ($this->changeTeam($team_id,$request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Team '.$request->getParam('name').' updated successfully.');
+			$this->flash->addMessage('success', 'Team updated successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.teams.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to update team');

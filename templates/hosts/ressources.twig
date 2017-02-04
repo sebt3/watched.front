@@ -1,17 +1,17 @@
 {% extends "core.twig" %}
-{% block title %}Host {{ host.host }} {% endblock %}
+{% block title %}{{ _('Host') }} {{ host.host }} {% endblock %}
 {% block contentHeader %}
-        Ressources
-        <small>on {{ host.host }}</small>
+        {{ _('Ressources') }}
+        <small>{{ _('on') }} {{ host.host }}</small>
 {% endblock %}
 {% block content %}
           <div class="box box-default">
             <div class="box-body table-responsive">
 	      <table class="table table-striped table-hover">
 	      <thead><tr>
-               <th>name</th>
-               <th>monitor items</th>
-               <th>current events</th>
+               <th>{{ _('name') }}</th>
+               <th>{{ _('monitor items') }}</th>
+               <th>{{ _('current events') }}</th>
 	      </tr></thead><tbody>
     {% for r in ressources %}
                <tr>

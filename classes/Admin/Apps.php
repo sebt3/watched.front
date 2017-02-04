@@ -379,7 +379,7 @@ order by name asc');
 	public function change($request, $response, $args) {
 		$app_id = $request->getAttribute('id');
 		if ($this->changeApp($app_id,$request->getParam('name'),$request->getParam('group_id'))) {
-			$this->flash->addMessage('success', 'App '.$request->getParam('name').' updated successfully.');
+			$this->flash->addMessage('success', 'App updated successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.apps.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to update app');

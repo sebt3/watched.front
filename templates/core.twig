@@ -66,9 +66,9 @@
       </h1>
       <ol class="breadcrumb">
   {% block breadcrumb %}
-        <li><a href="/"><i class="fa fa-home"></i>Home</a></li>
+        <li><a href="/"><i class="fa fa-home"></i>{{ _('Home') }}</a></li>
     {% for b in menu.breadcrumb %}
-        <li><a href="{{ b.url }}"><i class="{{ b.icon }}"></i>{{ b.name }}</a></li>
+        <li><a href="{{ b.url }}"><i class="{{ b.icon }}"></i>{{ _(b.name) }}</a></li>
     {% endfor %}
   {% endblock %}
       </ol>

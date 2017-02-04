@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %}404 not found{% endblock %}
+{% block title %}404 {{ _('not found') }}{% endblock %}
 {% block contentHeader %}
         Watched
-        <small>404 not found</small>
+        <small>404 {{ _('not found') }}</small>
 {% endblock %}
 {% block content %}
     <section class="content">
@@ -10,11 +10,10 @@
         <h2 class="headline text-yellow"> 404</h2>
 
         <div class="error-content">
-          <h3><i class="fa fa-warning text-yellow"></i> Oops! Page not found.</h3>
+          <h3><i class="fa fa-warning text-yellow"></i> {{ _('Oops! Page not found.') }}</h3>
 
           <p>
-            We could not find the page you were looking for.
-            Meanwhile, you may <a href="{{ path_for('home') }}">return home</a>.
+            {{ _('We could not find the page you were looking for. Meanwhile, you may') }} <a href="{{ path_for('home') }}">{{ _('return home') }}</a>.
           </p>
         </div>
       </div>

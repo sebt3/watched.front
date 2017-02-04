@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %}{{ h.host }} Service{% endblock %}
+{% block title %}{{ _('Services') }} {{ _('on') }} {{ h.host }}{% endblock %}
 {% block contentHeader %}
-	Services
-        <small>on {{ h.host }}</small>
+	{{ _('Services') }}
+        <small>{{ _('on') }} {{ h.host }}</small>
 {% endblock %}
 {% block content %}
       <div class="row">

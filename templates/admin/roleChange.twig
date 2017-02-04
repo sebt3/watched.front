@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %}Roles - Modify{% endblock %}
+{% block title %}{{ _('Roles') }} - {{ _('Modify') }}{% endblock %}
 {% block contentHeader %}
-        Roles
-        <small>Modify a role</small>
+        {{ _('Roles') }}
+        <small>{{ _('Modify a role') }}</small>
 {% endblock %}
 {% block content %}
       <div class="row">
@@ -10,21 +10,21 @@
         <div class="col-md-8">
           <div class="box box-info">
             <div class="box-header with-border">
-              <h3 class="box-title">Modify a role</h3>
+              <h3 class="box-title">{{ _('Modify a role') }}</h3>
             </div>
             <form class="form-horizontal" action="{{ path_for('admin.roles.change', {'id': role_id}) }}" method="post">
               <div class="box-body">
 
                 <div class="form-group">
-                  <label for="name" class="col-sm-2 control-label">Name</label>
+                  <label for="name" class="col-sm-2 control-label">{{ _('Name') }}</label>
 
                   <div class="col-sm-10">
-                    <input type="name" class="form-control" id="name" name="name" placeholder="Name" {% if name %} value="{{name}}" {% endif %}>
+                    <input type="name" class="form-control" id="name" name="name" placeholder="{{ _('Name') }}" {% if name %} value="{{name}}" {% endif %}>
                   </div>
                 </div>
               <div class="box-footer">
-                <a href="{{ path_for('admin.roles.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> Cancel</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-pencil"></i> update</button>
+                <a href="{{ path_for('admin.roles.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
+                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-pencil"></i> {{ _('update') }}</button>
               </div>
             </form>
           </div>

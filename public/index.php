@@ -35,6 +35,7 @@ $container['db'] = function ($c) {
     return new \Slim\Csrf\Guard;
 };*/
 $container['flash'] = function () {	return new \Slim\Flash\Messages; };
+$container['trans'] = function ($c) {	return new Translate($c); };
 $container['auth'] = function ($c) {	return new AuthContainer($c); };
 $container['menu']  = function ($c) {	return new MenuObject($c); };
 
@@ -48,14 +49,15 @@ $container['view'] = function ($container) use ($app) {
         $container['request']->getUri()
     ));
     $view->getEnvironment()->addGlobal('menu',  $container->menu);
-    $view->getEnvironment()->addGlobal('flash', $container->get('flash'));
+    $view->getEnvironment()->addGlobal('flash', $container->flash);
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('_', $container->trans));
 
     return $view;
 };
-$container['notFoundHandler'] = function ($c) {		return new NotFoundHandler($c->get('view')); };
+$container['notFoundHandler']	= function ($c) {	return new NotFoundHandler($c->get('view')); };
 $container['notAllowedHandler'] = function ($c) {	return new NotAllowedHandler($c->get('view')); };
-$container['phpErrorHandler'] = function ($c) {		return new PhpErrorHandler($c->get('view')); };
-$container['errorHandler'] = function ($c) {		return new ErrorHandler($c->get('view')); };
+$container['phpErrorHandler']	= function ($c) {	return new PhpErrorHandler($c->get('view')); };
+$container['errorHandler']	= function ($c) {	return new ErrorHandler($c->get('view')); };
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // middlewares

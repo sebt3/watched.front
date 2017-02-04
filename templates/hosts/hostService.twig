@@ -1,7 +1,7 @@
 {% extends "core.twig" %}
-{% block title %}Service {{ service.name }}{% endblock %}
+{% block title %}{{ _('Service') }} {{ service.name }}{% endblock %}
 {% block contentHeader %}
-        Service
+        {{ _('Service') }}
         <small>{{ service.name }}</small>
 {% endblock %}
 {% block content %}
@@ -14,12 +14,12 @@
 	    <div class="box-body">
 	      <table class="table table-striped table-hover">
 	      <thead><tr>
-               <th>name</th>
-               <th>path</th>
-               <th>cwd</th>
-               <th>username</th>
-               <th>last check</th>
-               <th>status</th>
+               <th>{{ _('name') }}</th>
+               <th>{{ _('path') }}</th>
+               <th>{{ _('cwd') }}</th>
+               <th>{{ _('username') }}</th>
+               <th>{{ _('last check') }}</th>
+               <th>{{ _('status') }}</th>
 	      </tr></thead><tbody>
         {% for p in service.process %}
 	<!--<li class="{{ p.color }}">{{ p.process_name }}</li>-->
@@ -39,14 +39,14 @@
         <div class="col-md-4">
           <div class="box box-default">
             <div class="box-header with-border">
-              <h3 class="box-title">Sockets </h3>
+              <h3 class="box-title">{{ _('Sockets') }}</h3>
             </div>
 	    <div class="box-body">
 	      <table class="table table-striped table-hover">
 	      <thead><tr>
-               <th>listen</th>
-               <th>last check</th>
-               <th>status</th>
+               <th>{{ _('listen') }}</th>
+               <th>{{ _('last check') }}</th>
+               <th>{{ _('status') }}</th>
 	      </tr></thead><tbody>
         {% for o in service.sockets %}
 		<tr>
@@ -65,7 +65,7 @@
         <div class="col-md-12">
           <div class="box box-default">
             <div class="box-header with-border">
-              <h3 class="box-title">Availability</h3>
+              <h3 class="box-title">{{ _('Availability') }}</h3>
 	      <div class="box-tools">
 		<!-- TODO: add a dropdown to select the period -->
                     <div class="btn-group">
@@ -74,11 +74,11 @@
                           Period <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                          <li><a onclick="setPeriod('all')">All</a></li>
-                          <li><a onclick="setPeriod('week')">Last week</a></li>
-                          <li><a onclick="setPeriod('yesterday')">Yesterday</a></li>
-                          <li><a onclick="setPeriod('today')">Today</a></li>
-                          <li><a onclick="setPeriod('hour')">Last hour</a></li>
+                          <li><a onclick="setPeriod('all')">{{ _('All') }}</a></li>
+                          <li><a onclick="setPeriod('week')">{{ _('Last week') }}</a></li>
+                          <li><a onclick="setPeriod('yesterday')">{{ _('Yesterday') }}</a></li>
+                          <li><a onclick="setPeriod('today')">{{ _('Today') }}</a></li>
+                          <li><a onclick="setPeriod('hour')">{{ _('Last hour') }}</a></li>
                         </ul>
                       </div>
                     </div>

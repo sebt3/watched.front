@@ -334,7 +334,7 @@ order by name asc');
 //////
 	public function addPost($request, $response, $args) {
 		if ($this->addGroup($request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Group '.$request->getParam('name').' added successfully.');
+			$this->flash->addMessage('success', 'Group added successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.groups.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to add group');
@@ -347,7 +347,7 @@ order by name asc');
 	public function change($request, $response, $args) {
 		$group_id = $request->getAttribute('id');
 		if ($this->changeGroup($group_id,$request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Group '.$request->getParam('name').' updated successfully.');
+			$this->flash->addMessage('success', 'Group updated successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.groups.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to update group');

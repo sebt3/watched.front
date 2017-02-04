@@ -1,11 +1,11 @@
       <ul class="sidebar-menu">
 {% if menu.isAdmin %}
-        <li class="header">Admin</li>
+        <li class="header">{{ _('Admin') }}</li>
   {% for d in menu.adminlinks %}
         <li class="treeview {% if d.active == true %}active{% endif %}">
           <a href="#">
             <i class="{{ d.icon }}"></i>
-            <span>{{ d.name }}</span>
+            <span>{{ _(d.name) }}</span>
             <span class="pull-right-container">
 {% if d.active == true %}
               <i class="fa fa-angle-down pull-right"></i>
@@ -16,19 +16,19 @@
           </a>
           <ul class="treeview-menu">
     {% for h in d.pages %}
-            <li {% if h.active == true %}class="active"{% endif %}><a href="{{ path_for(h.page) }}"><i class="{{ h.icon }}"></i> {{ h.name }}</a></li>
+            <li {% if h.active == true %}class="active"{% endif %}><a href="{{ path_for(h.page) }}"><i class="{{ h.icon }}"></i> {{ _(h.name) }}</a></li>
     {% endfor %}
           </ul>
         </li>
   {% endfor %}
 {% endif %}
 {% if menu.domains %}
-        <li class="header">Hosts</li>
+        <li class="header">{{ _('Hosts') }}</li>
   {% for d in menu.domains %}
         <li class="treeview {% if d.active == true %}active{% endif %}">
           <a href="#">
             <i class="fa fa-pie-chart"></i>
-            <span>{{ d.name }}</span>
+            <span>{{ _(d.name) }}</span>
             <span class="pull-right-container">
 {% if d.active == true %}
               <i class="fa fa-angle-down pull-right"></i>
@@ -46,7 +46,7 @@
   {% endfor %}
 {% endif %}
 {% if menu.apps %}
-        <li class="header">Apps</li>
+        <li class="header">{{ _('Applications') }}</li>
   {% for d in menu.apps %}
         <li class="treeview {% if d.active == true %}active{% endif %}">
           <a href="#">

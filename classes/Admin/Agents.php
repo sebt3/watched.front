@@ -117,7 +117,7 @@ order by central_id desc, host asc, port asc');
 
 	public function addPost($request, $response, $args) {
 		if ($this->addAgent($request->getParam('host'),$request->getParam('port'),$request->getParam('ssl'), $request->getParam('freq'), $request->getParam('central'))) {
-			$this->flash->addMessage('success', 'Agent '.$request->getParam('name').' added successfully.');
+			$this->flash->addMessage('success', 'Agent added successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.agents.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to add agent');
@@ -130,7 +130,7 @@ order by central_id desc, host asc, port asc');
 	public function change($request, $response, $args) {
 		$agent_id = $request->getAttribute('id');
 		if ($this->changeAgent($agent_id,$request->getParam('host'), $request->getParam('port'), $request->getParam('freq'), $request->getParam('central'), $request->getParam('ssl'))) {
-			$this->flash->addMessage('success', 'Agent '.$request->getParam('host').' updated successfully.');
+			$this->flash->addMessage('success', 'Agent updated successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.agents.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to update agent');

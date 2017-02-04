@@ -101,7 +101,7 @@ order by name asc');
 
 	public function addPost($request, $response, $args) {
 		if ($this->addRole($request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Role '.$request->getParam('name').' added successfully.');
+			$this->flash->addMessage('success', 'Role added successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.roles.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to add role');
@@ -114,7 +114,7 @@ order by name asc');
 	public function change($request, $response, $args) {
 		$role_id = $request->getAttribute('id');
 		if ($this->changeRole($role_id,$request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Role '.$request->getParam('name').' updated successfully.');
+			$this->flash->addMessage('success', 'Role updated successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.roles.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to update role');

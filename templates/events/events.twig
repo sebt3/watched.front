@@ -1,20 +1,20 @@
 {% extends "core.twig" %}
-{% block title %}Events{% endblock %}
+{% block title %}{{ _('Events') }}{% endblock %}
 {% block contentHeader %}
-        Current events 
-        <small>on ressources</small>
+        {{ _('Current events') }} 
+        <small>{{ _('on') }} {{ _('ressources') }}</small>
 {% endblock %}
 {% block content %}
           <div class="box box-default">
             <div class="box-body table-responsive">
 	      <table class="table table-striped table-hover">
 	      <thead><tr>
-               <th>host name</th>
-               <th>ressource name</th>
-               <th>type</th>
-               <th>property</th>
-               <th>status</th>
-               <th>since</th>
+               <th>{{ _('host name') }}</th>
+               <th>{{ _('ressource name') }}</th>
+               <th>{{ _('type') }}</th>
+               <th>{{ _('property') }}</th>
+               <th>{{ _('status') }}</th>
+               <th>{{ _('since') }}</th>
 	      </tr></thead><tbody>
     {% for a in events %}
                <tr>

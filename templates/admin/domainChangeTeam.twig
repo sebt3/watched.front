@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %}{{ name }} domain - Update alerting{% endblock %}
+{% block title %}{{ _('Domain') }} - {{ _('Update alerting') }}{% endblock %}
 {% block contentHeader %}
-        {{ name }} domain
-        <small>Update alerting</small>
+        {{ _('Domain') }}
+        <small>{{ _('Update alerting') }}</small>
 {% endblock %}
 {% block content %}
       <div class="row">
@@ -10,13 +10,13 @@
         <div class="col-md-8">
           <div class="box box-info">
             <div class="box-header with-border">
-              <h3 class="box-title">Update alerting for team {{ team.name }} on {{ name }} domain</h3>
+              <h3 class="box-title">{{ _('Update alerting on domain') }} {{ name }}</h3>
             </div>
             <form class="form-horizontal" action="{{ path_for('admin.domains.changeTeam', {'id': domain_id, 'rid': role.id, 'tid': team.id}) }}" method="post">
               <div class="box-body">
 
                 <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">Domain</label>
+                  <label for="ssl" class="col-sm-2 control-label">{{ _('Domain') }}</label>
                   <div class="col-sm-10">
 		    <input type='hidden' name='did' value='{{ domain_id }}'/>
 		    <div class="form-control">{{ name }}</div>
@@ -24,7 +24,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">Team</label>
+                  <label for="ssl" class="col-sm-2 control-label">{{ _('Team') }}</label>
                   <div class="col-sm-10">
 		    <input type='hidden' name='tid' value='{{ team.id }}'/>
 		    <div class="form-control">{{ team.name }}</div>
@@ -32,7 +32,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">Role</label>
+                  <label for="ssl" class="col-sm-2 control-label">{{ _('Role') }}</label>
                   <div class="col-sm-10">
 		    <input type='hidden' name='rid' value='{{ role.id }}'/>
 		    <div class="form-control">{{ role.name }}</div>
@@ -40,18 +40,18 @@
                 </div>
 
                 <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">Should alert</label>
+                  <label for="ssl" class="col-sm-2 control-label">{{ _('Should alert') }}</label>
                   <div class="col-sm-10">
 		    <select class="form-control" name='alert'>
-			<option {% if alert==1 %} selected="selected"{% endif %} value=1>Yes</option>
-			<option {% if alert==0 %} selected="selected"{% endif %} value=0>No</option>
+			<option {% if alert==1 %} selected="selected"{% endif %} value=1>{{ _('Yes') }}</option>
+			<option {% if alert==0 %} selected="selected"{% endif %} value=0>{{ _('No') }}</option>
 		    </select>
                   </div>
                 </div>
 
               <div class="box-footer">
-                <a href="{{ path_for('admin.domains.change', {'id': domain_id}) }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> Cancel</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-check"></i> Update</button>
+                <a href="{{ path_for('admin.domains.change', {'id': domain_id}) }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
+                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-check"></i> {{ _('Update') }}</button>
               </div>
             </form>
           </div>

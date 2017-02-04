@@ -18,7 +18,6 @@ class Clean extends CorePage {
   left join c$domains d on d.id=h.domain_id
  where s.host_id=h.id
   order by domain_name,host_name,name');
-		$row = $stmt->fetch();
 		while($row = $stmt->fetch())
 			$results[] = $row;
 		return $results;
@@ -31,7 +30,6 @@ class Clean extends CorePage {
   left join c$domains d on d.id=h.domain_id
  where s.host_id=h.id and 0=1
   order by domain_name,host_name,name'); //TODO: add the ability to detect missing host
-		$row = $stmt->fetch();
 		while($row = $stmt->fetch())
 			$results[] = $row;
 		return $results;

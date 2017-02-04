@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %}405 not allowed{% endblock %}
+{% block title %}405 {{ _('not allowed') }}{% endblock %}
 {% block contentHeader %}
         Watched
-        <small>405 not allowed</small>
+        <small>405 {{ _('not allowed') }}</small>
 {% endblock %}
 {% block content %}
     <section class="content">
@@ -10,10 +10,10 @@
         <h2 class="headline text-red"> 405</h2>
 
         <div class="error-content">
-          <h3><i class="fa fa-ban text-red"></i> Oops! Permission denied.
+          <h3><i class="fa fa-ban text-red"></i> {{ _('Oops! Permission denied.') }}
 
-          <p>You're not allowed here.</p>
-	  <p>Back to the <a href="{{ path_for('home') }}">Dashboard</a>.
+          <p>{{ _("You're not allowed here.") }}</p>
+	  <p>{{ _('Back to the') }} <a href="{{ path_for('home') }}">{{ _('Dashboard') }}</a>.
           </p>
         </div>
       </div>
@@ -22,27 +22,23 @@
 <div class="login-box">
   <div class="login-box-body">
     {{ include('bars/flashs.twig') }}
-    <p class="login-box-msg">Sign in to start your session</p>
+    <p class="login-box-msg">{{ _('Sign in to start your session') }}</p>
 
     <form action="{{ path_for('auth.login') }}" method="post">
       <div class="form-group has-feedback">
-        <input type="login" name="username" class="form-control" placeholder="Username">
+        <input type="login" name="username" class="form-control" placeholder="{{ _('Username') }}">
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
       </div>
       <div class="form-group has-feedback">
-        <input type="password" name="password" class="form-control" placeholder="Password">
+        <input type="password" name="password" class="form-control" placeholder="{{ _('Password') }}">
         <span class="glyphicon glyphicon-lock form-control-feedback"></span>
       </div>
       <div class="row">
         <div class="col-xs-8">
-          <!--<div class="checkbox icheck">
-            <label>
-              <input type="checkbox"> Remember Me
-            </label>
-		</div>-->
+          <div class="checkbox icheck"><label><input type="checkbox" name="remember"> {{ _('Remember Me') }}</label></div>
         </div>
         <div class="col-xs-4">
-          <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+          <button type="submit" class="btn btn-primary btn-block btn-flat">{{ _('Sign In') }}</button>
         </div>
       </div>
     </form>

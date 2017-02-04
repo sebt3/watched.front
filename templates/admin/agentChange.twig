@@ -1,8 +1,8 @@
 {% extends "core.twig" %}
-{% block title %}Agents - Modify{% endblock %}
+{% block title %}{{ _('Agents') }} - {{ _('Modify') }}{% endblock %}
 {% block contentHeader %}
-        Agents
-        <small>Modify an agent</small>
+        {{ _('Agents') }}
+        <small>{{ _('Modify an agent') }}</small>
 {% endblock %}
 {% block content %}
       <div class="row">
@@ -10,56 +10,56 @@
         <div class="col-md-8">
           <div class="box box-info">
             <div class="box-header with-border">
-              <h3 class="box-title">Modify an agent</h3>
+              <h3 class="box-title">{{ _('Modify an agent') }}</h3>
             </div>
             <form class="form-horizontal" action="{{ path_for('admin.agents.change', {'id': agent_id}) }}" method="post">
               <div class="box-body">
 
                 <div class="form-group">
-                  <label for="host" class="col-sm-2 control-label">Host</label>
+                  <label for="host" class="col-sm-2 control-label">{{ _('Host') }}</label>
 
                   <div class="col-sm-10">
-                    <input type="text" class="form-control" id="host" name="host" placeholder="Host" {% if host %} value="{{host}}" {% endif %}>
+                    <input type="text" class="form-control" id="host" name="host" placeholder="{{ _('Host') }}" {% if host %} value="{{host}}" {% endif %}>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="port" class="col-sm-2 control-label">Port</label>
+                  <label for="port" class="col-sm-2 control-label">{{ _('Port') }}</label>
 
                   <div class="col-sm-10">
-                    <input type="text" class="form-control" id="port" name="port" placeholder="Number" {% if port %} value="{{port}}" {% endif %}>
+                    <input type="text" class="form-control" id="port" name="port" placeholder="{{ _('Number') }}" {% if port %} value="{{port}}" {% endif %}>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">Use SSL</label>
+                  <label for="ssl" class="col-sm-2 control-label">{{ _('Use SSL') }}</label>
 
                   <div class="col-sm-10">
 		    <select class="form-control" name='ssl'>
-			<option {% if ssl==1 %} selected="selected"{% endif %} value=1>Yes</option>
-			<option {% if ssl==0 %} selected="selected"{% endif %} value=0>No</option>
+			<option {% if ssl==1 %} selected="selected"{% endif %} value=1>{{ _('Yes') }}</option>
+			<option {% if ssl==0 %} selected="selected"{% endif %} value=0>{{ _('No') }}</option>
 		    </select>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="freq" class="col-sm-2 control-label">Pooling frequency</label>
+                  <label for="freq" class="col-sm-2 control-label">{{ _('Pooling frequency (s)') }}</label>
 
                   <div class="col-sm-10">
-                    <input type="name" class="form-control" id="freq" name="freq" placeholder="Number" {% if freq %} value="{{freq}}" {% endif %}>
+                    <input type="name" class="form-control" id="freq" name="freq" placeholder="{{ _('Number') }}" {% if freq %} value="{{freq}}" {% endif %}>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label for="central" class="col-sm-2 control-label">Backend group #</label>
+                  <label for="central" class="col-sm-2 control-label">{{ _('Backend group #') }}</label>
 
                   <div class="col-sm-10">
-                    <input type="name" class="form-control" id="central" name="central" placeholder="Number" {% if central %} value="{{central}}" {% endif %}>
+                    <input type="name" class="form-control" id="central" name="central" placeholder="{{ _('Number') }}" {% if central %} value="{{central}}" {% endif %}>
                   </div>
                 </div>
               <div class="box-footer">
-                <a href="{{ path_for('admin.agents.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> Cancel</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-pencil"></i> update</button>
+                <a href="{{ path_for('admin.agents.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
+                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-pencil"></i> {{ _('update') }}</button>
               </div>
             </form>
           </div>

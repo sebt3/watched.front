@@ -312,7 +312,7 @@ class Users extends CorePage {
 
 	public function addPost($request, $response, $args) {
 		if ($this->adduser($request->getParam('username'), $request->getParam('firstname'), $request->getParam('lastname'), $request->getParam('password'))) {
-			$this->flash->addMessage('info', 'User '.$request->getParam('username').' added successfully.');
+			$this->flash->addMessage('info', 'User added successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.users.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to add user');
@@ -328,7 +328,7 @@ class Users extends CorePage {
 	public function change($request, $response, $args) {
 		$user_id = $request->getAttribute('id');
 		if ($this->changeuser($user_id,$request->getParam('username'), $request->getParam('firstname'), $request->getParam('lastname'), $request->getParam('password'))) {
-			$this->flash->addMessage('info', 'User '.$request->getParam('username').' updated successfully.');
+			$this->flash->addMessage('info', 'User updated successfully.');
 			return $response->withRedirect($this->router->pathFor('admin.users.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to update user');
