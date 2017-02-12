@@ -36,462 +36,380 @@ function wdDateFormat(date) {
 		: formatYear)(date);
 }
 
-function wdAxes() {
-	var	data		= [],
-		width		= 500,
-		height		= 400,
-		callbacks	= {},
-		root, marq,
-		x		= d3.scaleTime().range([0, width]),
-		y		= d3.scaleLinear().range([height, 0]),
-		filter		= function(e){return e!="timestamp";},
-		xAxis		= function(g) {
-			g.call(d3.axisBottom(x).tickFormat(wdDateFormat));
-			g.select(".domain").remove();
-			g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1.5px");},
-		yAxis		= function(g) {
-			g.call(d3.axisRight(y).tickSize(width));
-			g.select(".domain").remove();
-			g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1px");
-			g.selectAll(".tick:not(:first-of-type) line").attr("stroke-dasharray", "5,5");
-			g.selectAll(".tick text").attr("x", -20);};
+function wdBaseComponant() {
+	var	data	= [],
+		called	= false,
+		root;
+	function chart(s) { called=true; s.each(chart.init); return chart; }
 
-	function chart(selection) {
-		selection.each(function() {
-			root	= d3.select(this);
-			marq	= root.append("line").attr("x1", 0).attr("y1", 0)
-					.attr("x2", 0).attr("y2", height)
-					.attr("shape-rendering", "crispEdges")
-					.style("stroke-width", 1).style("stroke", "black")
-					.style("fill", "none");
-			root.append("g").attr("class", "x axis").attr("transform", 
-						"translate(0," + height + ")").call(xAxis);
-			root.append("g").attr("class", "y axis").call(yAxis);
-		});
+	chart.callbacks = {};
+	chart.inited	= function() {return called; }
+	chart.init	= function() { 
+		root = d3.select(this); 
+		if (typeof chart.onInit === 'function')
+			chart.onInit();
+		if (typeof chart.renderUpdate === 'function')
+			chart.renderUpdate();
+	}
+	chart.root	= function(_) {
+		if (arguments.length) {
+			root = _;
+			return chart;
+		} else if (chart.inited())
+			return root; 
+		else
+			return false;
+	}
+	chart.data	= function(_) { 
+		if (!arguments.length) return data;
+		if (typeof _!="object" || typeof _[0]=="undefined") return chart;
+		data = _;
+		if (typeof chart.onDataUpdate === 'function')
+			chart.onDataUpdate();
+		if (chart.inited() && typeof chart.renderUpdate === 'function')
+			chart.renderUpdate();
 		return chart;
 	}
-	callbacks["mouseMove"]	= function(x,y) {
-		if (typeof marq === 'undefined') return;
-		marq.attr("x1", x).attr("x2", x)
-	};
-	chart.callbacks	= callbacks;
-	chart.height	= function(_) {
-		if (!arguments.length) return height;
-		height = _;
-		y.range([height, 0]);
-		if (typeof root !== 'undefined')
-			root.select(".x.axis").attr("transform", "translate(0," + height + ")");
-		return chart;
-	};
-	chart.width	= function(_) {
-		if (!arguments.length) return width;
-		width = _;
-		x.range([0, width]);
-		if (typeof root === 'undefined') return chart;
-		var	update	= root.transition();
-		update.select(".x.axis").duration(150).call(xAxis);
-		update.select(".y.axis").duration(150).call(yAxis);
-		return chart;
-	};
-	chart.data	= function(_) {
-		if (!arguments.length) return data;
-		data = _;
-		x.domain(d3.extent(data, function(d) { return d.timestamp; }));
-		y.domain([0, d3.max(data, function(d) {
-			var keys = Object.keys(d).filter(filter),
-			    vals = keys.map(function (i) {return d[i]});
-			return d3.max(vals);
-		})]);
-		return chart;
-	};
-	chart.filter	= function(_) {
-		if (!arguments.length) return filter;
-		filter = _;
-		return chart;
-	};
-
 	return chart;
 }
 
-function wdHLegend() {
-	var	data		= [],
-		color		= d3.scaleOrdinal(d3.schemeCategory10),
-		width		= 500,
-		height		= 40,
-		callbacks	= {},
-		filter		= function(e){return e!="timestamp";},
-		keys		= [],
-		root, renderUpdate;
+function wdFilteredComponant(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
+		keys	= [],
+ 		pData	= chart.data,
+		filter	= function(e){return e!="timestamp";};
 
-	function chart(selection) {
-		selection.each(function() {
-			var	root	= d3.select(this);
-		});
+	chart.filter	= function(_) { if (!arguments.length) return filter; filter = _; return chart; }
+	chart.keys	= function(_) { 
+		if (!arguments.length) return keys;
+		keys = _;
+	}
+	chart.data	= function(_) { 
+		if (!arguments.length) return pData();
+		if (typeof _!="object" || typeof _[0]=="undefined") return chart;
+		chart.keys(Object.keys(_[0]).filter(filter))
+		return 	pData(_);
+	}
+	return chart;
+}
+
+function wdColoredComponant(pClass, pColor) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
+		color	= (typeof pColor!="undefined"&&pColor!=null)?pColor:d3.scaleOrdinal(d3.schemeCategory10);
+	chart.color	= function(_) { 
+		if (!arguments.length) return color; color = _;
+		if (typeof chart.onColorUpdate === 'function')
+			chart.onColorUpdate();
 		return chart;
 	}
-	renderUpdate		= function() {
-		var	update	= root.transition();
-	};
-	callbacks["mouseMove"]	= function(x,y) {
-	}
-	chart.callbacks	= callbacks;
-	chart.data	= function(_) {
-		if (!arguments.length) return data;
-		data = _;
-		keys = Object.keys(data[0]).filter(filter);
-		if (typeof root !== 'undefined')
-			renderUpdate();
-		return chart;
-	};
-	chart.height	= function(_) {
-		if (!arguments.length) return height;
-		height = _;
-		return chart;
-	};
-	chart.width	= function(_) {
-		if (!arguments.length) return width;
-		width = _;
-		return chart;
-	};
-	chart.color	= function(_) {
-		if (!arguments.length) return color;
-		color = _;
-		return chart;
-	};
-	chart.filter	= function(_) {
-		if (!arguments.length) return filter;
-		filter = _;
-		return chart;
-	};
+	return chart;
+}
 
+function wdSizedComponant(pClass, pW, pH) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
+		width	= (typeof pW!="undefined"&&pW!=null)?pW:0, 
+		height	= (typeof pH!="undefined"&&pH!=null)?pH:0;
+	chart.width	= function(_) { 
+		if (!arguments.length) return width; width = _;
+		if (typeof chart.onWidthUpdate === 'function')
+			chart.onWidthUpdate();
+		return chart;
+	}
+	chart.height	= function(_) { 
+		if (!arguments.length) return height; height = _;
+		if (typeof chart.onHeightUpdate === 'function')
+			chart.onHeightUpdate();
+		return chart;
+	}
+	return chart;
+}
+
+function wdMinSizedComponant(pClass, pW, pH) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdSizedComponant(null, pW, pH),
+		minWidth	= (typeof pW!="undefined"&&pW!=null)?pW:0, 
+		minHeight	= (typeof pH!="undefined"&&pH!=null)?pH:0
+		pWidth		= chart.width,
+		pHeight		= chart.height;
+
+	chart.updateSizeFromMin	=function () {pWidth(minWidth);pHeight(minHeight)}
+	chart.width	= function(_) { 
+		if (!arguments.length) return pWidth(); 
+		if (_>minWidth) return pWidth(_);
+		return chart;
+	}
+	chart.height	= function(_) { 
+		if (!arguments.length) return pHeight(); 
+		if (_>minHeight) return pHeight(_);
+		return chart;
+	}
+	return chart;
+}
+
+function wdAxedComponant(pClass, pW, pH) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdSizedComponant(null, pW, pH);
+	chart.xAxis		= d3.scaleTime().range([0, chart.width()]);
+	chart.yAxis		= d3.scaleLinear().range([chart.height(), 0]);
+	chart.onHeightUpdate	= function(_) {
+		chart.yAxis.range([chart.height(), 0]);
+	};
+	chart.onWidthUpdate	= function() {
+		chart.xAxis.range([0, chart.width()]);
+	};
+	chart.onDataUpdate	= function() {
+		chart.xAxis.domain(d3.extent(chart.data(), function(d) { return d.timestamp; }));
+		chart.yAxis.domain([0, d3.max(chart.data(), function(d) {
+			var keys = Object.keys(d).filter(chart.filter()),
+			    vals = keys.map(function (i) {return d[i]});
+			return d3.max(vals);
+		})]);
+	};
+	return chart;
+}
+
+function wdAxesComponant(pClass, pW, pH) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdAxedComponant(null, pW, pH), 
+		pOnHU = chart.onHeightUpdate, pOnWU = chart.onWidthUpdate;
+	chart.xAxisLine		= function(g) {
+		g.call(d3.axisBottom(chart.xAxis).tickFormat(wdDateFormat));
+		g.select(".domain").remove();
+		g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1.5px");
+	}
+	chart.yAxisLine		= function(g) {
+		g.call(d3.axisRight(chart.yAxis).tickSize(chart.width()));
+		g.select(".domain").remove();
+		g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1px");
+		g.selectAll(".tick:not(:first-of-type) line").attr("stroke-dasharray", "5,5");
+		g.selectAll(".tick text").attr("x", -20);
+	};
+	chart.onInit		= function () {
+		chart.root().append("g").attr("class", "x axis").attr("transform", "translate(0," + chart.height() + ")").call(chart.xAxisLine);
+		chart.root().append("g").attr("class", "y axis").call(chart.yAxisLine);
+	}
+	chart.onDataUpdate	= function() {
+		chart.xAxis.domain(d3.extent(chart.data(), function(d) { return d.timestamp; }));
+		chart.yAxis.domain([0, d3.max(chart.data(), function(d) {
+			var keys = Object.keys(d),
+			    vals = keys.map(function (i) {return d[i]});
+			return d3.max(vals);
+		})]);
+	};
+	chart.renderUpdate	= function() {
+		var	update	= chart.root().transition();
+		update.select(".x.axis").duration(150).call(chart.xAxisLine);
+		update.select(".y.axis").duration(150).call(chart.yAxisLine);
+	}
+	chart.onWidthUpdate	= function() {
+		pOnWU();
+		if (chart.inited()) chart.renderUpdate;
+	};
+	chart.onHeightUpdate	= function() {
+		pOnHU();
+		if (chart.inited())
+			root.select(".x.axis").attr("transform", "translate(0," + chart.height() + ")");
+	}
+	return chart;
+}
+
+function wdHLegendComponant(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdSizedComponant( wdColoredComponant( wdFilteredComponant()), 500,30);
+
+	chart.onDataUpdate	= function() {
+	}
+	chart.renderUpdate	= function() {
+		var	update	= chart.root().transition();
+	};
+	chart.callbacks["mouseMove"]	= function(x,y) {
+	}
 	return chart;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watchedEvent
 
-function wdEventLines() {
-	var	color		= d3.scaleOrdinal(d3.schemeCategory10),
-		callbacks	= {},
-		width		= 500,
-		height		= 400,
-		x		= d3.scaleTime().range([0, width]),
-		y		= d3.scaleLinear().range([height, 0]),
+function wdEventLines(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdFilteredComponant( wdAxedComponant(null, 500,200))),
 		line		= d3.line().curve(d3.curveBasis)
-					.x(function(d) { return x(d.timestamp); })
-					.y(function(d) { return y(d.value); }),
-		filter		= function(e){return e!="timestamp";},
-		data		= [],
-		keys		= [],
-		lines		= [],
-		root, renderUpdate;
+					.x(function(d) { return chart.xAxis(d.timestamp); })
+					.y(function(d) { return chart.yAxis(d.value); }),
+		lines		= [];
+		pOnDU = chart.onDataUpdate;
 
-	function chart(selection) {
-		selection.each(function() {
-			root		= d3.select(this);
-		});
-		return chart;
-	}
-	renderUpdate	= function() {
-		root.selectAll(".lines").remove();
-		var	update	= root.selectAll(".lines").data(lines, function(d) { return d.timestamp }),
+	chart.renderUpdate	= function() {
+		chart.root().selectAll(".lines").remove();
+		var	update	= chart.root().selectAll(".lines").data(lines, function(d) { return d.timestamp }),
 			eLines	= update.enter().append("g").attr("class", "lines");
 		update.exit().remove();
 		eLines.append("path").attr("class", "line")
 			.attr("d", function(d) { return line(d.values); })
-			.style("stroke", function(d) { return color(d.id); });
+			.style("stroke", function(d) { return chart.color()(d.id); });
 	};
-	callbacks["mouseMove"]	= function(x,y) {
+	chart.callbacks["mouseMove"]	= function(x,y) {
 	};
-	chart.callbacks	= callbacks;
-	chart.data	= function(_) {
-		if (!arguments.length) return data;
-		data = _;
-		keys = Object.keys(data[0]).filter(filter);
-		lines = keys.map(function(i) {
+	chart.onDataUpdate	= function() {
+		pOnDU();
+		lines = chart.keys().map(function(i) {
 			return {
 				id: i,
-				values: data.map(function(d) {
+				values: chart.data().map(function(d) {
 					return {timestamp: d.timestamp, value:+d[i]};
 				})
 			};
 		});
-		x.domain(d3.extent(data, function(d) { return d.timestamp; }));
-		y.domain([0, d3.max(data, function(d) {
-			var keys = Object.keys(d).filter(filter),
+		chart.color().domain(chart.keys());
+	};
+
+	return chart;
+}
+
+function wdEventAxes(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdFilteredComponant( wdAxesComponant( null,500,200)),
+		marq, pInit = chart.onInit;
+
+	chart.onInit	= function() {
+		pInit();
+		marq	= chart.root().append("line").attr("x1", 0).attr("y1", 0)
+				.attr("x2", 0).attr("y2", chart.height())
+				.attr("shape-rendering", "crispEdges")
+				.style("stroke-width", 1).style("stroke", "black")
+				.style("fill", "none");
+	}
+	chart.callbacks["mouseMove"]	= function(x,y) { if (typeof marq !== 'undefined') marq.attr("x1", x).attr("x2", x); };
+	chart.onDataUpdate	= function() {
+		chart.xAxis.domain(d3.extent(chart.data(), function(d) { return d.timestamp; }));
+		chart.yAxis.domain([0, d3.max(chart.data(), function(d) {
+			var keys = Object.keys(d).filter(chart.filter()),
 			    vals = keys.map(function (i) {return d[i]});
 			return d3.max(vals);
 		})]);
-		color.domain(keys);
-		if (typeof root !== 'undefined') 
-			renderUpdate();
-		return chart;
 	};
-	chart.color	= function(_) {
-		if (!arguments.length) return color;
-		color = _;
-		return chart;
-	};
-	chart.height	= function(_) {
-		if (!arguments.length) return height;
-		height = _;
-		y.range([height, 0]);
-		return chart;
-	};
-	chart.width	= function(_) {
-		if (!arguments.length) return width;
-		width = _;
-		x.range([0, width]);
-		return chart;
-	};
-	chart.filter	= function(_) {
-		if (!arguments.length) return filter;
-		filter = _;
-		return chart;
-	};
-
 	return chart;
 }
 
-function wdEventChart() {
-	var	margin		= {top: 50, right: 10, bottom: 20, left: 30},
-		color		= d3.scaleOrdinal(d3.schemeCategory10),
+function wdEventChart(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass: wdColoredComponant( wdFilteredComponant(wdMinSizedComponant(null, 500,380))),
+		margin		= {top: 50, right: 10, bottom: 20, left: 30},
 		dispatch	= d3.dispatch("mouseMove"),
-		axes 		= wdAxes(),
-		legend 		= wdHLegend().color(color),
-		lines		= wdEventLines().color(color),
-		data		= [],
+		axes		= wdEventAxes(),
+		legend 		= wdHLegendComponant().color(chart.color()),
+		lines		= wdEventLines().color(chart.color()),
 		baseUrl		= "",
-		minWidth	= 500,
-		minHeight	= 400,
-		width		= minWidth, 
-		height		= minHeight,
-		prop		= "",
-		filter		= function(e){return e!="timestamp";},
-		root, bound, svg, updateData;
+		prop		= "";
 
-	function chart(selection) {
-		selection.each(function() {
-			root	= d3.select(this);
-			bound	= root.node().getBoundingClientRect();
-			width	= Math.max(bound.width, minWidth);
-			height	= Math.max(bound.height, minHeight);
-			axes.width(width - margin.left - margin.right).height(height - margin.top - margin.bottom);
-			lines.width(width - margin.left - margin.right).height(height - margin.top - margin.bottom);
-			legend.width(width - 2*margin.right).height(margin.top - 2*margin.right)
-			svg	= root.append("svg").attr("width", width).attr("height", height);
-			svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(lines);
-			svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(axes);
-			svg.append("g").attr("transform", "translate(" + margin.right + "," + margin.right + ")").call(legend);
-			svg.on("mousemove", function() {
-				var 	bBox	= root.node().getBoundingClientRect();
-					x	= d3.event.pageX-bBox.left-margin.left,
-					y	= d3.event.pageY-bBox.top-margin.top;
-				if (	x>0 && x<bBox.right-bBox.left-margin.left-margin.right &&
-					y>0 && y<bBox.bottom-bBox.top-margin.top-margin.bottom) {
-					dispatch.call("mouseMove", null, x,y);
-				}
-			});
-			dispatch.on("mouseMove.axis", axes.callbacks["mouseMove"]);
-			dispatch.on("mouseMove.lines", lines.callbacks["mouseMove"]);
-			dispatch.on("mouseMove.legend", legend.callbacks["mouseMove"]);
+	chart.onInit	= function() {
+		var bound	= chart.root().node().getBoundingClientRect();
+		chart.width(bound.width);
+		chart.height(bound.height);
+		legend.height(margin.top - 2*margin.right)
+		var svg		= chart.root().append("svg").attr("width", chart.width()).attr("height", chart.height());
+		svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(lines);
+		svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(axes);
+		svg.append("g").attr("transform", "translate(" + margin.right + "," + margin.right + ")").call(legend);
+		svg.on("mousemove", function() {
+			var 	bBox	= chart.root().node().getBoundingClientRect();
+				x	= d3.event.pageX-bBox.left-margin.left,
+				y	= d3.event.pageY-bBox.top-margin.top;
+			if (	x>0 && x<bBox.right-bBox.left-margin.left-margin.right &&
+				y>0 && y<bBox.bottom-bBox.top-margin.top-margin.bottom) {
+				dispatch.call("mouseMove", null, x,y);
+			}
 		});
-		return chart;
+		dispatch.on("mouseMove.axis", axes.callbacks["mouseMove"]);
+		dispatch.on("mouseMove.lines", lines.callbacks["mouseMove"]);
+		dispatch.on("mouseMove.legend", legend.callbacks["mouseMove"]);
 	}
-	updateData	= function(_) {
-		if (!arguments.length) return data;
-		if (typeof _!="object" || typeof _[0]=="undefined") return chart;
-		data = _;
-		axes.data(data);
-		lines.data(data);
-		legend.data(data);
-		return chart;
+	chart.onHeightUpdate	= function() {
+		axes.height(chart.height() - margin.top - margin.bottom);
+		lines.height(chart.height() - margin.top - margin.bottom);
+	};
+	chart.onWidthUpdate	= function() {
+		axes.width(chart.width() - margin.left - margin.right);
+		lines.width(chart.width() - margin.left - margin.right);
+		legend.width(chart.width() - 2*margin.right);
+	};
+	chart.onColorUpdate	= function() {
+		lines.color(chart.color());
+		legend.color(chart.color());
+	};
+	chart.onDataUpdate	= function() {
+		axes.data(chart.data());
+		lines.data(chart.data());
+		legend.data(chart.data());
 	};
 	chart.dispatch	= dispatch;
-	chart.data	= updateData;
 	chart.prop	= function(_) {
-		if (!arguments.length) return prop;
-		prop = _;
-		filter = function(e){return e!="timestamp" && (e.match("avg_"+prop) || e==prop );};
-		axes.filter(filter);
-		lines.filter(filter);
+		if (!arguments.length) return prop; prop = _;
+		chart.filter(function(e){return e!="timestamp" && (e.match("avg_"+prop) || e==prop );});
+		axes.filter(chart.filter());
+		lines.filter(chart.filter());
 		return chart;
 	};
 	chart.baseUrl	= function(_) {
-		if (!arguments.length) return data;
-		baseUrl = _;
+		if (!arguments.length) return chart.data(); baseUrl = _;
 		$.getJSON(baseUrl, function(results) {
-			if (typeof results!="object" || typeof results[0]=="undefined") return;
-			updateData(results); 
+			chart.data(results); 
 		});
 
 		return chart;
 	};
-	chart.height	= function(_) {
-		if (!arguments.length) return height;
-		height = Math.max(_, minHeight);
-		axes.height(height - margin.top - margin.bottom);
-		lines.height(height - margin.top - margin.bottom);
-		return chart;
-	};
-	chart.width	= function(_) {
-		if (!arguments.length) return width;
-		width = Math.max(_, minWidth);
-		axes.width(width - margin.left - margin.right);
-		lines.width(width - margin.left - margin.right);
-		legend.width(width - 2*margin.right);
-		return chart;
-	};
-	chart.color	= function(_) {
-		if (!arguments.length) return color;
-		color = _;
-		lines.color(color);
-		legend.color(color);
-		return chart;
-	};
+	chart.updateSizeFromMin();
 	return chart;
 }
 
-
 function watchedEvent(id, baseUrl, prop) {
-	var chart = wdEventChart()
-		.prop(prop)
-		.baseUrl(baseUrl);
+	var chart = wdEventChart().prop(prop).baseUrl(baseUrl);
 	d3.select("#"+id).call(chart);
 	return chart;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watchedService
-function wdServiceAreas() {
-	var	color		= d3.scaleOrdinal(d3.schemeCategory10),
-		width		= 500,
-		height		= 400,
-		x		= d3.scaleTime().range([0, width]),
-		y		= d3.scaleLinear().range([height, 0]),
-		data		= [],
-		keys		= [],
+function wdServiceAreas(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdFilteredComponant( wdAxedComponant(null, 500, 300))),
 		stack		= d3.stack(),
 		area		= d3.area()
-					.x(function(d, i) { return x(d.data.timestamp); })
-					.y0(function(d) { return y(d[0]); })
-					.y1(function(d) { return y(d[1]); }),
-		lines		= [],
-		root, renderUpdate;
+					.x(function(d, i) { return chart.xAxis(d.data.timestamp); })
+					.y0(function(d) { return chart.yAxis(d[0]); })
+					.y1(function(d) { return chart.yAxis(d[1]); });
 
-	function chart(selection) {
-		selection.each(function() {
-			root	= d3.select(this);
-		});
-		return chart;
-	}
-	renderUpdate	= function() {
-		root.selectAll(".lines").remove();
-		var	update	= root.selectAll(".lines").data(stack(data), function(d) { return d.timestamp }),
+	chart.renderUpdate	= function() {
+		chart.root().selectAll(".lines").remove();
+		var	update	= chart.root().selectAll(".lines").data(stack(chart.data()), function(d) { return d.timestamp }),
 			eLines	= update.enter().append("g").attr("class", "lines");
 		update.exit().remove();
 		eLines.append("path").attr("class", "area")
-			.style("fill", function(d) { return color(d.key); })
+			.style("fill", function(d) { return chart.color()(d.key); })
 			.attr("d", area);
 	};
-	chart.data	= function(_) {
-		if (!arguments.length) return data;
-		data = _;
-		keys = Object.keys(data[0]).filter(function(e){return e!="timestamp"});
-		lines = keys.map(function(i) {
-			return {
-				id: i,
-				values: data.map(function(d) {
-					return {timestamp: d.timestamp, value:+d[i]};
-				})
-			};
-		});
-		stack.keys(keys);
-		x.domain(d3.extent(data, function(d) { return d.timestamp; }));
-		y.domain([0, d3.max(data, function(d) { return d.failed+d.missing+d.ok; })]);
-		if (typeof root !== 'undefined') renderUpdate();
-		return chart;
-	};
-	chart.color	= function(_) {
-		if (!arguments.length) return color;
-		color = _;
-		return chart;
-	};
-	chart.height	= function(_) {
-		if (!arguments.length) return height;
-		height = _;
-		y.range([height, 0]);
-		return chart;
-	};
-	chart.width	= function(_) {
-		if (!arguments.length) return width;
-		width = _;
-		x.range([0, width]);
-		return chart;
+	chart.onDataUpdate	= function() {
+		stack.keys(chart.keys());
+		chart.xAxis.domain(d3.extent(chart.data(), function(d) { return d.timestamp; }));
+		chart.yAxis.domain([0, d3.max(chart.data(), function(d) { return d.failed+d.missing+d.ok; })]);
 	};
 
 	return chart;
 }
 
-function wdServiceAxes() {
-	var	data		= [],
-		width		= 500,
-		height		= 400,
-		x		= d3.scaleTime().range([0, width]),
-		y		= d3.scaleLinear().range([height, 0]),
-		xAxis		= function(g) {
-			g.call(d3.axisBottom(x).tickFormat(wdDateFormat));
-			g.select(".domain").remove();
-			g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1.5px"); },
-		yAxis	= function(g) {
-			g.call(d3.axisRight(y).tickSize(width).ticks(y.domain()[1]));
-			g.select(".domain").remove();
-			g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1px");
-			g.selectAll(".tick:not(:first-of-type) line").attr("stroke-dasharray", "5,5");
-			g.selectAll(".tick text").attr("x", -20).attr("dy", "-4"); },
-		root, renderUpdate;
+function wdServiceAxes(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdAxesComponant(null,500,200);
 
-	function chart(selection) {
-		selection.each(function() {
-			root	= d3.select(this);
-			root.append("g").attr("class", "x axis").attr("transform", 
-						"translate(0," + height + ")").call(xAxis);
-			root.append("g").attr("class", "y axis").call(yAxis);
-		});
-		return chart;
-	}
-	renderUpdate	= function() {
-		var	update	= root.transition();
-		update.select(".x.axis").duration(150).call(xAxis);
-		update.select(".y.axis").duration(150).call(yAxis);
+	chart.yAxisLine		= function(g) {
+		g.call(d3.axisRight(chart.yAxis).tickSize(chart.width()).ticks(chart.yAxis.domain()[1]));
+		g.select(".domain").remove();
+		g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1px");
+		g.selectAll(".tick:not(:first-of-type) line").attr("stroke-dasharray", "5,5");
+		g.selectAll(".tick text").attr("x", -20).attr("dy", "-4"); 
 	};
-	chart.height	= function(_) {
-		if (!arguments.length) return height;
-		height = _;
-		y.range([height, 0]);
-		if (typeof root === 'undefined') return chart;
-		root.select(".x.axis").attr("transform", "translate(0," + height + ")");
-		return chart;
-	};
-	chart.width	= function(_) {
-		if (!arguments.length) return width;
-		width = _;
-		x.range([0, width]);
-		return chart;
-	};
-	chart.data	= function(_) {
-		if (!arguments.length) return data;
-		data = _;
-		x.domain(d3.extent(data, function(d) { return d.timestamp; }));
-		y.domain([0, d3.max(data, function(d) { return d.failed+d.missing+d.ok; })]);
-		if (typeof root !== 'undefined') renderUpdate();
-		return chart;
+
+	chart.onDataUpdate	= function() {
+		chart.xAxis.domain(d3.extent(chart.data(), function(d) { return d.timestamp; }));
+		chart.yAxis.domain([0, d3.max(chart.data(), function(d) { return d.failed+d.missing+d.ok; })]);
 	};
 
 	return chart;
 }
 
-function wdServiceChart() {
-	var	margin		= {top: 10, right: 10, bottom: 20, left: 30},
+function wdServiceChart(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdMinSizedComponant(null,500,330),
+		margin		= {top: 10, right: 10, bottom: 20, left: 30},
 		color		= function (k) {
 			switch(k) {
 				case "missing": return '#ff851b';
@@ -501,35 +419,21 @@ function wdServiceChart() {
 		},
 		axes 		= wdServiceAxes(),
 		areas		= wdServiceAreas().color(color),
-		data		= [],
-		baseUrl		= "",
-		minWidth	= 500,
-		minHeight	= 400,
-		width		= minWidth, 
-		height		= minHeight,
-		root, bound, svg, setData, setPeriod, setHeight, setWidth;
+		baseUrl		= "";
 
-	function chart(selection) {
-		selection.each(function() {
-			root	= d3.select(this),
-			bound	= root.node().getBoundingClientRect();
-			setWidth(bound.width);
-			setHeight(bound.height);
-			svg	= root.append("svg").attr("width", width).attr("height", height);
-			svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(areas);
-			svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(axes);
-		});
-		return chart;
+	chart.onInit	= function() {
+		var	bound	= chart.root().node().getBoundingClientRect();
+		chart.width(bound.width);
+		chart.height(bound.height);
+		var 	svg	= chart.root().append("svg").attr("width", chart.width()).attr("height", chart.height());
+		svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(areas);
+		svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(axes);
 	}
-	setData		= function(_) {
-		if (!arguments.length) return data;
-		if (typeof _!="object" || typeof _[0]=="undefined") return chart;
-		data = _;
-		axes.data(data);
-		areas.data(data);
-		return chart;
+	chart.onDataUpdate	= function(_) {
+		axes.data(chart.data());
+		areas.data(chart.data());
 	}
-	setPeriod	= function(p) {
+	chart.setPeriod	= function(p) {
 		var url;
 		switch(p) {
 			case "month": url=baseUrl+"/"+(Math.floor(Date.now())-(3600000*24*31));break;
@@ -542,38 +446,25 @@ function wdServiceChart() {
 				url=baseUrl;
 		}
 		$.getJSON(url, function(results) {
-			if (typeof results!="object" || typeof results[0]=="undefined") return;
-			setData(results); 
+			chart.data(results); 
 		});
 	}
-	setHeight	= function(_) {
-		if (!arguments.length) return height;
-		height = Math.max(_, minHeight);
-		axes.height(height - margin.top - margin.bottom);
-		areas.height(height - margin.top - margin.bottom);
-		return chart; },
-	setWidth	= function(_) {
-		if (!arguments.length) return width;
-		width = Math.max(_, minWidth);
-		axes.width(width - margin.left - margin.right);
-		areas.width(width - margin.left - margin.right);
-		return chart;
-	};
-	chart.setPeriod = setPeriod;
-	chart.height	= setHeight;
-	chart.width	= setWidth;
-	chart.data	= setData;
-	chart.color	= function(_) {
-		if (!arguments.length) return color;
-		color = _;
-		return chart;
+	chart.onHeightUpdate	= function(_) {
+		 axes.height(chart.height() - margin.top - margin.bottom);
+		areas.height(chart.height() - margin.top - margin.bottom);
+	}
+	chart.onWidthUpdate	= function(_) {
+		 axes.width(chart.width() - margin.left - margin.right);
+		areas.width(chart.width() - margin.left - margin.right);
 	};
 	chart.baseUrl	= function(_) {
-		if (!arguments.length) return data;
-		baseUrl = _;
-		setPeriod();
+		if (!arguments.length) return data; baseUrl = _;
+		chart.setPeriod();
 		return chart;
 	};
+	chart.updateSizeFromMin();
+	chart.color	= function(_) { if (!arguments.length) return color; color = _; return chart; };
+
 	return chart;
 }
 
@@ -587,211 +478,153 @@ function watchedService(id, baseUrl) {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watchedDonut
 
-function wdDonutChartLegend() {
-	var	color		= d3.scaleOrdinal(d3.schemeCategory10),
-		dispatch	= d3.dispatch("itemMouseOver", "itemMouseOut"),
-		callbacks	= {},
-		data		= [],
-		root, renderUpdate;
+function wdDonutChartLegend(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant();
 
-	function chart(selection) {
-		selection.each(function() {
-			root	= d3.select(this);
-			dispatch.on("itemMouseOver.legend", callbacks["itemMouseOver"]).on("itemMouseOut.legend", callbacks["itemMouseOut"]);
-		});
-		return chart;
+	chart.dispatch	= d3.dispatch("itemMouseOver", "itemMouseOut");
+	chart.callbacks["itemMouseOver"]	= function(d, i) {
+		if (!chart.inited()) return;
+		var c = chart.color()(i);
+		if (typeof chart.data()[i].color !== 'undefined') {c=chart.data()[i].color;}
+		chart.root().selectAll("#li-"+i)
+			.style("background-color", c)
+			.style("font-weight","bold")
+	};
+	chart.callbacks["itemMouseOut"]	= function(d, i) {
+		if (!chart.inited()) return;
+		chart.root().selectAll("#li-"+i)
+			.style("background-color", "white")
+			.style("font-weight","normal")
+	};
+	chart.onInit	= function() {
+		chart.dispatch	.on("itemMouseOver.legend", chart.callbacks["itemMouseOver"])
+				.on("itemMouseOut.legend",  chart.callbacks["itemMouseOut"]);
 	}
-	renderUpdate	= function() {
-		root.selectAll("li").selectAll("i").remove();
-		root.selectAll("li").selectAll("span").remove();
-		var	update	= root.selectAll("li").data(data, function(d) { return d ? d.label : this.id; }),
+	chart.renderUpdate	= function() {
+		chart.root().selectAll("li").selectAll("i").remove();
+		chart.root().selectAll("li").selectAll("span").remove();
+		var	update	= chart.root().selectAll("li").data(chart.data(), function(d) { return d ? d.label : this.id; }),
 			liHtml	= update.enter().append("li")
 					.merge(update).attr("id", function(d, i) { return "li-" + i });
 		liHtml.append("i").attr("class", "fa fa-circle-o")
 			.attr("style", function (d,i) { 
 				if (typeof d.color !== 'undefined') 
 					return "color:"+d.color+";";
-				return "color:"+color(i)+";";
+				return "color:"+chart.color()(i)+";";
 			});
 		liHtml.append("span").text(function (d) {return " "+d.label;});
 		liHtml.append("span").attr("class", "pull-right").text(function (d) {return d.value;});
-		liHtml	.on("mouseover", function(d, i){dispatch.call("itemMouseOver", null, d, i);})
-			.on("mouseout", function(d, i) {dispatch.call("itemMouseOut", null, d, i);})
+		liHtml	.on("mouseover", function(d, i){chart.dispatch.call("itemMouseOver", null, d, i);})
+			.on("mouseout", function(d, i) {chart.dispatch.call("itemMouseOut",  null, d, i);})
 		update.exit().remove();
-	};
-	callbacks["itemMouseOver"]	= function(d, i) {
-		if (typeof root === 'undefined') return;
-		var c = color(i);
-		if (typeof data[i].color !== 'undefined') {c=data[i].color;}
-		root.selectAll("#li-"+i)
-			.style("background-color", c)
-			.style("font-weight","bold")
-	};
-	callbacks["itemMouseOut"]	= function(d, i) {
-		root.selectAll("#li-"+i)
-			.style("background-color", "white")
-			.style("font-weight","normal")
-	};
-	chart.dispatch	= dispatch;
-	chart.callbacks	= callbacks;
-	chart.data	= function(_) {
-		if (!arguments.length) return data;
-		data = _;
-		if (typeof root !== 'undefined') renderUpdate();
-		return chart;
-	};
-	chart.color	= function(_) {
-		if (!arguments.length) return color;
-		color = _;
-		return chart;
 	};
 
 	return chart;
 }
 
-function wdDonutChartDonut() {
-	var	color		= d3.scaleOrdinal(d3.schemeCategory10),
-		dispatch	= d3.dispatch("itemMouseOver", "itemMouseOut"),
-		callbacks	= {},
-		data		= [],
-		minWidth	= 150,
-		minHeight	= 150,
-		width		= minWidth,
-		height		= minHeight,
-		radius		= minHeight/2-3,
-		arc		= d3.arc().outerRadius(radius).innerRadius(radius/2).padAngle(0.01).cornerRadius(3),
-		arc2		= d3.arc().outerRadius(radius+3).innerRadius(radius/2-3).padAngle(0).cornerRadius(3),
-		root, chartLayer, allPies, allPaths, loadtween, updateArcs, renderUpdate;
+function wdDonutChartDonut(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdMinSizedComponant( null, 150,150)),
+		radius	= chart.width()/2-3,
+		arc	= d3.arc().outerRadius(radius).innerRadius(radius/2).padAngle(0.01).cornerRadius(3),
+		arc2	= d3.arc().outerRadius(radius+3).innerRadius(radius/2-3).padAngle(0).cornerRadius(3),
+		allPies, allPaths;
 
-	function chart(selection) {
-		selection.each(function() {
-			root		= d3.select(this).attr("width", width).attr("height", height);
-			chartLayer	= root.append("g").classed("chartLayer", true);
-			allPies		= chartLayer.selectAll(".pies");
-			allPaths	= chartLayer.selectAll(".arcPath");
-			dispatch.on("itemMouseOver.donut", callbacks["itemMouseOver"]).on("itemMouseOut.donut", callbacks["itemMouseOut"]);
-		});
-		return chart;
+	chart.dispatch	= d3.dispatch("itemMouseOver", "itemMouseOut");
+	chart.callbacks["itemMouseOver"] = function(d, i) {
+		if (!chart.inited()) return;
+		var c = chart.color()(i);
+		if (typeof chart.data()[i].color !== 'undefined') {c=chart.data()[i].color;}
+		chart.root().selectAll("#arc-"+i).attr("d",arc2)
 	}
-	renderUpdate	= function() {
-		root.selectAll("path").remove();
-		var 	update	= allPies.data(data),
-			arcs	= d3.pie().sort(null).value(function(d) { return d.value; })(data),
+	chart.callbacks["itemMouseOut"]	= function(d, i) {
+		if (!chart.inited()) return;
+		chart.root().selectAll("#arc-"+i).attr("d",arc)
+	}
+	chart.onInit	= function() {
+		chart.root().attr("width", chart.width()).attr("height", chart.height());
+		var chartLayer	= chart.root().append("g").classed("chartLayer", true);
+		allPies		= chartLayer.selectAll(".pies");
+		allPaths	= chartLayer.selectAll(".arcPath");
+		chart.dispatch	.on("itemMouseOver.donut", chart.callbacks["itemMouseOver"])
+				.on("itemMouseOut.donut",  chart.callbacks["itemMouseOut"]);
+	}
+	chart.loadtween	= function(d,i) {
+		var interpolate = d3.interpolate(d.startAngle, d.endAngle);
+		return function(t) {d.endAngle = interpolate(t);return arc(d);};
+	}
+	chart.renderUpdate	= function() {
+		chart.root().selectAll("path").remove();
+		var 	update	= allPies.data(chart.data()),
+			arcs	= d3.pie().sort(null).value(function(d) { return d.value; })(chart.data()),
 			pies	= update.enter().append("g").classed("pies", true)
-					.attr("transform", "translate("+[width/2, height/2]+")"),
+					.attr("transform", "translate("+[chart.width()/2, chart.height()/2]+")"),
 			blocks	= pies.selectAll(".arc").data(arcs),
 			newBlock= blocks.enter().append("g").classed("arc", true);
 		newBlock.append("path").classed("arcPath", true).attr("d", arc).attr("stroke", "white").style("stroke-width", "0.5")
 			.attr("id", function(d, i) { return "arc-" + i }).attr("fill", "white")
-			.on("mouseover", function(d, i) {dispatch.call("itemMouseOver", null, d, i);})
-			.on("mouseout", function(d, i) {dispatch.call("itemMouseOut", null, d, i);})
+			.on("mouseover", function(d, i) {chart.dispatch.call("itemMouseOver", null, d, i);})
+			.on("mouseout", function(d, i) { chart.dispatch.call("itemMouseOut",  null, d, i);})
 			.transition().duration(350)
 			.delay(function(d, i) { return i * 50; })
 			.attr("fill", function(d,i){ 
-				if (typeof data[i].color !== 'undefined') 
-					return data[i].color;
-				return color(i);
-			}).attrTween("d", loadtween);
+				if (typeof chart.data()[i].color !== 'undefined') 
+					return chart.data()[i].color;
+				return chart.color()(i);
+			}).attrTween("d", chart.loadtween);
 		update.exit().remove();
 	};
-	loadtween	= function(d,i) {
-		var interpolate = d3.interpolate(d.startAngle, d.endAngle);
-		return function(t) {d.endAngle = interpolate(t);return arc(d);};
-	}
-	updateArcs	= function() {
-		if (typeof allPaths === 'undefined') return;
-		radius		= Math.min(width,height)/2-3;
+	chart.updateArcs	= function() {
+		if (!chart.inited()) return;
+		radius		= Math.min(chart.width(),chart.height())/2-3;
 		arc.outerRadius(radius).innerRadius(radius/2);
 		arc2.outerRadius(radius+3).innerRadius(radius/2-3);
 		allPaths.attr("d", arc);
-		allPies.attr("transform", "translate("+[width/2, height/2]+")");
-	}
-	callbacks["itemMouseOver"]	= function(d, i) {
-		if (typeof root === 'undefined') return;
-		var c = color(i);
-		if (typeof data[i].color !== 'undefined') {c=data[i].color;}
-		root.selectAll("#arc-"+i).attr("d",arc2)
-	}
-	callbacks["itemMouseOut"]	= function(d, i) {
-		if (typeof root === 'undefined') return;
-		root.selectAll("#arc-"+i).attr("d",arc)
+		allPies.attr("transform", "translate("+[chart.width()/2, chart.height()/2]+")");
 	}
 
-	chart.dispatch	= dispatch;
-	chart.callbacks	= callbacks;
-	chart.data	= function(_) {
-		if (!arguments.length) return data;
-		data = _;
-		if (typeof root !== 'undefined') renderUpdate();
-		return chart;
+	chart.onHeightUpdate	= function(_) {
+		chart.updateArcs();
+		if (chart.inited())
+			chart.root().attr("height", chart.height());
 	};
-	chart.height	= function(_) {
-		if (!arguments.length) return height;
-		height = Math.max(_, minHeight);
-		updateArcs();
-		if (typeof root !== 'undefined')
-			root.attr("height", height);
-		return chart;
-	};
-	chart.width	= function(_) {
-		if (!arguments.length) return width;
-		width = Math.max(_, minWidth);
-		updateArcs();
-		if (typeof root !== 'undefined')
-			root.attr("width", width);
-		return chart;
-	};
-	chart.color	= function(_) {
-		if (!arguments.length) return color;
-		color = _;
-		return chart;
+	chart.onWidthUpdate	= function(_) {
+		chart.updateArcs();
+		if (chart.inited())
+			chart.root().attr("width", chart.width());
 	};
 
 	return chart;
 }
 
-function wdDonutChart() {
-	var	color		= d3.scaleOrdinal(d3.schemeCategory10),
-		data		= [],
-		legend		= wdDonutChartLegend(),
-		donut		= wdDonutChartDonut(),
-		width, height, root, rightHtml;
+function wdDonutChart(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant(),
+		legend	= wdDonutChartLegend(),
+		donut	= wdDonutChartDonut(),
+		width, height, rightHtml;
 
-	function chart(selection) {
-		selection.each(function() {
-			root			= d3.select(this);
-			var	rowHtml		= root.append("div").attr("class", "row"),
-				leftHtml	= rowHtml.append("div").attr("class", "col-xs-6 col-md-8")
-								.append("div").attr("class", "chart-responsive");
-			rightHtml		= rowHtml.append("div").attr("class", "col-xs-6 col-md-4");
-			rightHtml.append("ul").attr("class", "chart-legend clearfix").call(legend);
-			leftHtml.append("svg").call(donut);
-			legend.color(color).data(data);
-			width			= leftHtml.node().getBoundingClientRect().width;
-			height			= rightHtml.node().getBoundingClientRect().height;
-			donut.width(width).height(height).color(color).data(data);
-			legend.dispatch.on("itemMouseOver.donut",  donut.callbacks["itemMouseOver"]);
-			legend.dispatch.on("itemMouseOut.donut",   donut.callbacks["itemMouseOut"]);
-			donut.dispatch.on("itemMouseOver.legend", legend.callbacks["itemMouseOver"]);
-			donut.dispatch.on("itemMouseOut.legend",  legend.callbacks["itemMouseOut"]);
-		});
-		return chart;
+	chart.onInit	= function() {
+		var	rowHtml	= chart.root().append("div").attr("class", "row"),
+			leftHtml= rowHtml.append("div").attr("class", "col-xs-6 col-md-8")
+					.append("div").attr("class", "chart-responsive");
+		rightHtml	= rowHtml.append("div").attr("class", "col-xs-6 col-md-4");
+		rightHtml.append("ul").attr("class", "chart-legend clearfix").call(legend);
+		leftHtml.append("svg").call(donut);
+		legend.color(chart.color()).data(chart.data());
+		width		= leftHtml.node().getBoundingClientRect().width;
+		height		= rightHtml.node().getBoundingClientRect().height;
+		donut.width(width).height(height).color(chart.color()).data(chart.data());
+		legend.dispatch.on("itemMouseOver.donut",  donut.callbacks["itemMouseOver"]);
+		legend.dispatch.on("itemMouseOut.donut",   donut.callbacks["itemMouseOut"]);
+		donut.dispatch.on("itemMouseOver.legend", legend.callbacks["itemMouseOver"]);
+		donut.dispatch.on("itemMouseOut.legend",  legend.callbacks["itemMouseOut"]);
 	}
-	chart.data	= function(_) {
-		if (!arguments.length) return data;
-		data	= _;
-		legend.data(data);
-		if (typeof rightHtml === 'undefined') return chart;
+	chart.renderUpdate	= function() {
 		height	= rightHtml.node().getBoundingClientRect().height;
-		donut.height(height).data(data);
-		return chart;
+		donut.height(height).data(chart.data());
 	};
-	chart.color	= function(_) {
-		if (!arguments.length) return color;
-		color = _;
-		legend.color(color);
-		donut.color(color);
-		return chart;
+	chart.onColorUpdate	= function() {
+		legend.color(chart.color());
+		donut.color(chart.color());
 	};
 
 	return chart;
