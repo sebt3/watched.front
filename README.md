@@ -7,7 +7,7 @@ This is the frontend. Allow to view performance metric and monitoring events gen
 This project is based on the following projects :
 * [bootstrap](http://getbootstrap.com)
 * [AdminLTE](https://almsaeedstudio.com/preview)
-* [morris.js](http://morrisjs.github.io/morris.js/)
+* [d3.js](https://d3js.org/)
 * [Font Awesome](http://fontawesome.io)
 * [composer](https://getcomposer.org)
 * [slim](http://www.slimframework.com)
@@ -25,11 +25,5 @@ This project is based on the following projects :
 Complete instructions [here](https://sebt3.github.io/watched/doc/install/#the-frontend).
 
 ## Current status
-So far, this is just a front-end to the collected data. Most of the planned features are still missing. Yet it's already good enough as a data front-end. Features :
-* Global dashboard
-* Synthetic host display
-* Metrics history graphs
-* Monitoring status for metrics and services
-
-
-
+In between a prototype and a full fleged frontend.
+At best an alpha status.

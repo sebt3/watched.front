@@ -25,22 +25,7 @@ table.table-hover tr td a {
                 </button>
               </div>
             </div>
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-8">
-                  <div class="chart-responsive">
-                    <canvas id="pieChart" height="150"></canvas>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <ul class="chart-legend clearfix">
-    {% for m in monitorStatus %}
-    <li><i class="fa fa-circle-o {{ m.text }}"></i> {{ _(m.name) }}<span class="pull-right">{{ m.cnt }}</span></li>
-    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-            </div>
+	    <div class="box-body" id="gfx1"></div>
             <div class="box-footer no-padding">
               <ul class="nav nav-pills nav-stacked">
     {% for e in activeEvent %}
@@ -93,22 +78,7 @@ table.table-hover tr td a {
                 </button>
               </div>
             </div>
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-8">
-                  <div class="chart-responsive">
-                    <canvas id="pieChart2" height="150"></canvas>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <ul class="chart-legend clearfix">
-    {% for m in monitorItems %}
-                    <li><i class="fa fa-circle-o {{ m.text }}"></i> {{ _(m.name) }}<span class="pull-right">{{ m.cnt }}</span></li>
-    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-            </div>
+	    <div class="box-body" id="gfx2"></div>
             <div class="box-footer no-padding">
               <ul class="nav nav-pills nav-stacked">
     {% for e in monitorList %}
@@ -156,24 +126,21 @@ table.table-hover tr td a {
 {% endblock %}
 {% block scripts %}
 <script>
+  {% if monitorItems is defined and monitorItems is not null %}
 if (!Date.now) {
     Date.now = function() { return new Date().getTime(); }
 }
-  {% if monitorItems is defined and monitorItems is not null %}
-  var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
-  var pieChart = new Chart(pieChartCanvas);
-  var pieChartCanvas2 = $("#pieChart2").get(0).getContext("2d");
-  var pieChart2 = new Chart(pieChartCanvas2);
-  var PieData1 = [];
   var graph;
+  var PieData1 = [];
     {% for m in monitorStatus %}
   PieData1.push({
       value: {{ m.cnt }},
       color: "{{ m.color }}",
       highlight: "{{ m.color }}",
-      label: "{{ m.name }}"
+      label: "{{ _(m.name) }}"
     });
     {% endfor %}
+  watchedDonut("gfx1", PieData1);
 
   var PieData2 = [];
     {% for m in monitorItems %}
@@ -181,25 +148,10 @@ if (!Date.now) {
       value: {{ m.cnt }},
       color: "{{ m.color }}",
       highlight: "{{ m.color }}",
-      label: "{{ m.name }}"
+      label: "{{ _(m.name) }}"
     });
     {% endfor %}
-
-  var pieOptions = {
-    segmentShowStroke: true,
-    segmentStrokeColor: "#fff",
-    segmentStrokeWidth: 1,
-    percentageInnerCutout: 50, /* This is 0 for Pie charts*/
-    animationSteps: 100,
-    animationEasing: "easeOutBounce",
-    animateRotate: true,
-    animateScale: false,
-    responsive: true,
-    maintainAspectRatio: false,
-    tooltipTemplate: "<%=label%> - <%=value %>"
-  };
-  pieChart.Doughnut(PieData1, pieOptions);
-  pieChart2.Doughnut(PieData2, pieOptions);
+  watchedDonut("gfx2", PieData2);
   {% endif %}
 
 $.getJSON( "{{ path_for('apiRessource', { 'aid': a.id, 'rid': r.id, 'name': r.type }) }}", function( data ) {

@@ -67,7 +67,6 @@
             <div class="box-header with-border">
               <h3 class="box-title">{{ _('Availability') }}</h3>
 	      <div class="box-tools">
-		<!-- TODO: add a dropdown to select the period -->
                     <div class="btn-group">
                       <div class="btn-group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -75,6 +74,7 @@
                         </button>
                         <ul class="dropdown-menu">
                           <li><a onclick="setPeriod('all')">{{ _('All') }}</a></li>
+                          <li><a onclick="setPeriod('month')">{{ _('Last month') }}</a></li>
                           <li><a onclick="setPeriod('week')">{{ _('Last week') }}</a></li>
                           <li><a onclick="setPeriod('yesterday')">{{ _('Yesterday') }}</a></li>
                           <li><a onclick="setPeriod('today')">{{ _('Today') }}</a></li>
@@ -96,48 +96,10 @@
 
 {% block scripts %}
 <script>
-if (!Date.now) {
-    Date.now = function() { return new Date().getTime(); }
-}
-
-$.getJSON( "{{ path_for('apiService', { 'id': service.id }) }}", function( data ) {
-	var ykeys = [];
-	$.each(data[0], function(index, value) {
-		if (index!='timestamp')
-			ykeys.push(index);
-	});
-	graph = new Morris.Area({
-		element: 'morrisChart',  
-		data: data, 
-		hideHover: true,
-		xkey: 'timestamp', 
-		pointSize:0,fillOpacity:0.3,
-		ykeys: ['missing','failed','ok'], labels: ['missing','failed','ok'], lineColors: ['#ff851b','#dd4b39','#00a65a']
-	});
-});
-
-function updateLiveGraph(url) {
-  $.getJSON(url, function(results) {
-	graph.setData(results); 
-  });
-}
-
+chart = watchedService('morrisChart', "{{ path_for('apiService', { 'id': service.id }) }}");/**/
 function setPeriod(p) {
-	var baseurl="{{ path_for('apiService', { 'id': service.id }) }}";
-	var url;
-	switch(p) {
-	case "all": url=baseurl;break;
-	case "week": url=baseurl+"/"+(Math.floor(Date.now())-(3600000*24*7));break;
-	case "yesterday": url=baseurl+"/"+((Math.floor(Date.now()/(3600000*24))-1)*(3600000*24))+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
-	case "today": url=baseurl+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
-	case "hour": url=baseurl+"/"+(Math.floor(Date.now()/(3600000))*(3600000));break;
-	default:
-		return false
-	}
-	updateLiveGraph(url)
-	return true
+	chart.setPeriod(p);
 }
-
 </script>
 {% endblock %}
 

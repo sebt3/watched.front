@@ -74,7 +74,8 @@
 {% endblock %}
 {% block scripts %}
 <script>
-$.getJSON( "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", function( data ) {
+chart = watchedEvent('morrisChart', "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", "{{ e.property }}");/**/
+/*$.getJSON( "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", function( data ) {
 	ykeys = [];
 	$.each(data[0], function(index, value) {
 		if (index!='timestamp' && (index.match(/\_{{ e.property }}/)!=null || index=="{{ e.property }}" ))
@@ -88,6 +89,6 @@ $.getJSON( "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e,
 		pointSize:0,fillOpacity:0.3,behaveLikeLine:true, 
 		ykeys: ykeys, labels: ykeys
 	});
-});
+});/**/
 </script>
 {% endblock %}

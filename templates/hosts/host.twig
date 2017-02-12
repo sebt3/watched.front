@@ -24,22 +24,7 @@ table.table-hover tr td a {
                 </button>
               </div>
             </div>
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-8">
-                  <div class="chart-responsive">
-                    <canvas id="pieChart" height="150"></canvas>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <ul class="chart-legend clearfix">
-    {% for m in monitorStatus %}
-    <li><i class="fa fa-circle-o {{ m.text }}"></i> {{ _(m.name) }}<span class="pull-right">{{ m.cnt }}</span></li>
-    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-            </div>
+	    <div class="box-body" id="gfx1"></div>
             <div class="box-footer no-padding">
               <ul class="nav nav-pills nav-stacked">
     {% for e in activeEvent %}
@@ -94,22 +79,7 @@ table.table-hover tr td a {
                 </button>
               </div>
             </div>
-            <div class="box-body">
-              <div class="row">
-                <div class="col-md-8">
-                  <div class="chart-responsive">
-                    <canvas id="pieChart2" height="150"></canvas>
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <ul class="chart-legend clearfix">
-    {% for m in monitorItems %}
-                    <li><i class="fa fa-circle-o {{ m.text }}"></i> {{ _(m.name) }}<span class="pull-right">{{ m.cnt }}</span></li>
-    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-            </div>
+	    <div class="box-body" id="gfx2"></div>
             <div class="box-footer no-padding">
               <ul class="nav nav-pills nav-stacked">
               </ul>
@@ -250,19 +220,16 @@ table.table-hover tr td a {
 
 {% block scripts %}
 <script>
-  var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
-  var pieChart = new Chart(pieChartCanvas);
-  var pieChartCanvas2 = $("#pieChart2").get(0).getContext("2d");
-  var pieChart2 = new Chart(pieChartCanvas2);
   var PieData1 = [];
     {% for m in monitorStatus %}
   PieData1.push({
       value: {{ m.cnt }},
       color: "{{ m.color }}",
       highlight: "{{ m.color }}",
-      label: "{{ m.name }}"
+      label: "{{ _(m.name) }}"
     });
     {% endfor %}
+  watchedDonut("gfx1", PieData1);
 
   var PieData2 = [];
     {% for m in monitorItems %}
@@ -270,25 +237,10 @@ table.table-hover tr td a {
       value: {{ m.cnt }},
       color: "{{ m.color }}",
       highlight: "{{ m.color }}",
-      label: "{{ m.name }}"
+      label: "{{ _(m.name) }}"
     });
     {% endfor %}
-
-  var pieOptions = {
-    segmentShowStroke: true,
-    segmentStrokeColor: "#fff",
-    segmentStrokeWidth: 1,
-    percentageInnerCutout: 50, /* This is 0 for Pie charts */
-    animationSteps: 100,
-    animationEasing: "easeOutBounce",
-    animateRotate: true,
-    animateScale: false,
-    responsive: true,
-    maintainAspectRatio: false,
-    tooltipTemplate: "<%=label%> - <%=value %>"
-  };
-  pieChart.Doughnut(PieData1, pieOptions);
-  pieChart2.Doughnut(PieData2, pieOptions);
+  watchedDonut("gfx2", PieData2);
 
 Morris.Bar({
   element: 'memory-usage',

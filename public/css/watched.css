@@ -5,3 +5,9 @@
 .error-details table th {
 	padding-right:20px;
 }
+
+.lines .line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 3px;
+}
