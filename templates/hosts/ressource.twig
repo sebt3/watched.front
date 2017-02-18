@@ -103,12 +103,12 @@ table.table-hover tr td a {
                           Period <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                          <li><a onclick="setPeriod('all')">All</a></li>
-                          <li><a onclick="setPeriod('week')">Last week</a></li>
-                          <li><a onclick="setPeriod('yesterday')">Yesterday</a></li>
-                          <li><a onclick="setPeriod('today')">Today</a></li>
-                          <li><a onclick="setPeriod('hour')">Last hour</a></li>
-			  <!--<li><a onclick="setPeriod('test')">test</a></li>-->
+                          <li><a onclick="chart.setPeriod('all')">{{ _('All') }}</a></li>
+                          <li><a onclick="chart.setPeriod('month')">{{ _('Last month') }}</a></li>
+                          <li><a onclick="chart.setPeriod('week')">{{ _('Last week') }}</a></li>
+                          <li><a onclick="chart.setPeriod('yesterday')">{{ _('Yesterday') }}</a></li>
+                          <li><a onclick="chart.setPeriod('today')">{{ _('Today') }}</a></li>
+                          <li><a onclick="chart.setPeriod('hour')">{{ _('Last hour') }}</a></li>
                         </ul>
                       </div>
                     </div>
@@ -125,12 +125,10 @@ table.table-hover tr td a {
       </div>
 {% endblock %}
 {% block scripts %}
+<script src="/js/watched.donut.js"></script>
+<script src="/js/watched.line.js"></script>
 <script>
   {% if monitorItems is defined and monitorItems is not null %}
-if (!Date.now) {
-    Date.now = function() { return new Date().getTime(); }
-}
-  var graph;
   var PieData1 = [];
     {% for m in monitorStatus %}
   PieData1.push({
@@ -153,52 +151,6 @@ if (!Date.now) {
     {% endfor %}
   watchedDonut("gfx2", PieData2);
   {% endif %}
-
-$.getJSON( "{{ path_for('apiRessource', { 'aid': a.id, 'rid': r.id, 'name': r.type }) }}", function( data ) {
-	var ykeys = [];
-	$.each(data[0], function(index, value) {
-		if (index!='timestamp' && index.match(/^min/)==null && index.match(/^max/)==null)
-			ykeys.push(index);
-	});
-	graph = new Morris.Area({
-		element: 'morrisChart',  
-		data: data, 
-		hideHover: true,
-		xkey: 'timestamp', 
-		pointSize:0,fillOpacity:0.3,
-		ykeys: ykeys, labels: ykeys
-	});
-});
-
-function updateLiveGraph(url) {
-  $.getJSON(url, function(results) {
-  	var ykeys = [];
-	$.each(results[0], function(index, value) {
-		if (index!='timestamp' && index.match(/^min/)==null && index.match(/^max/)==null)
-			ykeys.push(index);
-	});
-	graph.options.ykeys=ykeys;
-	graph.options.labels=ykeys;
-	graph.setData(results); 
-  });
-}
-
-function setPeriod(p) {
-	var baseurl='{{ path_for('apiRessource', { 'aid': a.id, 'rid': r.id, 'name': r.type }) }}';
-	var url;
-	switch(p) {
-	case "all": url=baseurl;break;
-	case "week": url=baseurl+"/"+(Math.floor(Date.now())-(3600000*24*7));break;
-	case "yesterday": url=baseurl+"/"+((Math.floor(Date.now()/(3600000*24))-1)*(3600000*24))+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
-	case "today": url=baseurl+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
-	case "hour": url=baseurl+"/"+(Date.now()-3600000);break;
-	case "test": url=baseurl+"/"+(Date.now()-6*3600000-4*600000)+"/"+(Date.now()-5*3600000+60000);break;
-	default:
-		return false;
-	}
-	updateLiveGraph(url);
-	return true;
-}
-
+chart = watchedRessource('morrisChart', "{{ path_for('apiRessource', { 'aid': a.id, 'rid': r.id, 'name': r.type }) }}");
 </script>
 {% endblock %}

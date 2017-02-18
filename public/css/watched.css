@@ -6,8 +6,11 @@
 	padding-right:20px;
 }
 
-.lines .line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 3px;
+.chart .lines .line {
+	fill: none;
+	stroke-width: 3px;
+}
+.chart .axis .domain {
+	fill: none;
+	stroke-width: 0px;
 }

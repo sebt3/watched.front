@@ -219,29 +219,43 @@ table.table-hover tr td a {
 {% endblock %}
 
 {% block scripts %}
+<script src="/js/watched.donut.js"></script>
+<script src="/js/watched.bar.js"></script>
 <script>
-  var PieData1 = [];
+  watchedDonut("gfx1", [
     {% for m in monitorStatus %}
-  PieData1.push({
+    {
       value: {{ m.cnt }},
       color: "{{ m.color }}",
-      highlight: "{{ m.color }}",
       label: "{{ _(m.name) }}"
-    });
+    },
     {% endfor %}
-  watchedDonut("gfx1", PieData1);
-
-  var PieData2 = [];
+  ]);
+  watchedDonut("gfx2", [
     {% for m in monitorItems %}
-  PieData2.push({
+    {
       value: {{ m.cnt }},
       color: "{{ m.color }}",
-      highlight: "{{ m.color }}",
       label: "{{ _(m.name) }}"
-    });
+    },
     {% endfor %}
-  watchedDonut("gfx2", PieData2);
+  ]);
 
+  var data = [
+    {% for m in monitorStatus %}
+    {
+      value: {{ m.cnt }},
+      color: "{{ m.color }}",
+      label: "{{ _(m.name) }}"
+    },
+    {% endfor %}
+  ];
+  watchedMemSwap('memory-usage',[
+    {% for m in memoryUsage %}
+      { type: '{{ m.name }}', used: {{ m.used }}, free: {{ m.free }}, url: "{{ path_for('ressource', { 'aid': m.host_id, 'rid': m.res_id }) }}" },
+    {% endfor %}
+  ]); /**/
+/*
 Morris.Bar({
   element: 'memory-usage',
   data: [
@@ -256,6 +270,6 @@ Morris.Bar({
   labels: ['Used', 'Free']
 }).on('click', function(i, row){
   location.href=row["url"];
-});
+});/**/
 </script>
 {% endblock %}

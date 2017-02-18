@@ -73,22 +73,8 @@
       </div>
 {% endblock %}
 {% block scripts %}
+<script src="/js/watched.line.js"></script>
 <script>
-chart = watchedEvent('morrisChart', "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", "{{ e.property }}");/**/
-/*$.getJSON( "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", function( data ) {
-	ykeys = [];
-	$.each(data[0], function(index, value) {
-		if (index!='timestamp' && (index.match(/\_{{ e.property }}/)!=null || index=="{{ e.property }}" ))
-			ykeys.push(index);
-	});
-	graph = new Morris.Line({
-		element: 'morrisChart',  
-		data: data, 
-		xkey: 'timestamp', 
-		hideHover: true,
-		pointSize:0,fillOpacity:0.3,behaveLikeLine:true, 
-		ykeys: ykeys, labels: ykeys
-	});
-});/**/
+chart = watchedEvent('morrisChart', "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", "{{ e.property }}");
 </script>
 {% endblock %}

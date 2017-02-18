@@ -73,12 +73,12 @@
                           Period <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu">
-                          <li><a onclick="setPeriod('all')">{{ _('All') }}</a></li>
-                          <li><a onclick="setPeriod('month')">{{ _('Last month') }}</a></li>
-                          <li><a onclick="setPeriod('week')">{{ _('Last week') }}</a></li>
-                          <li><a onclick="setPeriod('yesterday')">{{ _('Yesterday') }}</a></li>
-                          <li><a onclick="setPeriod('today')">{{ _('Today') }}</a></li>
-                          <li><a onclick="setPeriod('hour')">{{ _('Last hour') }}</a></li>
+                          <li><a onclick="chart.setPeriod('all')">{{ _('All') }}</a></li>
+                          <li><a onclick="chart.setPeriod('month')">{{ _('Last month') }}</a></li>
+                          <li><a onclick="chart.setPeriod('week')">{{ _('Last week') }}</a></li>
+                          <li><a onclick="chart.setPeriod('yesterday')">{{ _('Yesterday') }}</a></li>
+                          <li><a onclick="chart.setPeriod('today')">{{ _('Today') }}</a></li>
+                          <li><a onclick="chart.setPeriod('hour')">{{ _('Last hour') }}</a></li>
                         </ul>
                       </div>
                     </div>
@@ -95,11 +95,9 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="/js/watched.service.js"></script>
 <script>
-chart = watchedService('morrisChart', "{{ path_for('apiService', { 'id': service.id }) }}");/**/
-function setPeriod(p) {
-	chart.setPeriod(p);
-}
+chart = watchedService('morrisChart', "{{ path_for('apiService', { 'id': service.id }) }}");
 </script>
 {% endblock %}
 

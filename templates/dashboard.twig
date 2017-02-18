@@ -143,39 +143,35 @@ table.table-hover tr td a {
 {% endblock %}
 
 {% block scripts %}
+<script src="/js/watched.donut.js"></script>
 <script>
-  var PieData1 = [];
+  watchedDonut("gfx1",  [
     {% for m in monitorStatus %}
-  PieData1.push({
+    {
       value: {{ m.cnt }},
       color: "{{ m.color }}",
-      highlight: "{{ m.color }}",
       label: "{{ _(m.name) }}"
-    });
+    },
     {% endfor %}
-  watchedDonut("gfx1", PieData1);/**/
-
-  var PieData2 = [];
+  ]);
+  watchedDonut("gfx2", [
     {% for m in monitorItems %}
-  PieData2.push({
+    {
       value: {{ m.cnt }},
       color: "{{ m.color }}",
-      highlight: "{{ m.color }}",
       label: "{{ _(m.name) }}"
-    });
+    },
     {% endfor %}
-  x = watchedDonut("gfx2", PieData2);
-
-  var PieData3 = [];
+  ]);
+  watchedDonut("gfx3", [
     {% for m in domains %}
-  PieData3.push({
+    {
       value: {{ m.cnt }},
       color: "{{ m.color }}",
-      highlight: "{{ m.color }}",
       label: "{{ _(m.name) }}"
-    });
+    },
     {% endfor %}
-  watchedDonut("gfx3", PieData3);
+  ]);
 
 </script>
 {% endblock %}
