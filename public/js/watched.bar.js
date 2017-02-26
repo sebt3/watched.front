@@ -3,8 +3,9 @@
 function wdBarChartBars(pClass) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdFilteredComponant( wdAxedComponant(null, 200, 200))),
 		stack		= d3.stack();
-	chart.xAxis		= d3.scaleBand().rangeRound([0, chart.width()]).padding(0.1);
+	chart.xAxis		= d3.scaleBand().padding(0.2);
 	chart.colorFunction	= function() { return chart.color(); }
+	chart.dispatch.register("click");
 	chart.dispatch.on("renderUpdate.wdBarChartBars", function() {
 		chart.root().selectAll(".bars").remove();
 		var	update	= chart.root().selectAll(".bars").data(stack(chart.data()), function(d) { return d.type }),
@@ -18,11 +19,12 @@ function wdBarChartBars(pClass) {
 				.attr("x", function(d) { return chart.xAxis(d.data.type); })
 				.attr("y", function(d) { return chart.yAxis(d[1]); })
 				.attr("height", function(d) { return chart.yAxis(d[0]) - chart.yAxis(d[1]); })
-				.attr("width", chart.xAxis.bandwidth());
+				.attr("width", chart.xAxis.bandwidth())
+				.on("click",function (d,i){chart.dispatch.call("click", this,d,i);});
 	});
 	chart.dispatch.on("widthUpdate.wdAxedComponant", function() { });
 	chart.dispatch.on("widthUpdate.wdBarChartBars", function() {
-		chart.xAxis.rangeRound([0, chart.width()]).padding(0.1);
+		chart.xAxis.rangeRound([0, chart.width()]);
 	});
 	chart.dispatch.on("dataUpdate.wdAxedComponant", function() { });
 	chart.dispatch.on("dataUpdate.wdBarChartBars", function() {
@@ -111,15 +113,17 @@ function watchedBarChart(id, data) {
 	d3.select("#"+id).call(chart);
 	return chart;
 }
+
 function watchedMemSwap(id, data) {
 	var chart = wdBarChart();
 	var cmem  = d3.scaleOrdinal(['#00a65a','#cccccc']).domain(['used','free'])
 	var cswap = d3.scaleOrdinal(['#dd4b39','#cccccc']).domain(['used','free'])
-	chart.bars().colorFunction	= function(d,i) { 
+	chart.bars().colorFunction	= function(d) { 
 		if (d.data.type=="memory")
 			return cmem;
 		return cswap;
 	}
+	chart.bars().dispatch.on("click.watchedMemSwap", function(d) {window.location.href =d.data.url})
 	chart.data(data);
 	d3.select("#"+id).call(chart);
 	return chart;

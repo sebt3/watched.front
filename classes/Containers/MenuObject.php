@@ -59,15 +59,16 @@ class MenuObject extends core {
 				array('name' => 'Users', 'icon' => 'icon ion-person', 'page' => 'admin.users.list'),
 				array('name' => 'Teams', 'icon' => 'icon ion-person-stalker', 'page' => 'admin.teams.list'),
 				array('name' => 'Roles', 'icon' => 'icon ion-ios-body-outline', 'page' => 'admin.roles.list')
-				
 			)));
 			array_push($this->adminlinks, array('name' => 'Parc management', 'icon' => 'fa fa-globe', 'pages' => array(
 				array('name' => 'Agents', 'icon' => 'fa fa-id-badge', 'page' => 'admin.agents.list'),
 				array('name' => 'Domains', 'icon' => 'fa fa-object-group', 'page' => 'admin.domains.list'),
 				array('name' => 'Apps', 'icon' => 'fa fa-rocket', 'page' => 'admin.apps.list'),
-				array('name' => 'Groups', 'icon' => 'fa fa-briefcase', 'page' => 'admin.groups.list'),
+				array('name' => 'Groups', 'icon' => 'fa fa-briefcase', 'page' => 'admin.groups.list')
+			)));
+			array_push($this->adminlinks, array('name' => 'Data management', 'icon' => 'fa fa-database', 'pages' => array(
+				array('name' => 'Tables', 'icon' => 'fa fa-table', 'page' => 'admin.tables'),
 				array('name' => 'Clean', 'icon' => 'fa fa-eraser', 'page' => 'admin.clean')
-				
 			)));
 		}
 

@@ -111,6 +111,7 @@ function wdServiceChart(pClass) {
 	});
 	chart.color(d3.scaleOrdinal(['#dd4b39','#ff851b','#b3ffb3']));
 	chart.updateSizeFromMin();
+	chart.areas	= function() {return areas }
 
 	return chart;
 }

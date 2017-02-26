@@ -122,6 +122,7 @@ function wdLineChart(pClass) {
 		legend.filter(chart.filter());
 		return chart;
 	};
+	chart.lines	= function() {return lines }
 	chart.updateSizeFromMin();
 	return chart;
 }
@@ -131,8 +132,18 @@ function watchedEvent(id, baseUrl, prop) {
 	d3.select("#"+id).call(chart);
 	return chart;
 }
+
 function watchedRessource(id, baseUrl) {
 	var chart = wdLineChart().baseUrl(baseUrl);
+	d3.select("#"+id).call(chart);
+	return chart;
+}
+
+function watchedLive(id, baseUrl, freq) {
+	var chart = wdLineChart().baseUrl(baseUrl);
+	setInterval(function() {
+		chart.baseUrl(baseUrl);
+	}, 1000*freq)
 	d3.select("#"+id).call(chart);
 	return chart;
 }

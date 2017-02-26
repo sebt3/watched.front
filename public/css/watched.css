@@ -14,3 +14,11 @@
 	fill: none;
 	stroke-width: 0px;
 }
+
+thead th.asc:after {
+	content: "\21E7";
+}
+
+thead th.desc:after {
+	content: "\21E9";
+}

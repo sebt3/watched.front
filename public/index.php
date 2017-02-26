@@ -163,6 +163,12 @@ $app->group('/admin', function () use ($app) {
 		$app->post('/{id:[0-9]+}/addHost', '\Domains:postHost');
 		$app->post('/{id:[0-9]+}/hosts/{hid:[0-9]+}/delete', '\Domains:deleteHost')->setName('admin.domains.deleteHost');
 	});
+	$app->group('/tables', function () use ($app) {
+		$app->get('', '\Tables:listAll')->setName('admin.tables');
+		$app->get('/{name}', '\Tables:viewTable')->setName('admin.tables.edit');
+		$app->post('/{name}', '\Tables:postConfig');
+		$app->get('/{name}/del', '\Tables:removeConfig')->setName('admin.tables.del');
+	});
 	$app->group('/clean', function () use ($app) {
 		$app->get('', '\Clean:listAll')->setName('admin.clean');
 		$app->post('/service/{id:[0-9]+}/delete', '\Clean:deleteService')->setName('admin.clean.deleteService');
