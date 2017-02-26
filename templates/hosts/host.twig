@@ -44,27 +44,16 @@ table.table-hover tr td a {
               </div>
             </div>
             <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
+	      <table class="table table-striped table-hover" id="sort">
 	      <thead><tr>
-               <th>{{ _('id') }}</th>
-               <th>{{ _('start') }}</th>
-               <th>{{ _('end') }}</th>
-               <th>{{ _('ressource') }}</th>
-               <th>{{ _('property') }}</th>
-               <th>{{ _('value') }}</th>
-               <th>{{ _('rule') }}</th>
+               <th class="sortable">{{ _('id') }}</th>
+               <th class="sortable">{{ _('start') }}</th>
+               <th class="sortable">{{ _('end') }}</th>
+               <th class="sortable">{{ _('ressource') }}</th>
+               <th class="sortable">{{ _('property') }}</th>
+               <th class="sortable">{{ _('value') }}</th>
+               <th class="sortable">{{ _('rule') }}</th>
 	      </tr></thead><tbody>
-    {% for h in monitorHistory %}
-               <tr class="{{ h.color }}">
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.id }}</a></td>
-		<td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.start_time }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.end_time }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.decode }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.property }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.current_value }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.encode }}{{ h.value }}</a></td>
-               </tr>
-    {% endfor %}
 	      </tbody>
 	     </table>
             </div>
@@ -221,8 +210,22 @@ table.table-hover tr td a {
 {% block scripts %}
 <script src="/js/watched.donut.js"></script>
 <script src="/js/watched.bar.js"></script>
+<script src="/js/watched.tables.js"></script>
 <script>
-  watchedDonut("gfx1", [
+  myTable = watchedTable("sort", [
+    {% for h in monitorHistory %}
+      {
+	id:	{ "text": "{{ h.id }}", "color": "{{ h.color }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	stime:	{ "text": "{{ h.start_time }}", "color": "{{ h.color }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	etime:	{ "text": "{{ h.end_time }}", "color": "{{ h.color }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	res:	{ "text": "{{ h.decode }}", "color": "{{ h.color }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	prop:	{ "text": "{{ h.property }}", "color": "{{ h.color }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	value:	{ "text": "{{ h.current_value }}", "color": "{{ h.color }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	rule:	{ "text": "{{ h.encode }}{{ h.value }}", "color": "{{ h.color }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+      },
+    {% endfor %}
+  ]);
+  myMonitor = watchedDonut("gfx1", [
     {% for m in monitorStatus %}
     {
       value: {{ m.cnt }},
@@ -231,7 +234,7 @@ table.table-hover tr td a {
     },
     {% endfor %}
   ]);
-  watchedDonut("gfx2", [
+  myItems = watchedDonut("gfx2", [
     {% for m in monitorItems %}
     {
       value: {{ m.cnt }},
@@ -240,36 +243,10 @@ table.table-hover tr td a {
     },
     {% endfor %}
   ]);
-
-  var data = [
-    {% for m in monitorStatus %}
-    {
-      value: {{ m.cnt }},
-      color: "{{ m.color }}",
-      label: "{{ _(m.name) }}"
-    },
-    {% endfor %}
-  ];
-  watchedMemSwap('memory-usage',[
+  myMemory = watchedMemSwap('memory-usage',[
     {% for m in memoryUsage %}
       { type: '{{ m.name }}', used: {{ m.used }}, free: {{ m.free }}, url: "{{ path_for('ressource', { 'aid': m.host_id, 'rid': m.res_id }) }}" },
     {% endfor %}
-  ]); /**/
-/*
-Morris.Bar({
-  element: 'memory-usage',
-  data: [
-    {% for m in memoryUsage %}
-      { type: '{{ m.name }}', used: {{ m.used }}, free: {{ m.free }}, url: "{{ path_for('ressource', { 'aid': m.host_id, 'rid': m.res_id }) }}" },
-    {% endfor %}
-  ],
-  xkey: 'type',
-  ykeys: ['used', 'free'],
-  stacked: true,
-  hideHover: true,
-  labels: ['Used', 'Free']
-}).on('click', function(i, row){
-  location.href=row["url"];
-});/**/
+  ]);
 </script>
 {% endblock %}

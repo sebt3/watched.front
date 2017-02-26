@@ -171,7 +171,7 @@ select et.name, et.id, count(e.id) as cnt
 			$r2['current_value'] = round($r2['current_value']);
 			$r2['value'] = round($r2['value']);
 			$r2['decode'] = urldecode($r2['name']);
-			$r2['encode'] = urldecode($r2['oper']);
+			$r2['encode'] = html_entity_decode($r2['oper']);
 			$ret[] = $r2;
 		}
 		return $ret;
@@ -227,7 +227,7 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
 			$r5['color'] = $this->getEventTextColor($r5['event_name']);
 			$r5['value'] = round($r5['value']);
 			$r5['current_value'] = round($r5['current_value']);
-			$r5['encode'] = urldecode($r5['oper']);
+			$r5['encode'] = $r5['oper'];
 			$r5['start_time'] = $this->formatTimestamp($r5['start_time']);
 			if ($r5['end_time'] != null)
 				$r5['end_time'] = $this->formatTimestamp($r5['end_time']);

@@ -8,18 +8,7 @@
 <a class="btn btn-default btn-flat" href="{{ path_for('admin.apps.add') }}">
   <i class="fa fa-plus" aria-hidden="true"></i> {{ _('Add') }}
 </a>
-          <div class="box box-default">
-            <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
-	      <thead><tr>
-               <th>{{ _('name') }}</th>
-               <th class='pull-right'>{{ _('actions') }}</th>
-	      </tr></thead><tbody>
     {% for a in apps %}
-               <tr>
-		<td><a href="{{ path_for('admin.apps.change', { 'id': a.id }) }}">{{ a.name }}</a></td>
-                <td class='pull-right'><a href="{{ path_for('admin.apps.change', { 'id': a.id }) }}"><i class="fa fa-wrench"></i></a>&nbsp;
-		    <a data-toggle="modal" data-target="#delete{{ a.id }}"><i class="fa fa-trash"></i></a>
 <div class="modal fade modal-warning" id="delete{{ a.id }}" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -39,11 +28,30 @@
     </div>
   </div>
 </div>
-		</td>
-               </tr>
     {% endfor %}
+          <div class="box box-default">
+            <div class="box-body table-responsive">
+	      <table class="table table-striped table-hover" id="sort">
+	      <thead><tr>
+               <th class="sortable">{{ _('name') }}</th>
+               <th class='text-right'>{{ _('actions') }}</th>
+	      </tr></thead><tbody>
 	      </tbody>
 	     </table>
             </div>
           </div>
+{% endblock %}
+{% block scripts %}
+<script src="/js/watched.tables.js"></script>
+<script>
+  myTable = watchedTable("sort", [
+    {% for a in apps %}
+      {
+	name:	{ "text": "{{ a.name }}", "url": "{{ path_for('admin.apps.change', { 'id': a.id }) }}"},
+	actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.apps.change', { 'id': a.id }) }}" },
+		   { icon:"fa fa-trash",  target: "#delete{{ a.id }}" } ]
+      },
+    {% endfor %}
+  ]);
+</script>
 {% endblock %}

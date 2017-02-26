@@ -79,27 +79,16 @@ table.table-hover tr td a {
               </div>
             </div>
             <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
+	      <table class="table table-striped table-hover" id="event">
 	      <thead><tr>
-               <th>{{ _('id') }}</th>
-               <th>{{ _('since') }}</th>
-               <th>{{ _('host') }}</th>
-               <th>{{ _('ressource') }}</th>
-               <th>{{ _('property') }}</th>
-               <th>{{ _('value') }}</th>
-               <th>{{ _('rule') }}</th>
+               <th class="sortable">{{ _('id') }}</th>
+               <th class="sortable">{{ _('since') }}</th>
+               <th class="sortable">{{ _('host') }}</th>
+               <th class="sortable">{{ _('ressource') }}</th>
+               <th class="sortable">{{ _('property') }}</th>
+               <th class="sortable">{{ _('value') }}</th>
+               <th class="sortable">{{ _('rule') }}</th>
 	      </tr></thead><tbody>
-    {% for h in events %}
-               <tr class="{{ h.color }}">
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.id }}</a></td>
-		<td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.start_time }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.host_name }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.decode }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.property }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.current_value }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('event', { 'id': h.id }) }}">{{ h.encode }}{{ h.value }}</a></td>
-               </tr>
-    {% endfor %}
 	      </tbody>
 	     </table>
             </div>
@@ -116,21 +105,13 @@ table.table-hover tr td a {
               </div>
             </div>
             <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
+	      <table class="table table-striped table-hover" id="servs">
 	      <thead><tr>
-               <th>{{ _('host') }}</th>
-               <th>{{ _('service') }}</th>
-               <th>{{ _('since') }}</th>
-               <th>{{ _('status') }}</th>
+               <th class="sortable">{{ _('host') }}</th>
+               <th class="sortable">{{ _('service') }}</th>
+               <th class="sortable">{{ _('since') }}</th>
+               <th class="sortable">{{ _('status') }}</th>
 	      </tr></thead><tbody>
-    {% for h in services %}
-               <tr class="{{ h.color }}">
-                <td><a  class="{{ h.color }}" href="{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}">{{ h.host }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}">{{ h.service }}</a></td>
-		<td><a  class="{{ h.color }}" href="{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}">{{ h.timestamp }}</a></td>
-                <td><a  class="{{ h.color }}" href="{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}">{{ _(h.status) }}</a></td>
-               </tr>
-    {% endfor %}
 	      </tbody>
 	     </table>
             </div>
@@ -143,8 +124,32 @@ table.table-hover tr td a {
 {% endblock %}
 {% block scripts %}
 <script src="/js/watched.donut.js"></script>
+<script src="/js/watched.tables.js"></script>
 <script>
-  watchedDonut("gfx1",  [
+  myEvent = watchedTable("event", [
+    {% for h in events %}
+      {
+	id:	{ "color": "{{ h.color }}", "text": "{{ h.id }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	stime:	{ "color": "{{ h.color }}", "text": "{{ h.start_time }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	hname:	{ "color": "{{ h.color }}", "text": "{{ h.host_name }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	res:	{ "color": "{{ h.color }}", "text": "{{ h.decode }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	prop:	{ "color": "{{ h.color }}", "text": "{{ h.property }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	value:	{ "color": "{{ h.color }}", "text": "{{ h.current_value }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+	rule:	{ "color": "{{ h.color }}", "text": "{{ h.encode }}{{ h.value }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
+      },
+    {% endfor %}
+  ]);
+  myServ = watchedTable("servs", [
+    {% for h in services %}
+      {
+	host:	{ "color": "{{ h.color }}", "text": "{{ h.host }}",  "url": "{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}"},
+	serv:	{ "color": "{{ h.color }}", "text": "{{ h.service }}",  "url": "{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}"},
+	time:	{ "color": "{{ h.color }}", "text": "{{ h.timestamp }}",  "url": "{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}"},
+	status:	{ "color": "{{ h.color }}", "text": "{{ _(h.status) }}",  "url": "{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}"},
+      },
+    {% endfor %}
+  ]);
+  myMonitor = watchedDonut("gfx1",  [
     {% for m in monitorStatus %}
     {
       value: {{ m.cnt }},
@@ -153,7 +158,7 @@ table.table-hover tr td a {
     },
     {% endfor %}
   ]);
-  watchedDonut("gfx2", [
+  myItem = watchedDonut("gfx2", [
     {% for m in monitorItems %}
     {
       value: {{ m.cnt }},
@@ -162,7 +167,7 @@ table.table-hover tr td a {
     },
     {% endfor %}
   ]);
-  watchedDonut("gfx3", [
+  myDomain = watchedDonut("gfx3", [
     {% for m in domains %}
     {
       value: {{ m.cnt }},

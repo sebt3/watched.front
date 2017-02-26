@@ -5,26 +5,7 @@
         <small>{{ _('old services and hosts') }}</small>
 {% endblock %}
 {% block content %}
-      <div class="row">
-        <div class="col-md-6">
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Services') }}</h3>
-            </div>
-              <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
-	      <thead><tr>
-               <th>{{ _('Domain') }}</th>
-               <th>{{ _('Host') }}</th>
-               <th>{{ _('Service') }}</th>
-               <th class='pull-right'>{{ _('actions') }}</th>
-	      </tr></thead><tbody>
     {% for a in services %}
-               <tr>
-		<td>{{ a.domain_name }}</td>
-		<td>{{ a.host_name }}</td>
-		<td>{{ a.name }}</td>
-                <td class='pull-right'><a data-toggle="modal" data-target="#deleteServ{{ a.id }}"><i class="fa fa-trash"></i></a>
 <div class="modal fade modal-warning" id="deleteServ{{ a.id }}" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -56,32 +37,8 @@
     </div>
   </div>
 </div>
-		</td>
-               </tr>
     {% endfor %}
-	      </tbody>
-	     </table>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Hosts') }}</h3>
-            </div>
-              <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
-	      <thead><tr>
-               <th>{{ _('Domain') }}</th>
-               <th>{{ _('Host') }}</th>
-               <th class='pull-right'>{{ _('actions') }}</th>
-	      </tr></thead><tbody>
     {% for a in hosts %}
-               <tr>
-		<td>{{ a.domain_name }}</td>
-		<td>{{ a.name }}</td>
-                <td class='pull-right'><a data-toggle="modal" data-target="#deleteHost{{ a.id }}"><i class="fa fa-trash"></i></a>
 <div class="modal fade modal-warning" id="deleteHost{{ a.id }}" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -102,9 +59,39 @@
     </div>
   </div>
 </div>
-		</td>
-               </tr>
     {% endfor %}
+      <div class="row">
+        <div class="col-md-6">
+          <div class="box box-normal">
+            <div class="box-header with-border">
+              <h3 class="box-title">{{ _('Services') }}</h3>
+            </div>
+              <div class="box-body table-responsive">
+	      <table class="table table-striped table-hover" id='servs'>
+	      <thead><tr>
+               <th class="sortable">{{ _('Domain') }}</th>
+               <th class="sortable">{{ _('Host') }}</th>
+               <th class="sortable">{{ _('Service') }}</th>
+               <th class='text-right'>{{ _('actions') }}</th>
+	      </tr></thead><tbody>
+	      </tbody>
+	     </table>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="box box-normal">
+            <div class="box-header with-border">
+              <h3 class="box-title">{{ _('Hosts') }}</h3>
+            </div>
+              <div class="box-body table-responsive">
+	      <table class="table table-striped table-hover" id='hosts'>
+	      <thead><tr>
+               <th class="sortable">{{ _('Domain') }}</th>
+               <th class="sortable">{{ _('Host') }}</th>
+               <th class='text-right'>{{ _('actions') }}</th>
+	      </tr></thead><tbody>
 	      </tbody>
 	     </table>
               </div>
@@ -113,4 +100,27 @@
         </div>
       </div>
 {% endblock %}
-
+{% block scripts %}
+<script src="/js/watched.tables.js"></script>
+<script>
+  myHost = watchedTable("hosts", [
+    {% for a in hosts %}
+      {
+	domain:	"{{ a.domain_name }}",
+	name:	"{{ a.name }}",
+	actions: [ { icon:"fa fa-trash",  target: "#deleteHost{{ a.id }}" } ]
+      },
+    {% endfor %}
+  ]);
+  myServ = watchedTable("servs", [
+    {% for a in services %}
+      {
+	domain:	"{{ a.domain_name }}",
+	host:	"{{ a.host_name }}",
+	name:	"{{ a.name }}",
+	actions: [ { icon:"fa fa-trash",  target: "#deleteServ{{ a.id }}" } ]
+      },
+    {% endfor %}
+  ]);
+</script>
+{% endblock %}

@@ -5,6 +5,66 @@
         <small>{{ _('Modify a domain') }}</small>
 {% endblock %}
 {% block content %}
+    {% for a in teams %}
+<div class="modal fade modal-warning" id="deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">{{ _('Remove team permission on domain') }} {{ name }}</h4>
+      </div>
+      <div class="modal-body">
+	      <p>{{ _('Are you sure you want to remove this team permission on domain:') }}</p>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Domain') }}</strong></div>
+		<div class="col-md-10">{{ name }}</div>
+	      </div>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Team') }}</strong></div>
+		<div class="col-md-10">{{ a.team_name }}</div>
+	      </div>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Role') }}</strong></div>
+		<div class="col-md-10">{{ a.role_name }}</div>
+	      </div>
+      </div>
+      <div class="modal-footer">
+	<form action="{{ path_for('admin.domains.deleteTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}" method="post">
+          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
+	</form>
+      </div>
+    </div>
+  </div>
+</div>
+    {% endfor %}
+    {% for a in hosts %}
+<div class="modal fade modal-warning" id="deleteHost{{ domain_id }}-{{ a.id }}" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">{{ _('Remove host from the this domain') }}</h4>
+      </div>
+      <div class="modal-body">
+	      <p>{{ _('Are you sure you want to remove this host from domain:') }}</p>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Domain') }}</strong></div>
+		<div class="col-md-10">{{ name }}</div>
+	      </div>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Host') }}</strong></div>
+		<div class="col-md-10">{{ a.name }}</div>
+	      </div>
+      </div>
+      <div class="modal-footer">
+	<form action="{{ path_for('admin.domains.deleteHost', { 'id': domain_id, 'hid': a.id }) }}" method="post">
+          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
+	</form>
+      </div>
+    </div>
+  </div>
+</div>
+    {% endfor %}
       <div class="row">
         <div class="col-md-6">
           <div class="box box-info">
@@ -36,57 +96,16 @@
 	      </a>
             </div>
               <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
+	      <table class="table table-striped table-hover" id="team">
 	      <thead><tr>
-               <th>{{ _('Team') }}</th>
-               <th>{{ _('Role') }}</th>
-               <th>{{ _('Alert') }}</th>
-               <th class='pull-right'>{{ _('actions') }}</th>
+               <th class="sortable">{{ _('Team') }}</th>
+               <th class="sortable">{{ _('Role') }}</th>
+               <th class="sortable">{{ _('Alert') }}</th>
+               <th class='text-right'>{{ _('actions') }}</th>
 	      </tr></thead><tbody>
-    {% for a in teams %}
-               <tr>
-		<td><a href="{{ path_for('admin.teams.change', { 'id': a.team_id  }) }}">{{ a.team_name }}</a></td>
-		<td><a href="{{ path_for('admin.roles.change', { 'id': a.role_id }) }}">{{ a.role_name }}</a></td>
-		<td>{{ _(a.send) }}</td>
-                <td class='pull-right'><a href="{{ path_for('admin.domains.changeTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}"><i class="fa fa-wrench"></i></a>&nbsp;
-		    <a data-toggle="modal" data-target="#deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}"><i class="fa fa-trash"></i></a>
-<div class="modal fade modal-warning" id="deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Remove team permission on domain') }} {{ name }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to remove this team permission on domain:') }}</p>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Domain') }}</strong></div>
-		<div class="col-md-10">{{ name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Team') }}</strong></div>
-		<div class="col-md-10">{{ a.team_name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Role') }}</strong></div>
-		<div class="col-md-10">{{ a.role_name }}</div>
-	      </div>
-      </div>
-      <div class="modal-footer">
-	<form action="{{ path_for('admin.domains.deleteTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-		</td>
-               </tr>
-    {% endfor %}
 	      </tbody>
 	     </table>
               </div>
-            </form>
           </div>
         </div>
         <div class="col-md-6">
@@ -98,49 +117,39 @@
 	      </a>
             </div>
               <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
+	      <table class="table table-striped table-hover" id="host">
 	      <thead><tr>
-               <th>{{ _('name') }}</th>
-               <th class='pull-right'>{{ _('actions') }}</th>
+               <th class="sortable">{{ _('name') }}</th>
+               <th class='text-right'>{{ _('actions') }}</th>
 	      </tr></thead><tbody>
-    {% for a in hosts %}
-               <tr>
-		<td>{{ a.name }}</td>
-                <td class='pull-right'><a data-toggle="modal" data-target="#deleteHost{{ domain_id }}-{{ a.id }}"><i class="fa fa-trash"></i></a>
-<div class="modal fade modal-warning" id="deleteHost{{ domain_id }}-{{ a.id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Remove host from the this domain') }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to remove this host from domain:') }}</p>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Domain') }}</strong></div>
-		<div class="col-md-10">{{ name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Host') }}</strong></div>
-		<div class="col-md-10">{{ a.name }}</div>
-	      </div>
-      </div>
-      <div class="modal-footer">
-	<form action="{{ path_for('admin.domains.deleteHost', { 'id': domain_id, 'hid': a.id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-		</td>
-               </tr>
-    {% endfor %}
 	      </tbody>
 	     </table>
               </div>
-            </form>
           </div>
         </div>
       </div>
+{% endblock %}
+{% block scripts %}
+<script src="/js/watched.tables.js"></script>
+<script>
+  myHost = watchedTable("host", [
+    {% for a in hosts %}
+      {
+	name:	"{{ a.name }}",
+	actions: [ { icon:"fa fa-trash",  target: "#deleteHost{{ domain_id }}-{{ a.id }}" } ]
+      },
+    {% endfor %}
+  ]);
+  myTeam = watchedTable("team", [
+    {% for a in teams %}
+      {
+	team:	{ "text": "{{ a.team_name }}", "url": "{{ path_for('admin.teams.change', { 'id': a.team_id  }) }}"},
+	role:	{ "text": "{{ a.role_name }}", "url": "{{ path_for('admin.roles.change', { 'id': a.role_id }) }}"},
+	alert:	"{{ _(a.send) }}",
+	actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.domains.changeTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}" },
+		   { icon:"fa fa-trash",  target: "#deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}" } ]
+      },
+    {% endfor %}
+  ]);
+</script>
 {% endblock %}

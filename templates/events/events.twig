@@ -7,27 +7,34 @@
 {% block content %}
           <div class="box box-default">
             <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
+	      <table class="table table-striped table-hover" id="sort">
 	      <thead><tr>
-               <th>{{ _('host name') }}</th>
-               <th>{{ _('ressource name') }}</th>
-               <th>{{ _('type') }}</th>
-               <th>{{ _('property') }}</th>
-               <th>{{ _('status') }}</th>
-               <th>{{ _('since') }}</th>
+               <th class="sortable">{{ _('host name') }}</th>
+               <th class="sortable">{{ _('ressource name') }}</th>
+               <th class="sortable">{{ _('type') }}</th>
+               <th class="sortable">{{ _('property') }}</th>
+               <th class="sortable">{{ _('status') }}</th>
+               <th class="sortable">{{ _('since') }}</th>
 	      </tr></thead><tbody>
-    {% for a in events %}
-               <tr>
-                <td><a href="{{ path_for('host', { 'id': a.host_id }) }}">{{ a.host_name }}</a></td>
-                <td><a href="{{ path_for('ressource', { 'rid': a.res_id, 'aid': a.host_id }) }}">{{ a.name }}</a></td>
-                <td class="{{ a.color }}">{{ a.type }}</td>
-                <td><a href="{{ path_for('event', { 'id': a.id }) }}">{{ a.property }}</a></td>
-		<td><a href="{{ path_for('event', { 'id': a.id }) }}">{{ a.current_value }} {{ a.oper }} {{ a.value }}</a></td>
-                <td><a href="{{ path_for('event', { 'id': a.id }) }}">{{ a.start_time }}</a></td>
-               </tr>
-    {% endfor %}
 	      </tbody>
 	     </table>
             </div>
           </div>
+{% endblock %}
+{% block scripts %}
+<script src="/js/watched.tables.js"></script>
+<script>
+  myTable = watchedTable("sort", [
+    {% for a in events %}
+      {
+	hname:	{ "text": "{{ a.host_name }}", "color": "{{ a.color }}",  "url": "{{ path_for('host', { 'id': a.host_id }) }}"},
+	rname:	{ "text": "{{ a.name }}", "color": "{{ a.color }}",  "url": "{{ path_for('ressource', { 'rid': a.res_id, 'aid': a.host_id }) }}"},
+	type:	{ "text": "{{ a.type }}", "color": "{{ a.color }}"},
+	prop:	{ "text": "{{ a.property }}", "color": "{{ a.color }}",  "url": "{{ path_for('event', { 'id': a.id }) }}"},
+	status:	{ "text": "{{ a.current_value }} {{ a.oper }} {{ a.value }}", "color": "{{ a.color }}",  "url": "{{ path_for('event', { 'id': a.id }) }}"},
+	start:	{ "text": "{{ a.start_time }}", "color": "{{ a.color }}",  "url": "{{ path_for('event', { 'id': a.id }) }}"}
+      },
+    {% endfor %}
+  ]);
+</script>
 {% endblock %}

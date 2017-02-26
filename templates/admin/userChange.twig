@@ -5,6 +5,66 @@
         <small>{{ _('modify a user') }}</small>
 {% endblock %}
 {% block content %}
+    {% for a in teams %}
+<div class="modal fade modal-warning" id="deleteTeam{{ user_id }}-{{ a.id }}" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">{{ _('Remove a user from a team') }}</h4>
+      </div>
+      <div class="modal-body">
+	      <p>{{ _('Are you sure you want to remove this team from the user:') }}</p>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Username') }}</strong></div>
+		<div class="col-md-10">{{ username }}</div>
+	      </div>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Name') }}</strong></div>
+		<div class="col-md-10">{{ firstname }} {{ lastname }}</div>
+	      </div>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Team') }}</strong></div>
+		<div class="col-md-10">{{ a.name }}</div>
+	      </div>
+      </div>
+      <div class="modal-footer">
+	<form action="{{ path_for('admin.users.deleteTeam', { 'id': user_id, 'tid': a.id }) }}" method="post">
+          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
+	</form>
+      </div>
+    </div>
+  </div>
+</div>
+    {% endfor %}
+    {% for a in properties %}
+<div class="modal fade modal-warning" id="deleteProp{{ user_id }}-{{ a.id }}" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">{{ _('Remove alerting property from') }} {{ firstname }} {{ lastname }}</h4>
+      </div>
+      <div class="modal-body">
+	      <p>{{ _('Are you sure you want to remove this property from') }} {{ firstname }} {{ lastname }} :</p>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Property') }}</strong></div>
+		<div class="col-md-10">{{ a.name }}</div>
+	      </div>
+	      <div class="row">
+		<div class="col-md-2"><strong class='pull-right'>{{ _('Value') }}</strong></div>
+		<div class="col-md-10">{{ a.value }}</div>
+	      </div>
+      </div>
+      <div class="modal-footer">
+	<form action="{{ path_for('admin.users.deleteProp', { 'id': user_id, 'pid': a.id }) }}" method="post">
+          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
+	</form>
+      </div>
+    </div>
+  </div>
+</div>
+    {% endfor %}
       <div class="row">
         <div class="col-md-6">
           <div class="box box-info">
@@ -60,47 +120,12 @@
 	      </a>
             </div>
               <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
+	      <table class="table table-striped table-hover" id="props">
 	      <thead><tr>
-               <th>{{ _('Name') }}</th>
-               <th>{{ _('Value') }}</th>
-               <th class='pull-right'>{{ _('actions') }}</th>
+               <th class="sortable">{{ _('Name') }}</th>
+               <th class="sortable">{{ _('Value') }}</th>
+               <th class='text-right'>{{ _('actions') }}</th>
 	      </tr></thead><tbody>
-    {% for a in properties %}
-               <tr>
-		<td><a href="{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}">{{ a.name }}</a></td>
-		<td><a href="{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id }) }}">{{ a.value }}</a></td>
-                <td class='pull-right'><a href="{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id }) }}"><i class="fa fa-wrench"></i></a>&nbsp;
-		    <a data-toggle="modal" data-target="#deleteProp{{ user_id }}-{{ a.id }}"><i class="fa fa-trash"></i></a>
-<div class="modal fade modal-warning" id="deleteProp{{ user_id }}-{{ a.id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Remove alerting property from') }} {{ firstname }} {{ lastname }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to remove this property from') }} {{ firstname }} {{ lastname }} :</p>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Property') }}</strong></div>
-		<div class="col-md-10">{{ a.name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Value') }}</strong></div>
-		<div class="col-md-10">{{ a.value }}</div>
-	      </div>
-      </div>
-      <div class="modal-footer">
-	<form action="{{ path_for('admin.users.deleteProp', { 'id': user_id, 'pid': a.id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-		</td>
-               </tr>
-    {% endfor %}
 	      </tbody>
 	     </table>
               </div>
@@ -116,52 +141,38 @@
 	      </a>
             </div>
               <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
+	      <table class="table table-striped table-hover" id="team">
 	      <thead><tr>
-               <th>{{ _('name') }}</th>
-               <th class='pull-right'>{{ _('actions') }}</th>
+               <th class="sortable">{{ _('name') }}</th>
+               <th class='text-right'>{{ _('actions') }}</th>
 	      </tr></thead><tbody>
-    {% for a in teams %}
-               <tr>
-		<td>{{ a.name }}</td>
-                <td class='pull-right'><a data-toggle="modal" data-target="#deleteTeam{{ user_id }}-{{ a.id }}"><i class="fa fa-trash"></i></a>
-<div class="modal fade modal-warning" id="deleteTeam{{ user_id }}-{{ a.id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Remove a user from a team') }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to remove this team from the user:') }}</p>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Username') }}</strong></div>
-		<div class="col-md-10">{{ username }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Name') }}</strong></div>
-		<div class="col-md-10">{{ firstname }} {{ lastname }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Team') }}</strong></div>
-		<div class="col-md-10">{{ a.name }}</div>
-	      </div>
-      </div>
-      <div class="modal-footer">
-	<form action="{{ path_for('admin.users.deleteTeam', { 'id': user_id, 'tid': a.id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-		</td>
-               </tr>
-    {% endfor %}
 	      </tbody>
 	     </table>
               </div>
             </form>
           </div>
         </div>
+{% endblock %}
+{% block scripts %}
+<script src="/js/watched.tables.js"></script>
+<script>
+  myTeam = watchedTable("team", [
+    {% for a in teams %}
+      {
+	name:	"{{ a.name }}",
+	actions: [ { icon:"fa fa-trash",  target: "#deleteTeam{{ user_id }}-{{ a.id }}" } ]
+      },
+    {% endfor %}
+  ]);
+  myTable = watchedTable("props", [
+    {% for a in properties %}
+      {
+	name:	{ "text": "{{ a.name }}",  "url": "{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}"},
+	value:	{ "text": "{{ a.value }}",  "url": "{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}"},
+	actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}" },
+		   { icon:"fa fa-trash",  target: "#deleteProp{{ user_id }}-{{ a.id }}" } ]
+      },
+    {% endfor %}
+  ]);
+</script>
 {% endblock %}

@@ -5,26 +5,7 @@
         <small>{{ _('list') }}</small>
 {% endblock %}
 {% block content %}
-<a class="btn btn-default btn-flat" href="{{ path_for('admin.users.add') }}">
-  <i class="fa fa-plus" aria-hidden="true"></i> {{ _('Add') }}
-</a>
-          <div class="box box-default">
-            <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
-	      <thead><tr>
-               <th>{{ _('username') }}</th>
-               <th>{{ _('first name') }}</th>
-               <th>{{ _('last name') }}</th>
-               <th class='pull-right'>{{ _('Actions') }}</th>
-	      </tr></thead><tbody>
-    {% for a in users %}
-               <tr>
-                <td><a href="{{ path_for('admin.users.change', { 'id': a.id }) }}">{{ a.username }}</a></td>
-                <td><a href="{{ path_for('admin.users.change', { 'id': a.id }) }}">{{ a.firstname }}</a></td>
-                <td><a href="{{ path_for('admin.users.change', { 'id': a.id }) }}">{{ a.lastname }}</a></td>
-                <td class='pull-right'><a href="{{ path_for('admin.users.change', { 'id': a.id }) }}"><i class="fa fa-wrench"></i></a>&nbsp;
-      {% if a.username != 'public' and a.username != 'admin'  %}
-		    <a data-toggle="modal" data-target="#delete{{ a.id }}"><i class="fa fa-trash"></i></a>
+    {% for a in users %}{% if a.username != 'public' and a.username != 'admin'  %}
 <div class="modal fade modal-warning" id="delete{{ a.id }}" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -44,13 +25,37 @@
     </div>
   </div>
 </div>
-      {% endif %}
-		</td>
-               </tr>
-    {% endfor %}
+    {% endif %}{% endfor %}
+<a class="btn btn-default btn-flat" href="{{ path_for('admin.users.add') }}">
+  <i class="fa fa-plus" aria-hidden="true"></i> {{ _('Add') }}
+</a>
+          <div class="box box-default">
+            <div class="box-body table-responsive">
+	      <table class="table table-striped table-hover" id="sort">
+	      <thead><tr>
+               <th class="sortable">{{ _('username') }}</th>
+               <th class="sortable">{{ _('first name') }}</th>
+               <th class="sortable">{{ _('last name') }}</th>
+               <th class='text-right'>{{ _('Actions') }}</th>
+	      </tr></thead><tbody>
 	      </tbody>
 	     </table>
             </div>
           </div>
 {% endblock %}
-
+{% block scripts %}
+<script src="/js/watched.tables.js"></script>
+<script>
+  myTable = watchedTable("sort", [
+    {% for a in users %}
+      {
+	uname:	{ "text": "{{ a.username }}",  "url": "{{ path_for('admin.users.change', { 'id': a.id }) }}"},
+	fname:	{ "text": "{{ a.firstname }}", "url": "{{ path_for('admin.users.change', { 'id': a.id }) }}"},
+	lname:	{ "text": "{{ a.lastname }}",  "url": "{{ path_for('admin.users.change', { 'id': a.id }) }}"},
+	actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.users.change', { 'id': a.id }) }}" },
+		   {% if a.username != 'public' and a.username != 'admin' %}{ icon:"fa fa-trash",  target: "#delete{{ a.id }}" }{% endif %} ]
+      },
+    {% endfor %}
+  ]);
+</script>
+{% endblock %}
