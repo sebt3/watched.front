@@ -7,7 +7,6 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-
 d3.select('section.content').call(wdRow()
 	 .cell('col-md-6',wdUnion()
 		 .item(wdForm().url("{{ path_for('admin.domains.change', {'id': domain_id}) }}").body(wdBox()

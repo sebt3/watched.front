@@ -15,8 +15,8 @@ for lang in fr-FR;do
 			echo '{'
 		fi
 		grep '_(' templates/*/*|sed 's/.*{{ _('"'"'//;s/'"'"') }}.*//'|grep -v '}}'|sort -u|while read line;do
-			[ $X -ne 0 ] && echo -n ","
 			if ! grep -q "\"$line\":" $back;then
+				[ $X -ne 0 ] && echo -n ","
 				echo "	\"$line\": \"${line}\""
 			fi
 			X=1
