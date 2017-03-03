@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watchedService
-function wdServiceAreas(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdFilteredComponant( wdAxedComponant(null, 500, 300))),
+function wdServiceAreas(pClass, pX, pY) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdFilteredComponant( wdAxedComponant(null, pX,pY))),
 		stack		= d3.stack(),
 		area		= d3.area()
 					.x(function(d, i) { return chart.xAxis(d.data.timestamp); })
@@ -26,8 +26,8 @@ function wdServiceAreas(pClass) {
 	return chart;
 }
 
-function wdServiceAxes(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdAxesComponant(null,500,200);
+function wdServiceAxes(pClass, pX,pY) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdAxesComponant(null,pX,pY);
 
 	chart.yAxisLine		= function(g) {
 		g.call(d3.axisRight(chart.yAxis).tickSize(chart.width()).ticks(chart.yAxis.domain()[1]));
@@ -53,12 +53,13 @@ function wdServiceLegend(pClass) {
 function wdServiceChart(pClass) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdPeriodComponant( wdMinSizedComponant(null,500,330))),
 		margin		= {top: 30, right: 10, bottom: 20, left: 30},
-		axes 		= wdServiceAxes(),
-		areas		= wdServiceAreas(),
+		axes 		= wdServiceAxes(null,500,300),
+		areas		= wdServiceAreas(null,500,300),
 		legend 		= wdServiceLegend(),
 		baseUrl		= "",
 		xRev		= d3.scaleTime().domain([0, chart.width()-margin.left-margin.right]),
-		oldX		= 0;
+		oldX		= 0,
+		svg;
 
 	chart.dispatch.register("mouseMove", "updateValues");
 	chart.callbacks.mouseMove	= function(x,y) {
@@ -69,10 +70,10 @@ function wdServiceChart(pClass) {
 	};
 	chart.dispatch.on("init.wdServiceChart", function() { 
 		var	bound	= chart.root().node().getBoundingClientRect();
-		chart.width(bound.width);
+		chart.width(bound.width-30);
 		chart.height(bound.height);
 		legend.height(margin.top - 2*margin.right)
-		var 	svg	= chart.root().append("svg").attr("width", chart.width()).attr("height", chart.height());
+		svg	= chart.root().append("svg").attr("width", chart.width()).attr("height", chart.height());
 		svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(areas);
 		svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")").call(axes);
 		svg.append("g").attr("transform", "translate(" + margin.right + "," + margin.right + ")").call(legend);
@@ -110,7 +111,6 @@ function wdServiceChart(pClass) {
 		legend.color(chart.color());
 	});
 	chart.color(d3.scaleOrdinal(['#dd4b39','#ff851b','#b3ffb3']));
-	chart.updateSizeFromMin();
 	chart.areas	= function() {return areas }
 
 	return chart;

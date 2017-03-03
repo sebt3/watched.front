@@ -4,39 +4,21 @@
 	{{ _('Services') }}
         <small>{{ _('on') }} {{ h.host }}</small>
 {% endblock %}
-{% block content %}
-      <div class="row">
-    {% for a in services %}
-        <div class="col-md-6">
-          <div class="box box-default">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ a.name }} </h3>
-            </div>
-	    <div class="box-body">
-	     <div class="row">
-	      <div class="col-md-6">
-		<ul class="list-unstyled">
-        {% for p in a.process %}
-		  <li><a class="{{ p.color }}" href="{{ path_for('service', { 'hid': h.id, 'sid': a.id }) }}">{{ p.process_name }}</a></li>
-        {% endfor %}
-		</ul>
-	      </div>
-	      <div class="col-md-6">
-		<ul class="list-unstyled">
-        {% for o in a.sockets %}
-		  <li><a class="{{ o.color }}" href="{{ path_for('service', { 'hid': h.id, 'sid': a.id }) }}">{{ o.socket_name }}</a></li>
-        {% endfor %}
-		</ul>
-	      </div>
-	     </div>
-	    </div>
-          </div>
-        </div>
-	{% if  loop.index % 2 == 0 %}
-      </div>
-      <div class="row">
-	{% endif %}
-    {% endfor %}
-      </div>
-
+{% block scripts %}
+<script>
+d3.select('section.content').call(wdRow()
+	{% for a in services %}
+	.cell('col-md-6',wdBox().title("{{ a.name }}").body(wdRow()
+		 .cell('col-md-6', wdList()
+		{% for p in a.process %}
+			.add({color:"{{ p.color }}", text:"{{ p.process_name }}", url: "{{ path_for('service', { 'hid': h.id, 'sid': a.id }) }}"})
+		{% endfor %}
+		).cell('col-md-6', wdList()
+		{% for o in a.sockets %}
+			.add({color:"{{ o.color }}", text:"{{ o.socket_name }}", url: "{{ path_for('service', { 'hid': h.id, 'sid': a.id }) }}"})
+		{% endfor %}
+	)))
+	{% endfor %}
+);
+</script>
 {% endblock %}

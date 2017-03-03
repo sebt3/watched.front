@@ -4,123 +4,49 @@
         {{ _('Clean') }}
         <small>{{ _('old services and hosts') }}</small>
 {% endblock %}
-{% block content %}
-    {% for a in services %}
-<div class="modal fade modal-warning" id="deleteServ{{ a.id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Remove old service') }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to remove this old service:') }}</p>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Domain') }}</strong></div>
-		<div class="col-md-10">{{ a.domain_name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Host') }}</strong></div>
-		<div class="col-md-10">{{ a.host_name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Service') }}</strong></div>
-		<div class="col-md-10">{{ a.name }}</div>
-	      </div>
-      </div>
-      <div class="modal-footer">
-	<p class='pull-left'><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{ _('All related data will be purged') }}</p>
-	<form action="{{ path_for('admin.clean.deleteService', { 'id': a.id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-    {% endfor %}
-    {% for a in hosts %}
-<div class="modal fade modal-warning" id="deleteHost{{ a.id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Delete old host') }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to delete this host:') }}</p>
-	      <p>{{ a.name }}</p>
-      </div>
-      <div class="modal-footer">
-	<p class='pull-left'><i class="fa fa-exclamation-triangle" aria-hidden="true"></i> {{ _('All related data will be purged') }}</p>
-	<form action="{{ path_for('admin.domains.deleteHost', { 'id': domain_id, 'hid': a.id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-    {% endfor %}
-      <div class="row">
-        <div class="col-md-6">
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Services') }}</h3>
-            </div>
-              <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover" id='servs'>
-	      <thead><tr>
-               <th class="sortable">{{ _('Domain') }}</th>
-               <th class="sortable">{{ _('Host') }}</th>
-               <th class="sortable">{{ _('Service') }}</th>
-               <th class='text-right'>{{ _('actions') }}</th>
-	      </tr></thead><tbody>
-	      </tbody>
-	     </table>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Hosts') }}</h3>
-            </div>
-              <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover" id='hosts'>
-	      <thead><tr>
-               <th class="sortable">{{ _('Domain') }}</th>
-               <th class="sortable">{{ _('Host') }}</th>
-               <th class='text-right'>{{ _('actions') }}</th>
-	      </tr></thead><tbody>
-	      </tbody>
-	     </table>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-{% endblock %}
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-  myHost = watchedTable("hosts", [
-    {% for a in hosts %}
-      {
-	domain:	"{{ a.domain_name }}",
-	name:	"{{ a.name }}",
-	actions: [ { icon:"fa fa-trash",  target: "#deleteHost{{ a.id }}" } ]
-      },
-    {% endfor %}
-  ]);
-  myServ = watchedTable("servs", [
-    {% for a in services %}
-      {
-	domain:	"{{ a.domain_name }}",
-	host:	"{{ a.host_name }}",
-	name:	"{{ a.name }}",
-	actions: [ { icon:"fa fa-trash",  target: "#deleteServ{{ a.id }}" } ]
-      },
-    {% endfor %}
-  ]);
+d3.select('section.content').call(wdRow()
+	  .cell('col-md-6',wdBox().title("{{ _('Services') }}")
+		 .body(wdTableChart()
+		.col("{{ _('Domain') }}")
+		.col("{{ _('Host') }}")
+		.col("{{ _('Service') }}")
+		.col("{{ _('actions') }}",'text-right')
+		.body([
+	{% for a in services %} {
+		domain:	"{{ a.domain_name }}",
+		host:	"{{ a.host_name }}",
+		name:	"{{ a.name }}",
+		actions: [ { icon:"fa fa-trash",  target: "#deleteServ{{ a.id }}" } ]
+	}, {% endfor %}
+	]))).cell('col-md-6',wdBox().title("{{ _('Hosts') }}")
+		 .body(wdTableChart()
+		.col("{{ _('Domain') }}")
+		.col("{{ _('Host') }}")
+		.col("{{ _('actions') }}",'text-right')
+		.body([
+	{% for a in hosts %} {
+		domain:	"{{ a.domain_name }}",
+		name:	"{{ a.name }}",
+		actions: [ { icon:"fa fa-trash",  target: "#deleteHost{{ a.id }}" } ]
+	}, {% endfor %}
+]))));
+{% for a in services %}
+d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.clean.deleteService', { 'id': a.id }) }}").id("deleteServ{{ a.id }}").title("{{ _('Remove old service') }}").text("{{ _('Confirm') }}").body(wdUnion()
+	.item(wdP("{{ _('Are you sure you want to remove this old service:') }}"))
+	.item(wdDesc()
+		.item("{{ _('Domain') }}","{{ a.domain_name }}")
+		.item("{{ _('Host') }}","{{ a.host_name }}")
+		.item("{{ _('Service') }}","{{ a.name }}")
+)))
+{% endfor %}
+{% for a in hosts %}
+d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.domains.deleteHost', { 'id': domain_id, 'hid': a.id }) }}").id("deleteHost{{ a.id }}").title("{{ _('Delete old host') }}").text("{{ _('Confirm') }}").body(wdUnion()
+	.item(wdP("{{ _('Are you sure you want to delete this host:') }}"))
+	.item(wdP("{{ a.name }}")
+)))
+{% endfor %}
 </script>
 {% endblock %}

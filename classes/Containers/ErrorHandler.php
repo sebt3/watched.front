@@ -1,10 +1,9 @@
-
 <?php
-
+namespace Containers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use Slim\Handlers\Error;
-use Slim\Views\Twig; 
+use \Slim\Handlers\Error;
+use \Slim\Views\Twig; 
 
 class ErrorHandler extends Error {
 	private $view;
@@ -23,7 +22,7 @@ class ErrorHandler extends Error {
 		];
 	}
 
-	public function __invoke(Request $request, Response $response, Exception $e) { 
+	public function __invoke(Request $request, Response $response, \Exception $e) { 
 		$contentType = $this->determineContentType($request);
 		switch ($contentType) {
 		case 'application/json':

@@ -1,10 +1,10 @@
 <?php
-
+namespace Containers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use Slim\Handlers\NotAllowed; 
-use Slim\Views\Twig; 
-use Slim\Http\Body;
+use \Slim\Handlers\NotAllowed as NotAllowed; 
+use \Slim\Views\Twig; 
+use \Slim\Http\Body;
 
 class NotAllowedHandler extends NotAllowed {
 	private $view;

@@ -6,11 +6,11 @@
 	padding-right:20px;
 }
 
-.chart .lines .line {
+.lines .line {
 	fill: none;
 	stroke-width: 3px;
 }
-.chart .axis .domain {
+.axis .domain {
 	fill: none;
 	stroke-width: 0px;
 }

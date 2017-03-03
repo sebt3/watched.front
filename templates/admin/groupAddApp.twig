@@ -4,34 +4,19 @@
         {{ _('Group') }}
         <small>{{ _('Add a app') }}</small>
 {% endblock %}
-{% block content %}
-      <div class="row">
-	<div class="col-md-2"></div>
-        <div class="col-md-8">
-          <div class="box box-info">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Add a app to the group') }} {{ name }}</h3>
-            </div>
-            <form class="form-horizontal" action="{{ path_for('admin.groups.addApp', {'id': group_id}) }}" method="post">
-              <div class="box-body">
-
-                <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">{{ _('Available apps') }}</label>
-                  <div class="col-sm-10">
-		    <select class="form-control" name='sid'>
-    {% for a in apps %}
-			<option {% if hid==a.id %} selected="selected"{% endif %} value={{ a.id }}>{{ a.name }}</option>
-    {% endfor %}
-		    </select>
-                  </div>
-                </div>
-
-              <div class="box-footer">
-                <a href="{{ path_for('admin.groups.change', {'id': group_id}) }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-plus"></i> {{ _('Add') }}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+{% block scripts %}
+<script>
+d3.select('section.content').call(wdRow()
+	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.groups.addApp', {'id': group_id}) }}").body(wdBox().class('box-info')
+		.title("{{ _('Add a app to the group') }} {{ name }}").body(wdUnion()
+			.item(wdFormGroup('sid').label("{{ _('Available apps') }}").obj(
+				wdFormSelect('sid').value({{ sid }})
+	{% for a in apps %}
+					.add("{{ a.name }}",{{ a.id }})
+	{% endfor %}
+		))).footer(wdButtonGroup()
+			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.groups.change', {'id': group_id}) }}"))
+			.right(wdButton().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
+))));
+</script>
 {% endblock %}

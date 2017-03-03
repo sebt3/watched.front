@@ -73,7 +73,7 @@ function wdLineChart(pClass) {
 	};
 	chart.dispatch.on("init.wdLineChart", function() { 
 		var bound	= chart.root().node().getBoundingClientRect();
-		chart.width(bound.width);
+		chart.width(bound.width-30);
 		chart.height(bound.height);
 		legend.height(margin.top - 2*margin.right)
 		var svg		= chart.root().append("svg").attr("width", chart.width()).attr("height", chart.height());

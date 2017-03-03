@@ -9,7 +9,7 @@ if (!Date.now) {
 
 d3.dispatch.prototype.register = function() {
 	for (var i = 0, n = arguments.length, _ = {}, t; i < n; ++i) {
-		if (!(t = arguments[i] + "") || (t in _)) throw new Error("illegal type: " + t);
+		if (!(t = arguments[i] + "") || (t in this._)) throw new Error("illegal type: " + t);
 		this._[t] = [];
 	}	
 }
@@ -81,7 +81,7 @@ function wdBaseComponant() {
 function wdFilteredComponant(pClass) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
 		keys	= [],
-		filter	= function(e){return e!="timestamp"&&!e.match("min_")&&!e.match("max_")/**/;};
+		filter	= function(e){return e!="timestamp"&&!e.match("min_")&&!e.match("max_")&&!e.match("cnt_")&&!e.match("sum_")/**/;};
 
 	chart.filter	= function(_) { if (!arguments.length) return filter; filter = _; return chart; }
 	chart.keys	= function(_) { 
@@ -221,7 +221,7 @@ function wdAxesComponant(pClass, pW, pH) {
 	});
 	chart.dispatch.on("heightUpdate.wdAxesComponant", function() { 
 		if (chart.inited())
-			root.select(".x.axis").attr("transform", "translate(0," + chart.height() + ")");
+			chart.root().select(".x.axis").attr("transform", "translate(0," + chart.height() + ")");
 	});
 	chart.dispatch.on("renderUpdate.wdAxesComponant", function() { 
 		var	update	= chart.root().transition();

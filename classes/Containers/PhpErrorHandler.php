@@ -1,12 +1,12 @@
 <?php
-
+namespace Containers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use Slim\Handlers\PhpError;
-use Slim\Views\Twig; 
-use Slim\Http\Body;
+use \Slim\Handlers\PhpError;
+use \Slim\Views\Twig; 
+use \Slim\Http\Body;
 
-class PhpErrorHandler extends PhpError {
+class PhpErrorHandler extends \Slim\Handlers\PhpError {
 	private $view;
 
 	public function __construct(Twig $view) { 

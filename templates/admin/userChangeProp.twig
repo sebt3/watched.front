@@ -4,41 +4,16 @@
         {{ user.firstname }} {{ user.lastname }} 
         <small>{{ _('Update') }} {{p.name }}</small>
 {% endblock %}
-{% block content %}
-      <div class="row">
-	<div class="col-md-2"></div>
-        <div class="col-md-8">
-          <div class="box box-info">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Update alerting property for') }} {{ user.firstname }} {{ user.lastname }}</h3>
-            </div>
-            <form class="form-horizontal" action="{{ path_for('admin.users.changeProp', {'id': user.id, 'pid': p.id}) }}" method="post">
-              <div class="box-body">
-
-                <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">{{ _('Property') }}</label>
-                  <div class="col-sm-10">
-		    <input type='hidden' name='pid' value='{{ p.id }}'/>
-		    <div class="form-control">{{ p.name }}</div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">{{ _('Value') }}</label>
-                  <div class="col-sm-10">
-                    <input type="value" class="form-control" id="value" name="value" placeholder="{{ _('Value') }}" {% if value %} value="{{value}}" {% endif %}>
-                  </div>
-                </div>
-
-              <div class="box-footer">
-                <a href="{{ path_for('admin.users.change', {'id': user.id}) }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-check"></i> {{ _('Update') }}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+{% block scripts %}
+<script>
+d3.select('section.content').call(wdRow()
+	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.users.changeProp', {'id': user.id, 'pid': p.id}) }}").body(wdBox().class('box-info')
+		.title("{{ _('Update alerting property for') }} {{ user.firstname }} {{ user.lastname }}").body(wdUnion()
+			.item(wdFormGroup('pid').label("{{ _('Property') }}").value("{{ p.id }}","{{ p.name }}").type('hidden'))
+			.item(wdFormGroup('value').label("{{ _('Value') }}").value("{{ value }}", "{{ _('Value') }}"))
+		).footer(wdButtonGroup()
+			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.users.change', {'id': user.id}) }}"))
+			.right(wdButton().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
+))));
+</script>
 {% endblock %}
-
-
-

@@ -2,7 +2,6 @@
 use Interop\Container\ContainerInterface;
 
 class core {
-
 	protected $ci;
 
 	public function __construct(ContainerInterface $ci) { 

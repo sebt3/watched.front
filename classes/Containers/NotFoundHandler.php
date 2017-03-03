@@ -1,12 +1,12 @@
 <?php
-
+namespace Containers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use Slim\Handlers\NotFound; 
-use Slim\Views\Twig;
-use Slim\Http\Body;
+use \Slim\Handlers\NotFound as NotFound; 
+use \Slim\Views\Twig as Twig;
+use \Slim\Http\Body as Body;
 
-class NotFoundHandler extends NotFound {
+class NotFoundHandler extends \Slim\Handlers\NotFound {
 	private $view;
 
 	public function __construct(Twig $view) { 

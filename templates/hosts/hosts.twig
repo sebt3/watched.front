@@ -4,35 +4,24 @@
         {{ _('Hosts') }}
         <small>{{ _('list') }}</small>
 {% endblock %}
-{% block content %}
-          <div class="box box-default">
-            <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover" id="sort">
-	      <thead><tr>
-               <th class="sortable">{{ _('name') }}</th>
-               <th class="sortable">{{ _('monitor items') }}</th>
-               <th class="sortable">{{ _('current events') }}</th>
-               <th class="sortable">{{ _('ressources') }}</th>
-               <th class="sortable">{{ _('services') }}</th>
-	      </tr></thead><tbody>
-	      </tbody>
-	     </table>
-            </div>
-          </div>
-{% endblock %}
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-  myTable = watchedTable("sort", [
-    {% for a in hosts %}
-      {
-	name:	{ "text": "{{ a.host }}", "url": "{{ path_for('host', { 'id': a.id }) }}"},
+d3.select('section.content').call(wdBox().body(
+	wdTableChart()
+		.col("{{ _('name') }}")
+		.col("{{ _('monitor items') }}")
+		.col("{{ _('current events') }}")
+		.col("{{ _('ressources') }}")
+		.col("{{ _('services') }}")
+		.body([
+    {% for a in hosts %} {
+	name:	{ text: "{{ a.host }}", url: "{{ path_for('host', { 'id': a.id }) }}"},
 	items:	{{ a.monitor_items }},
 	events:	{{ a.events+a.failed }},
-	res:	{ "text": "{{ a.ressources }}", "url": "{{ path_for('ressources', { 'id': a.id }) }}"},
-	serv:	{ "text": "{{ a.services }}", "url": "{{ path_for('services', { 'id': a.id }) }}"}
-      },
-    {% endfor %}
-  ]);
+	res:	{ text: "{{ a.ressources }}", url: "{{ path_for('ressources', { 'id': a.id }) }}"},
+	serv:	{ text: "{{ a.services }}",   url: "{{ path_for('services', { 'id': a.id }) }}"}
+    }, {% endfor %}
+  ])));
 </script>
 {% endblock %}

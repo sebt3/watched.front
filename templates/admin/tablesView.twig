@@ -5,108 +5,42 @@
         {{ _('Tables') }}
         <small>{{ name }}</small>
 {% endblock %}
-{% block content %}
-      <div class="row">
-        <div class="col-md-4">
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Storage informations') }}</h3>
-            </div>
-              <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover">
+{% block scripts %}
+<script>
+d3.select('section.content').call(wdRow()
+	  .cell('col-md-4', wdBox().title("{{ _('Storage informations') }}").body(wdDescTable()
     {% for s in sizes %}
-	      <tr>
-               <th>{{ _(s.name) }}</th>
-	       <td class='pull-right'>{{ s.value }}</td>
-	      </tr>
+		.item("{{ _(s.name) }}","{{ s.value }}")
     {% endfor %}
-	     </table>
-              </div>
-          </div>
-        </div>
-        <div class="col-md-8">
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Configure data aggregate and purges') }}</h3>
-            </div>
-            <form class="form-horizontal" action="{{ path_for('admin.tables.edit', {'name': name }) }}" method="post">
-              <div class="box-body">
-
-               <div class="panel panel-default">
-                 <div class="panel-heading">{{ _('Aggregation delays') }}</div>
-                 <div class="panel-body">
-                <div class="form-group">
-                  <label for="delay_am" class="col-sm-2 control-label">{{ _('For minuts aggregate') }}</label>
-                  <div class="col-sm-10"><div class="input-group">
-                    <input type="text" class="form-control" id="delay_am" name="delay_am" placeholder="{{ _('Minuts') }}" {% if config.delay_am %} value="{{config.delay_am}}" {% endif %}>
-		    <span class="input-group-addon">{{ _('minuts') }}</span>
-                  </div></div>
-                </div>
-
-                <div class="form-group">
-                  <label for="delay_ah" class="col-sm-2 control-label">{{ _('For hours aggregate') }}</label>
-                  <div class="col-sm-10"><div class="input-group">
-                    <input type="text" class="form-control" id="delay_ah" name="delay_ah" placeholder="{{ _('Hours') }}" {% if config.delay_ah %} value="{{config.delay_ah}}" {% endif %}>
-		    <span class="input-group-addon">{{ _('hours') }}</span>
-                  </div></div>
-                </div>
-
-                <div class="form-group">
-                  <label for="delay_ad" class="col-sm-2 control-label">{{ _('For days aggregate') }}</label>
-                  <div class="col-sm-10"><div class="input-group">
-                    <input type="text" class="form-control" id="delay_ad" name="delay_ad" placeholder="{{ _('Days') }}" {% if config.delay_ad %} value="{{config.delay_ad}}" {% endif %}>
-		    <span class="input-group-addon">{{ _('days') }}</span>
-                  </div>
-		 </div></div>
-	       </div></div>
-
-               <div class="panel panel-default">
-                 <div class="panel-heading">{{ _('Data retention') }}</div>
-                 <div class="panel-body">
-
-                <div class="form-group">
-                  <label for="retention_d" class="col-sm-2 control-label">{{ _('For detailed data') }}</label>
-                  <div class="col-sm-10"><div class="input-group">
-                    <input type="text" class="form-control" id="retention_d" name="retention_d" placeholder="{{ _('Days') }}" {% if config.retention_d %} value="{{config.retention_d}}" {% endif %}>
-		    <span class="input-group-addon">{{ _('days') }}</span>
-                  </div></div>
-                </div>
-
-                <div class="form-group">
-                  <label for="retention_am" class="col-sm-2 control-label">{{ _('For minuts aggregate') }}</label>
-                  <div class="col-sm-10"><div class="input-group">
-                    <input type="text" class="form-control" id="retention_am" name="retention_am" placeholder="{{ _('Days') }}" {% if config.retention_am %} value="{{config.retention_am}}" {% endif %}>
-		    <span class="input-group-addon">{{ _('days') }}</span>
-                  </div></div>
-                </div>
-
-                <div class="form-group">
-                  <label for="retention_ah" class="col-sm-2 control-label">{{ _('For hours aggregate') }}</label>
-                  <div class="col-sm-10"><div class="input-group">
-                    <input type="text" class="form-control" id="retention_ah" name="retention_ah" placeholder="{{ _('Days') }}" {% if config.retention_ah %} value="{{config.retention_ah}}" {% endif %}>
-		    <span class="input-group-addon">{{ _('days') }}</span>
-                  </div></div>
-                </div>
-
-                <div class="form-group">
-                  <label for="retention_ad" class="col-sm-2 control-label">{{ _('For days aggregate') }}</label>
-                  <div class="col-sm-10"><div class="input-group">
-                    <input type="text" class="form-control" id="retention_ad" name="retention_ad" placeholder="{{ _('Days') }}" {% if config.retention_ad %} value="{{config.retention_ad}}" {% endif %}>
-		    <span class="input-group-addon">{{ _('days') }}</span>
-                  </div></div>
-                </div></div>
-
-              </div>
-              <div class="box-footer">
-                <a href="{{ path_for('admin.tables') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
-		<div class=pull-right>
+	)).cell('col-md-8',wdForm().url("{{ path_for('admin.tables.edit', {'name': name }) }}").body(
+	wdBox().title("{{ _('Configure data aggregate and purges') }}").body(
+		wdUnion().item(wdPanel().title("{{ _('Aggregation delays') }}").body(
+			wdUnion().item(wdFormGroup('delay_am').label("{{ _('For minuts aggregate') }}")
+				.value("{{config.delay_am}}","{{ _('Minuts') }}").add("{{ _('minuts') }}")
+			)	.item(wdFormGroup('delay_ah').label("{{ _('For hours aggregate') }}")
+				.value("{{config.delay_ah}}","{{ _('Hours') }}").add("{{ _('hours') }}")
+			)	.item(wdFormGroup('delay_ad').label("{{ _('For days aggregate') }}")
+				.value("{{config.delay_ad}}","{{ _('Days') }}").add("{{ _('days') }}")
+			)
+		)).item(wdPanel().title("{{ _('Data retention') }}").body(
+			wdUnion().item(wdFormGroup('retention_d').label("{{ _('For detailed data') }}")
+				.value("{{config.retention_d}}","{{ _('Days') }}").add("{{ _('days') }}")
+			)	.item(wdFormGroup('retention_am').label("{{ _('For minuts aggregate') }}")
+				.value("{{config.retention_am}}","{{ _('Days') }}").add("{{ _('days') }}")
+			)	.item(wdFormGroup('retention_ah').label("{{ _('For hours aggregate') }}")
+				.value("{{config.retention_ah}}","{{ _('Days') }}").add("{{ _('days') }}")
+			)	.item(wdFormGroup('retention_ad').label("{{ _('For days aggregate') }}")
+				.value("{{config.retention_ad}}","{{ _('Days') }}").add("{{ _('days') }}")
+			)
+		))
+	).footer(
+		wdButtonGroup()
+			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.tables') }}"))
 {% if isDefault %}
-                <a href="{{ path_for('admin.tables.del', {'name': name }) }}" class="btn btn-warning"><i class="fa fa-minus" aria-hidden="true"></i> {{ _('Revert to default') }}</a>&nbsp;
+			.right(wdAButton().text("{{ _('Revert to default') }}").icon("fa fa-minus").class('btn-warning').url("{{ path_for('admin.tables.del', {'name': name }) }}"))
 {% endif %}
-		<button type="submit" class="btn btn-info pull-right"><i class="fa fa-pencil"></i> {{ _('update') }}</button></div>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+			.right(wdButton().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
+	)
+)));
+</script>
 {% endblock %}

@@ -4,58 +4,29 @@
         {{ _('Users') }} 
         <small>{{ _('list') }}</small>
 {% endblock %}
-{% block content %}
-    {% for a in users %}{% if a.username != 'public' and a.username != 'admin'  %}
-<div class="modal fade modal-warning" id="delete{{ a.id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Delete user') }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to delete this user:') }}</p>
-	      <p>{{ a.firstname }} {{ a.lastname }} ({{ a.username }})</p>
-      </div>
-      <div class="modal-footer">
-	<form action="{{ path_for('admin.users.delete', { 'id': a.id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-    {% endif %}{% endfor %}
-<a class="btn btn-default btn-flat" href="{{ path_for('admin.users.add') }}">
-  <i class="fa fa-plus" aria-hidden="true"></i> {{ _('Add') }}
-</a>
-          <div class="box box-default">
-            <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover" id="sort">
-	      <thead><tr>
-               <th class="sortable">{{ _('username') }}</th>
-               <th class="sortable">{{ _('first name') }}</th>
-               <th class="sortable">{{ _('last name') }}</th>
-               <th class='text-right'>{{ _('Actions') }}</th>
-	      </tr></thead><tbody>
-	      </tbody>
-	     </table>
-            </div>
-          </div>
-{% endblock %}
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-  myTable = watchedTable("sort", [
-    {% for a in users %}
-      {
-	uname:	{ "text": "{{ a.username }}",  "url": "{{ path_for('admin.users.change', { 'id': a.id }) }}"},
-	fname:	{ "text": "{{ a.firstname }}", "url": "{{ path_for('admin.users.change', { 'id': a.id }) }}"},
-	lname:	{ "text": "{{ a.lastname }}",  "url": "{{ path_for('admin.users.change', { 'id': a.id }) }}"},
-	actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.users.change', { 'id': a.id }) }}" },
-		   {% if a.username != 'public' and a.username != 'admin' %}{ icon:"fa fa-trash",  target: "#delete{{ a.id }}" }{% endif %} ]
-      },
-    {% endfor %}
-  ]);
+{% for a in users %}{% if a.username != 'public' and a.username != 'admin'  %}
+d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.users.delete', { 'id': a.id }) }}").id("delete{{ a.id }}").title("{{ _('Delete user') }}").text("{{ _('Confirm') }}").body(wdUnion()
+	.item(wdP("{{ _('Are you sure you want to delete this user:') }}"))
+	.item(wdP("{{ a.firstname }} {{ a.lastname }} ({{ a.username }}"))
+))
+{% endif %}{% endfor %}
+d3.select('section.content').call(wdAButton().url("{{ path_for('admin.users.add') }}").icon('fa fa-plus').text("{{ _('Add') }}"))
+d3.select('section.content').call(wdBox().body(wdTableChart()
+	.col("{{ _('username') }}")
+	.col("{{ _('first name') }}")
+	.col("{{ _('last name') }}")
+	.col("{{ _('Actions') }}",'text-right')
+	.body([
+	{% for a in users %} {
+		uname:	{ text: "{{ a.username }}",  url: "{{ path_for('admin.users.change', { 'id': a.id }) }}"},
+		fname:	{ text: "{{ a.firstname }}", url: "{{ path_for('admin.users.change', { 'id': a.id }) }}"},
+		lname:	{ text: "{{ a.lastname }}",  url: "{{ path_for('admin.users.change', { 'id': a.id }) }}"},
+		actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.users.change', { 'id': a.id }) }}" },
+		{% if a.username != 'public' and a.username != 'admin' %}{ icon:"fa fa-trash",  target: "#delete{{ a.id }}" }{% endif %} ]
+	},{% endfor %}
+])));
 </script>
 {% endblock %}

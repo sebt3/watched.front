@@ -4,55 +4,18 @@
         {{ _('Users') }}
         <small>{{ _('create a user') }}</small>
 {% endblock %}
-{% block content %}
-      <div class="row">
-	<div class="col-md-2"></div>
-        <div class="col-md-8">
-          <div class="box box-info">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Create a user') }}</h3>
-            </div>
-            <form class="form-horizontal" action="{{ path_for('admin.users.add') }}" method="post">
-              <div class="box-body">
-
-                <div class="form-group">
-                  <label for="username" class="col-sm-2 control-label">{{ _('Username') }}</label>
-
-                  <div class="col-sm-10">
-                    <input type="username" class="form-control" id="username" name="username" placeholder="{{ _('Username') }}" {% if username %} value="{{username}}" {% endif %}>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="firstname" class="col-sm-2 control-label">{{ _('First name') }}</label>
-
-                  <div class="col-sm-10">
-                    <input class="form-control" id="firstname" name="firstname" placeholder="{{ _('First name') }}"{% if firstname %} value="{{firstname}}" {% endif %}>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="lastname" class="col-sm-2 control-label">{{ _('Last name') }}</label>
-
-                  <div class="col-sm-10">
-                    <input class="form-control" id="lastname" name="lastname" placeholder="{{ _('Last name') }}"{% if username %} value="{{lastname}}" {% endif %}>
-                  </div>
-                </div>
-
-		<div class="form-group">
-                  <label for="password" class="col-sm-2 control-label">{{ _('Password') }}</label>
-
-                  <div class="col-sm-10">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="{{ _('Password') }}" {% if password %} value="{{password}}" {% endif %}>
-                  </div>
-                </div>
-              </div>
-              <div class="box-footer">
-                <a href="{{ path_for('admin.users.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-plus"></i> {{ _('Add') }}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+{% block scripts %}
+<script>
+d3.select('section.content').call(wdRow()
+	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.users.add') }}").body(wdBox().class('box-info')
+		.title("{{ _('Create a user') }}").body(wdUnion()
+			.item(wdFormGroup('username').label("{{ _('Username') }}").value("{{ username }}", "{{ _('Username') }}"))
+			.item(wdFormGroup('firstname').label("{{ _('First name') }}").value("{{ firstname }}", "{{ _('First name') }}"))
+			.item(wdFormGroup('lastname').label("{{ _('Last name') }}").value("{{ lastname }}", "{{ _('Last name') }}"))
+			.item(wdFormGroup('password').label("{{ _('Password') }}").value("{{ password }}", "{{ _('Password') }}").type('password'))
+		).footer(wdButtonGroup()
+			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.users.list') }}"))
+			.right(wdButton().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
+))));
+</script>
 {% endblock %}

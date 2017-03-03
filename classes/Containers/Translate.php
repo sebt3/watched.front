@@ -1,7 +1,8 @@
 <?php
+namespace Containers;
 use Interop\Container\ContainerInterface as Container;
 
-class Translate extends core {
+class Translate extends \core {
 	private $lang;
 	private $trans;
 	public function __construct(Container $ci) {

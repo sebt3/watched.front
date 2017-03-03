@@ -1,9 +1,11 @@
 <?php
-use Interop\Container\ContainerInterface;
+namespace Admin;
+use \Interop\Container\ContainerInterface;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
+use \PDO as PDO;
 
-class Agents extends CorePage {
+class Agents extends \CorePage {
 	public function __construct(ContainerInterface $ci) { 
 		parent::__construct($ci);
 	}

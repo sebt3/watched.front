@@ -4,175 +4,62 @@
         {{ _('Users') }}
         <small>{{ _('modify a user') }}</small>
 {% endblock %}
-{% block content %}
-    {% for a in teams %}
-<div class="modal fade modal-warning" id="deleteTeam{{ user_id }}-{{ a.id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Remove a user from a team') }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to remove this team from the user:') }}</p>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Username') }}</strong></div>
-		<div class="col-md-10">{{ username }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Name') }}</strong></div>
-		<div class="col-md-10">{{ firstname }} {{ lastname }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Team') }}</strong></div>
-		<div class="col-md-10">{{ a.name }}</div>
-	      </div>
-      </div>
-      <div class="modal-footer">
-	<form action="{{ path_for('admin.users.deleteTeam', { 'id': user_id, 'tid': a.id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-    {% endfor %}
-    {% for a in properties %}
-<div class="modal fade modal-warning" id="deleteProp{{ user_id }}-{{ a.id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Remove alerting property from') }} {{ firstname }} {{ lastname }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to remove this property from') }} {{ firstname }} {{ lastname }} :</p>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Property') }}</strong></div>
-		<div class="col-md-10">{{ a.name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Value') }}</strong></div>
-		<div class="col-md-10">{{ a.value }}</div>
-	      </div>
-      </div>
-      <div class="modal-footer">
-	<form action="{{ path_for('admin.users.deleteProp', { 'id': user_id, 'pid': a.id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-    {% endfor %}
-      <div class="row">
-        <div class="col-md-6">
-          <div class="box box-info">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Modify a user') }}</h3>
-            </div>
-	    <form class="form-horizontal" action="{{ path_for('admin.users.change', {'id': user_id}) }}" method="post">
-              <div class="box-body">
-
-                <div class="form-group">
-                  <label for="username" class="col-sm-2 control-label">{{ _('Username') }}</label>
-
-                  <div class="col-sm-10">
-                    <input type="username" class="form-control" id="username" name="username" placeholder="{{ _('Username') }}" {% if username %} value="{{username}}" {% endif %}>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="firstname" class="col-sm-2 control-label">{{ _('First name') }}</label>
-
-                  <div class="col-sm-10">
-                    <input class="form-control" id="firstname" name="firstname" placeholder="{{ _('First name') }}"{% if firstname %} value="{{firstname}}" {% endif %}>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="lastname" class="col-sm-2 control-label">{{ _('Last name') }}</label>
-
-                  <div class="col-sm-10">
-                    <input class="form-control" id="lastname" name="lastname" placeholder="{{ _('Last name') }}"{% if lastname %} value="{{lastname}}" {% endif %}>
-                  </div>
-                </div>
-
-		<div class="form-group">
-                  <label for="password" class="col-sm-2 control-label">{{ _('Password') }}</label>
-
-                  <div class="col-sm-10">
-                    <input type="password" class="form-control" id="password" name="password" placeholder="{{ _('Password') }}" {% if password %} value="{{password}}" {% endif %}>
-                  </div>
-                </div>
-              </div>
-              <div class="box-footer">
-                <a href="{{ path_for('admin.users.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-pencil"></i> {{ _('update') }}</button>
-              </div>
-            </form>
-          </div>
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Properties') }}</h3>
-	      <a class="btn btn-default btn-flat pull-right" href="{{ path_for('admin.users.addProp', { 'id': user_id }) }}">
-		<i class="fa fa-plus" aria-hidden="true"></i> {{ _('Add') }}
-	      </a>
-            </div>
-              <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover" id="props">
-	      <thead><tr>
-               <th class="sortable">{{ _('Name') }}</th>
-               <th class="sortable">{{ _('Value') }}</th>
-               <th class='text-right'>{{ _('actions') }}</th>
-	      </tr></thead><tbody>
-	      </tbody>
-	     </table>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Teams') }}</h3>
-	      <a class="btn btn-default btn-flat pull-right" href="{{ path_for('admin.users.addTeam', {'id': user_id}) }}">
-		<i class="fa fa-plus" aria-hidden="true"></i> {{ _('Add') }}
-	      </a>
-            </div>
-              <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover" id="team">
-	      <thead><tr>
-               <th class="sortable">{{ _('name') }}</th>
-               <th class='text-right'>{{ _('actions') }}</th>
-	      </tr></thead><tbody>
-	      </tbody>
-	     </table>
-              </div>
-            </form>
-          </div>
-        </div>
-{% endblock %}
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-  myTeam = watchedTable("team", [
-    {% for a in teams %}
-      {
-	name:	"{{ a.name }}",
-	actions: [ { icon:"fa fa-trash",  target: "#deleteTeam{{ user_id }}-{{ a.id }}" } ]
-      },
-    {% endfor %}
-  ]);
-  myTable = watchedTable("props", [
-    {% for a in properties %}
-      {
-	name:	{ "text": "{{ a.name }}",  "url": "{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}"},
-	value:	{ "text": "{{ a.value }}",  "url": "{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}"},
-	actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}" },
-		   { icon:"fa fa-trash",  target: "#deleteProp{{ user_id }}-{{ a.id }}" } ]
-      },
-    {% endfor %}
-  ]);
+d3.select('section.content').call(wdRow()
+	 .cell('col-md-6',wdUnion()
+		 .item(wdForm().url("{{ path_for('admin.users.change', {'id': user_id}) }}").body(wdBox()
+			.title("{{ _('Modify a user') }}").class('box-info').body(wdUnion()
+				.item(wdFormGroup('username').label("{{ _('Username') }}").value("{{ username }}", "{{ _('Username') }}"))
+				.item(wdFormGroup('firstname').label("{{ _('First name') }}").value("{{ firstname }}", "{{ _('First name') }}"))
+				.item(wdFormGroup('lastname').label("{{ _('Last name') }}").value("{{ lastname }}", "{{ _('Last name') }}"))
+				.item(wdFormGroup('password').label("{{ _('Password') }}").value("{{ password }}", "{{ _('Password') }}").type('password'))
+			).footer(wdButtonGroup()
+				.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.users.list') }}"))
+				.right(wdButton().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
+		))).item(wdBox().title("{{ _('Properties') }}")
+			.tool(wdAButton().class('btn-default pull-right')
+				.url("{{ path_for('admin.users.addProp', { 'id': user_id }) }}")
+				.text("{{ _('Add') }}").icon('fa fa-plus')
+			).body(wdTableChart()
+				.col("{{ _('Name') }}")
+				.col("{{ _('Value') }}")
+				.col("{{ _('actions') }}",'text-right')
+				.body([
+	{% for a in properties %} {
+		name:	{ "text": "{{ a.name }}",  "url": "{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}"},
+		value:	{ "text": "{{ a.value }}",  "url": "{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}"},
+		actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.users.changeProp', { 'id': user_id, 'pid': a.id  }) }}" },
+			{ icon:"fa fa-trash",  target: "#deleteProp{{ user_id }}-{{ a.id }}" } ]
+	}, {% endfor %}
+	])))).cell('col-md-6',wdBox().title("{{ _('Teams') }}")
+		 .tool(wdAButton().class('btn-default pull-right')
+			.url("{{ path_for('admin.users.addTeam', {'id': user_id}) }}")
+			.text("{{ _('Add') }}").icon('fa fa-plus')
+		).body(wdTableChart()
+		.col("{{ _('name') }}").col("{{ _('actions') }}",'text-right')
+		.body([
+	{% for a in teams %}
+		{ name:	"{{ a.name }}", actions: [ { icon:"fa fa-trash",  target: "#deleteTeam{{ user_id }}-{{ a.id }}" } ] },
+	{% endfor %}
+]))));
+{% for a in teams %}
+d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.users.deleteTeam', { 'id': user_id, 'tid': a.id }) }}").id("deleteTeam{{ user_id }}-{{ a.id }}").title("{{ _('Remove a user from a team') }}").text("{{ _('Confirm') }}").body(wdUnion()
+	.item(wdP("{{ _('Are you sure you want to remove this team from the user:') }}"))
+	.item(wdDesc()
+		.item("{{ _('Username') }}","{{ username }}")
+		.item("{{ _('Name') }}","{{ firstname }} {{ lastname }}")
+		.item("{{ _('Team') }}","{{ a.name }}")
+)))
+{% endfor %}
+{% for a in properties %}
+d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.users.deleteProp', { 'id': user_id, 'pid': a.id }) }}").id("deleteProp{{ user_id }}-{{ a.id }}").title("{{ _('Remove alerting property from') }} {{ firstname }} {{ lastname }}").text("{{ _('Confirm') }}").body(wdUnion()
+	.item(wdP("{{ _('Are you sure you want to remove this property from') }} {{ firstname }} {{ lastname }} :"))
+	.item(wdDesc()
+		.item("{{ _('Property') }}","{{ a.name }}")
+		.item("{{ _('Value') }}","{{ a.value }}")
+)))
+{% endfor %}
 </script>
 {% endblock %}

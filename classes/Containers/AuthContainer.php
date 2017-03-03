@@ -1,8 +1,9 @@
 <?php
-
+namespace Containers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use Interop\Container\ContainerInterface as Container;
+use \PDO as PDO;
 
 // TODO: support for login attempt count
 
@@ -58,7 +59,7 @@ if (!function_exists('random_bytes')) {
 	}
 }
 
-class AuthContainer extends core {
+class AuthContainer extends \core {
 	private $user_id;
 	private $rememberLen;
 
@@ -298,27 +299,27 @@ class AuthContainer extends core {
 
 	public function assertAdmin($request, $response) {
 		if (!$this->isAdmin())
-			throw new Slim\Exception\MethodNotAllowedException($request, $response, array());
+			throw new \Slim\Exception\MethodNotAllowedException($request, $response, array());
 	}
 
 	public function assertDomain($domain_id, $request, $response) {
 		if (!$this->haveDomain($domain_id))
-			throw new Slim\Exception\MethodNotAllowedException($request, $response, array());
+			throw new \Slim\Exception\MethodNotAllowedException($request, $response, array());
 	}
 
 	public function assertHost($host_id, $request, $response) {
 		if (!$this->haveHost($host_id))
-			throw new Slim\Exception\MethodNotAllowedException($request, $response, array());
+			throw new \Slim\Exception\MethodNotAllowedException($request, $response, array());
 	}
 
 	public function assertService($service_id, $request, $response) {
 		if (!$this->haveService($service_id))
-			throw new Slim\Exception\MethodNotAllowedException($request, $response, array());
+			throw new \Slim\Exception\MethodNotAllowedException($request, $response, array());
 	}
 
 	public function assertApp($app_id, $request, $response) {
 		if (!$this->haveApp($app_id))
-			throw new Slim\Exception\MethodNotAllowedException($request, $response, array());
+			throw new \Slim\Exception\MethodNotAllowedException($request, $response, array());
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////

@@ -63,7 +63,12 @@
     </section>
     <section class="content">
   {% block content %}
-        <p>Some content here</p>
+<noscript>
+<div class="jumbotron">
+  <h1>Watched requires JavaScript to run!</h1>
+  <p>Please enable javascript on your browser (or disable noScript for this application)</p>
+</div>
+</noscript>
   {% endblock %}
     </section>
   </div>
@@ -87,6 +92,7 @@
 <script src="/js/adminlte.min.js"></script>
 <script src="/js/d3.v4.min.js"></script>
 <script src="/js/watched.js"></script>
+<script src="/js/watched.layout.js"></script>
 {% block scripts %}{% endblock %}
 </body>
 {% endblock %}

@@ -4,77 +4,25 @@
         {{ e.event_type }}
         <small>{{ _('on') }} {{ e.res_name }} {{ _('from') }} {{ e.host_name }}</small>
 {% endblock %}
-{% block content %}
-      <div class="row">
-        <div class="col-md-4">
-          <div class="box box-default">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Event Properties') }}</h3>
-            </div>
-            <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover"><tbody>
-               <tr>
-                <th>{{ _('id') }}</th>
-                <td class="pull-right">{{ e.id }}</td>
-               </tr>
-               <tr>
-                <th>{{ _('type') }}</th>
-                <td class="pull-right {{ e.color }}">{{ e.event_type }}</td>
-               </tr>
-	       <tr>
-		<th>{{ _('Host') }}</th>
-		<td class="pull-right"><a href="{{ path_for('host', { 'id': e.host_id }) }}">{{ e.host_name }}</a></td>
-               </tr>
-               <tr>
-                <th>{{ _('ressource type') }}</th>
-                <td class="pull-right">{{ e.res_type }}</td>
-               </tr>
-               <tr>
-                <th>{{ _('ressource') }}</th>
-                <td class="pull-right"><a href="{{ path_for('ressource', { 'aid': e.host_id, 'rid': e.res_id }) }}">{{ e.res_name }}</td>
-               </tr>
-               <tr>
-                <th>{{ _('property') }}</th>
-                <td class="pull-right">{{ e.property }}</td>
-               </tr>
-               <tr>
-                <th>{{ _('value') }}</th>
-                <td class="pull-right">{{ e.current_value }}</td>
-               </tr>
-               <tr>
-                <th>{{ _('rule') }}</th>
-                <td class="pull-right">{{ e.oper|e }}{{ e.value }}</td>
-               </tr>
-               <tr>
-                <th>{{ _('start') }}</th>
-                <td class="pull-right">{{ e.start_time }}</td>
-               </tr>
-               <tr>
-                <th>{{ _('end') }}</th>
-                <td class="pull-right">{{ e.end_time }}</td>
-               </tr>
-	      </tbody>
-	     </table>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-8">
-          <div class="box box-default">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Graphics') }}</h3>
-            </div>
-            <div class="box-body">
-	     <div class="chart">
-	      <div id="morrisChart"></div>
-	     </div>
-            </div>
-          </div>
-        </div>
-      </div>
-{% endblock %}
 {% block scripts %}
 <script src="/js/watched.line.js"></script>
 <script>
+d3.select('section.content').call(wdRow()
+	 .cell('col-md-4', wdBox().title("{{ _('Event Properties') }}")
+		.body(wdDescTable()
+			.item("{{ _('id') }}", "{{ e.id }}")
+			.item("{{ _('type') }}", "{{ e.event_type }}")
+			.item("{{ _('Host') }}", "{{ e.host_name }}", "{{ path_for('host', { 'id': e.host_id }) }}")
+			.item("{{ _('ressource type') }}", "{{ e.res_type }}")
+			.item("{{ _('ressource') }}", "{{ e.res_name }}","{{ path_for('ressource', { 'aid': e.host_id, 'rid': e.res_id }) }}")
+			.item("{{ _('property') }}", "{{ e.property }}")
+			.item("{{ _('value') }}", "{{ e.current_value }}")
+			.item("{{ _('rule') }}", "{{ e.oper|e }}{{ e.value }}")
+			.item("{{ _('start') }}", "{{ e.start_time }}")
+			.item("{{ _('end') }}", "{{ e.end_time }}")
+	)).cell('col-md-8', wdBox().title("{{ _('Graphics') }}")
+		.body(wdLineChart().prop("{{ e.property }}").baseUrl("{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}")
+)));
 chart = watchedEvent('morrisChart', "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", "{{ e.property }}");
 </script>
 {% endblock %}

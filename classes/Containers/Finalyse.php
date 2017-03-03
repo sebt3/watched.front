@@ -1,10 +1,10 @@
 <?php
-
+namespace Containers;
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-use Interop\Container\ContainerInterface as Container;
+use \Interop\Container\ContainerInterface as Container;
 
-class Finalyse extends core {
+class Finalyse extends \core {
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // middleware

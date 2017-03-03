@@ -4,65 +4,22 @@
         {{ _('Agents') }}
         <small>{{ _('Create an agent') }}</small>
 {% endblock %}
-{% block content %}
-      <div class="row">
-	<div class="col-md-2"></div>
-        <div class="col-md-8">
-          <div class="box box-info">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Create an agent') }}</h3>
-            </div>
-            <form class="form-horizontal" action="{{ path_for('admin.agents.add') }}" method="post">
-              <div class="box-body">
-
-                <div class="form-group">
-                  <label for="host" class="col-sm-2 control-label">{{ _('Host') }}</label>
-
-                  <div class="col-sm-10">
-                    <input type="text" class="form-control" id="host" name="host" placeholder="{{ _('Host') }}" {% if host %} value="{{host}}" {% endif %}>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="port" class="col-sm-2 control-label">{{ _('Port') }}</label>
-
-                  <div class="col-sm-10">
-                    <input type="text" class="form-control" id="port" name="port" placeholder="{{ _('Number') }}" value="{% if port %}{{port}}{% else %}9080{% endif %}">
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">{{ _('Use SSL') }}</label>
-
-                  <div class="col-sm-10">
-		    <select class="form-control" name='ssl'>
-			<option {% if ssl==1 %} selected="selected"{% endif %} value=1>{{ _('Yes') }}</option>
-			<option {% if ssl==0 %} selected="selected"{% endif %} value=0>{{ _('No') }}</option>
-		    </select>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="freq" class="col-sm-2 control-label">{{ _('Pooling frequency (s)') }}</label>
-
-                  <div class="col-sm-10">
-                    <input type="name" class="form-control" id="freq" name="freq" placeholder="{{ _('Number') }}" value="{% if freq %}{{freq}}{% else %}300{% endif %}">
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="central" class="col-sm-2 control-label">{{ _('Backend group #') }}</label>
-
-                  <div class="col-sm-10">
-                    <input type="name" class="form-control" id="central" name="central" placeholder="{{ _('Number') }}" value="{% if central %}{{central}}{% else %}1{% endif %}">
-                  </div>
-                </div>
-              <div class="box-footer">
-                <a href="{{ path_for('admin.agents.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-plus"></i> {{ _('Add') }}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+{% block scripts %}
+<script>
+d3.select('section.content').call(wdRow()
+	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.agents.add') }}").body(wdBox().class('box-info')
+		.title("{{ _('Create an agent') }}").body(wdUnion()
+			.item(wdFormGroup('host').label("{{ _('Host') }}").value("{{ host }}", "{{ _('Host') }}"))
+			.item(wdFormGroup('port').label("{{ _('Port') }}").value("{% if port %}{{port}}{% else %}9080{% endif %}", "{{ _('Number') }}"))
+			.item(wdFormGroup('ssl').label("{{ _('Use SSL') }}").obj(
+				wdFormSelect('ssl').value({{ ssl }})
+					.add("{{ _('No') }}", 0)
+					.add("{{ _('Yes') }}", 1)
+			)).item(wdFormGroup('freq').label("{{ _('Pooling frequency (s)') }}").value("{% if freq %}{{freq}}{% else %}300{% endif %}", "{{ _('Number') }}").add('{{ _('seconds') }}'))
+			.item(wdFormGroup('central').label("{{ _('Backend group #') }}").value("{% if central %}{{central}}{% else %}1{% endif %}", "{{ _('Number') }}"))
+		).footer(wdButtonGroup()
+			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.agents.list') }}"))
+			.right(wdButton().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
+))));
+</script>
 {% endblock %}

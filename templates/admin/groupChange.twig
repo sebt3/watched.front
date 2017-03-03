@@ -4,156 +4,62 @@
         {{ _('Groups') }}
         <small>{{ _('Modify a group') }}</small>
 {% endblock %}
-{% block content %}
-    {% for a in apps %}
-<div class="modal fade modal-warning" id="deleteApp{{ group_id }}-{{ a.id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Remove application from group') }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to remove this application from group:') }}</p>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Group') }}</strong></div>
-		<div class="col-md-10">{{ name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Application') }}</strong></div>
-		<div class="col-md-10">{{ a.name }}</div>
-	      </div>
-      </div>
-      <div class="modal-footer">
-	<form action="{{ path_for('admin.groups.deleteApp', { 'id': group_id, 'aid': a.id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-    {% endfor %}
-    {% for a in teams %}
-<div class="modal fade modal-warning" id="deleteTeam{{ group_id }}-{{ a.team_id }}-{{ a.role_id }}" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="myModalLabel">{{ _('Remove a team permission from a group') }}</h4>
-      </div>
-      <div class="modal-body">
-	      <p>{{ _('Are you sure you want to remove this team from this group:') }}</p>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Group') }}</strong></div>
-		<div class="col-md-10">{{ name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Team') }}</strong></div>
-		<div class="col-md-10">{{ a.team_name }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Type') }}</strong></div>
-		<div class="col-md-10">{{ _(a.type) }}</div>
-	      </div>
-	      <div class="row">
-		<div class="col-md-2"><strong class='pull-right'>{{ _('Role') }}</strong></div>
-		<div class="col-md-10">{{ a.role_name }}</div>
-	      </div>
-      </div>
-      <div class="modal-footer">
-	<form action="{{ path_for('admin.groups.deleteTeam', { 'id': group_id, 'tid': a.team_id, 'rid': a.role_id }) }}" method="post">
-          <button type="submit" class="btn btn-outline">{{ _('Confirm') }}</button>
-	</form>
-      </div>
-    </div>
-  </div>
-</div>
-    {% endfor %}
-      <div class="row">
-        <div class="col-md-6">
-          <div class="box box-info">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Modify a group') }}</h3>
-            </div>
-            <form class="form-horizontal" action="{{ path_for('admin.groups.change', {'id': group_id}) }}" method="post">
-              <div class="box-body">
-
-                <div class="form-group">
-                  <label for="name" class="col-sm-2 control-label">{{ _('Name') }}</label>
-
-                  <div class="col-sm-10">
-                    <input type="name" class="form-control" id="name" name="name" placeholder="{{ _('Name') }}" {% if name %} value="{{name}}" {% endif %}>
-                  </div>
-                </div>
-              <div class="box-footer">
-                <a href="{{ path_for('admin.groups.list') }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-pencil"></i> {{ _('update') }}</button>
-              </div>
-              </div>
-            </form>
-          </div>
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Teams') }}</h3>
-	      <a class="btn btn-default btn-flat pull-right" href="{{ path_for('admin.groups.addTeam', { 'id': group_id }) }}">
-		<i class="fa fa-plus" aria-hidden="true"></i> {{ _('Add') }}
-	      </a>
-            </div>
-              <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover" id="team">
-	      <thead><tr>
-               <th class="sortable">{{ _('Team') }}</th>
-               <th class="sortable">{{ _('Role') }}</th>
-               <th class="sortable">{{ _('Alert') }}</th>
-               <th class='text-right'>{{ _('actions') }}</th>
-	      </tr></thead><tbody>
-	      </tbody>
-	     </table>
-              </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="box box-normal">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Apps') }}</h3>
-	      <a class="btn btn-default btn-flat pull-right" href="{{ path_for('admin.groups.addApp', {'id': group_id}) }}">
-		<i class="fa fa-plus" aria-hidden="true"></i> {{ _('Add') }}
-	      </a>
-            </div>
-              <div class="box-body table-responsive">
-	      <table class="table table-striped table-hover" id="app">
-	      <thead><tr>
-               <th class="sortable">{{ _('Application') }}</th>
-               <th class='text-right'>{{ _('actions') }}</th>
-	      </tr></thead><tbody>
-	      </tbody>
-	     </table>
-              </div>
-          </div>
-        </div>
-      </div>
-{% endblock %}
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-  myApp = watchedTable("app", [
-    {% for a in apps %}
-      {
-	name:	"{{ a.name }}",
-	actions: [ { icon:"fa fa-trash",  target: "#deleteApp{{ group_id }}-{{ a.id }}" } ]
-      },
-    {% endfor %}
-  ]);
-  myTeam = watchedTable("team", [
-    {% for a in teams %}
-      {
+d3.select('section.content').call(wdRow()
+	  .cell('col-md-6',wdUnion()
+		.item(wdForm().url("{{ path_for('admin.groups.change', {'id': group_id}) }}").body(wdBox()
+			.title("{{ _('Modify a group') }}").class('box-info').body(wdUnion()
+				.item(wdFormGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
+			).footer(wdButtonGroup()
+				.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.groups.list') }}"))
+				.right(wdButton().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
+		))).item(wdBox().title("{{ _('Teams') }}")
+			.tool(wdAButton().class('btn-default pull-right')
+				.url("{{ path_for('admin.groups.addTeam', { 'id': group_id }) }}")
+				.text("{{ _('Add') }}").icon('fa fa-plus')
+			).body(wdTableChart()
+				.col("{{ _('Team') }}")
+				.col("{{ _('Role') }}")
+				.col("{{ _('Alert') }}")
+				.col("{{ _('actions') }}",'text-right')
+				.body([
+	{% for a in teams %} {
 	team:	{ "text": "{{ a.team_name }}", "url": "{{ path_for('admin.teams.change', { 'id': a.team_id  }) }}"},
-	role:	{ "text": "{{ a.team_name }}", "url": "{{ path_for('admin.roles.change', { 'id': a.role_id }) }}"},
+	role:	{ "text": "{{ a.role_name }}", "url": "{{ path_for('admin.roles.change', { 'id': a.role_id }) }}"},
 	send:	"{{ _(a.send) }}",
 	actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.groups.changeTeam', { 'id': group_id, 'tid': a.team_id, 'rid': a.role_id }) }}" },
 		   { icon:"fa fa-trash",  target: "#deleteTeam{{ group_id }}-{{ a.team_id }}-{{ a.role_id }}" } ]
-      },
-    {% endfor %}
-  ]);
+	}, {% endfor %}
+	])))).cell('col-md-6',wdBox().title("{{ _('Apps') }}")
+		 .tool(wdAButton().class('btn-default pull-right')
+			.url("{{ path_for('admin.groups.addApp', {'id': group_id}) }}")
+			.text("{{ _('Add') }}").icon('fa fa-plus')
+		).body(wdTableChart()
+		.col("{{ _('Application') }}").col("{{ _('actions') }}",'text-right')
+		.body([
+	{% for a in apps %}
+		{ name:	"{{ a.name }}", actions: [ { icon:"fa fa-trash",  target: "#deleteApp{{ group_id }}-{{ a.id }}" } ] },
+	{% endfor %}
+]))));
+{% for a in apps %}
+d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.groups.deleteApp', { 'id': group_id, 'aid': a.id }) }}").id("deleteApp{{ group_id }}-{{ a.id }}").title("{{ _('Remove application from group') }}").text("{{ _('Confirm') }}").body(wdUnion()
+	.item(wdP("{{ _('Are you sure you want to remove this application from group:') }}"))
+	.item(wdDesc()
+		.item("{{ _('Group') }}","{{ name }}")
+		.item("{{ _('Application') }}","{{ a.name }}")
+)))
+{% endfor %}
+{% for a in teams %}
+d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.groups.deleteTeam', { 'id': group_id, 'tid': a.team_id, 'rid': a.role_id }) }}").id("deleteTeam{{ group_id }}-{{ a.team_id }}-{{ a.role_id }}").title("{{ _('Remove a team permission from a group') }}").text("{{ _('Confirm') }}").body(wdUnion()
+	.item(wdP("{{ _('Are you sure you want to remove this team from this group:') }}"))
+	.item(wdDesc()
+		.item("{{ _('Group') }}","{{ name }}")
+		.item("{{ _('Team') }}","{{ a.team_name }}")
+		.item("{{ _('Type') }}","{{ _(a.type) }}")
+		.item("{{ _('Role') }}","{{ a.role_name }}")
+)))
+{% endfor %}
 </script>
 {% endblock %}

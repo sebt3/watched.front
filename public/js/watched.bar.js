@@ -114,7 +114,7 @@ function watchedBarChart(id, data) {
 	return chart;
 }
 
-function watchedMemSwap(id, data) {
+function wdMemSwapChart() {
 	var chart = wdBarChart();
 	var cmem  = d3.scaleOrdinal(['#00a65a','#cccccc']).domain(['used','free'])
 	var cswap = d3.scaleOrdinal(['#dd4b39','#cccccc']).domain(['used','free'])
@@ -124,7 +124,5 @@ function watchedMemSwap(id, data) {
 		return cswap;
 	}
 	chart.bars().dispatch.on("click.watchedMemSwap", function(d) {window.location.href =d.data.url})
-	chart.data(data);
-	d3.select("#"+id).call(chart);
 	return chart;
 }

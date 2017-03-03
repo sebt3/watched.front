@@ -1,16 +1,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 // wdTableChart
-function htmlDecode(text) {
-	var parser = new DOMParser;
-	var dom = parser.parseFromString('<!doctype html><body>' + text,'text/html');
-	return dom.body.textContent;
-}
-
 function wdTableBodyChart(pClass) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
 		keys	= [],
 		heads, rows;
-	chart.dispatch.on("init.wdTableChart", function() {
+	chart.dispatch.on("init.wdTableBodyChart", function() {
 		heads = chart.root().selectAll('thead th.sortable').on('click', function(d,i) {
 			if(typeof rows == "undefined") return;
 			chart.root().selectAll('thead th.sortable').selectAll('i')
@@ -21,6 +15,8 @@ function wdTableBodyChart(pClass) {
 			if (this.sortType == "asc") {
 				d3.select(this).select('i').attr('class', 'fa fa-sort-up pull-right');
 				rows.sort(function (a,b) {
+					if (a[keys[i]] == null) return false;
+					if (b[keys[i]] == null) return true;
 					if (typeof a[keys[i]] == "object")
 						return a[keys[i]].text>b[keys[i]].text;
 					return a[keys[i]]>b[keys[i]];
@@ -28,6 +24,8 @@ function wdTableBodyChart(pClass) {
 			} else {
 				d3.select(this).select('i').attr('class', 'fa fa-sort-down pull-right');
 				rows.sort(function (a,b) {
+					if (a[keys[i]] == null) return true;
+					if (b[keys[i]] == null) return false;
 					if (typeof a[keys[i]] == "object")
 						return a[keys[i]].text<b[keys[i]].text;
 					return a[keys[i]]<b[keys[i]];
@@ -35,7 +33,7 @@ function wdTableBodyChart(pClass) {
 			}
 		}).append('i').attr('class', 'fa fa-sort pull-right');
 	});
-	chart.dispatch.on("renderUpdate.wdTableChart", function() {
+	chart.dispatch.on("renderUpdate.wdTableBodyChart", function() {
 		var update = chart.root().select('tbody').selectAll('tr').data(chart.data());
 		update.exit().remove();
 		if(typeof chart.data()[0] == "undefined") return;
@@ -61,7 +59,8 @@ function wdTableBodyChart(pClass) {
 					else
 						d3.select(this).attr('href', p.url)
 							.append('i').attr('class', p.icon);
-				}).append('span').text(' ');
+						d3.select(this).append('span').text(' ');
+				});
 			} else if (typeof d.value == "object" && d.value != null) {
 				if (typeof d.value.color != "undefined")
 					d3.select(this).attr("class", d.value.color);
@@ -70,20 +69,39 @@ function wdTableBodyChart(pClass) {
 				if (typeof d.value.url  != "undefined") {
 					var a = d3.select(this).append('a')
 						.attr('href', d.value.url)
-						.text(' '+htmlDecode(d.value.text));
+						.html(' '+d.value.text);
 					if (typeof d.value.color != "undefined")
 						a.attr('class', d.value.color);
 				} else {
 					d3.select(this).append('span')
-						.text(' '+htmlDecode(d.value.text));
+						.html(' '+d.value.text);
 				}
 			} else if (typeof d.value != "undefined")
-				d3.select(this).text( htmlDecode(d.value) )
+				d3.select(this).html(d.value)
 		});
 	});
 	return chart;
 }
-function watchedTable(id, data) {
+
+function wdTableChart() {
+	var body = wdTableBodyChart(), heads = [];
+	function chart(s) { s.each(chart.init); return chart; }
+	chart.body    = function(t) {  body.data(t);return chart;}
+	chart.col     = function(t,c) { if (typeof c == 'undefined') c='sortable';heads.push({ 'text': t, 'class':c});return chart;}
+	chart.init    = function() {
+		if (d3.select(this).classed('box-body'))
+			d3.select(this).classed('table-responsive',true);
+		var t = d3.select(this).append('table').attr('class','table table-striped table-hover table-responsive')
+		t.append('thead').append('tr').selectAll('th').data(heads).enter().each(function(d,i) {
+			d3.select(this).append('th').attr('class',d.class).text(d.text)
+		});
+		t.append('tbody')
+		t.call(body)
+	}
+	return chart;
+}
+
+function watchedTableBody(id, data) {
 	var chart = wdTableBodyChart().data(data);
 	d3.select("#"+id).call(chart);
 	return chart;

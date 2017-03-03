@@ -1,7 +1,9 @@
 <?php
+namespace Containers;
 use Interop\Container\ContainerInterface as Container;
+use \PDO as PDO;
 
-class MenuObject extends core {
+class MenuObject extends \core {
 	//menu view interfaces
 	public $domains;
 	public $apps;
@@ -94,6 +96,4 @@ class MenuObject extends core {
 			array_unshift($this->domains, array('name' => 'unset', 'hosts' => $lst));
 	}
 }
-
-
 ?>

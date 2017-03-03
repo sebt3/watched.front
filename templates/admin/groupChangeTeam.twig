@@ -4,57 +4,21 @@
         {{ _('Group') }}
         <small>{{ _('Update alerting') }}</small>
 {% endblock %}
-{% block content %}
-      <div class="row">
-	<div class="col-md-2"></div>
-        <div class="col-md-8">
-          <div class="box box-info">
-            <div class="box-header with-border">
-              <h3 class="box-title">{{ _('Update alerting for group:') }} {{ name }}</h3>
-            </div>
-            <form class="form-horizontal" action="{{ path_for('admin.groups.changeTeam', {'id': group_id, 'rid': role.id, 'tid': team.id}) }}" method="post">
-              <div class="box-body">
-
-                <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">{{ _('Group') }}</label>
-                  <div class="col-sm-10">
-		    <input type='hidden' name='did' value='{{ group_id }}'/>
-		    <div class="form-control">{{ name }}</div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">{{ _('Team') }}</label>
-                  <div class="col-sm-10">
-		    <input type='hidden' name='tid' value='{{ team.id }}'/>
-		    <div class="form-control">{{ team.name }}</div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">{{ _('Role') }}</label>
-                  <div class="col-sm-10">
-		    <input type='hidden' name='rid' value='{{ role.id }}'/>
-		    <div class="form-control">{{ role.name }}</div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="ssl" class="col-sm-2 control-label">{{ _('Should alert') }}</label>
-                  <div class="col-sm-10">
-		    <select class="form-control" name='alert'>
-			<option {% if alert==1 %} selected="selected"{% endif %} value=1>{{ _('Yes') }}</option>
-			<option {% if alert==0 %} selected="selected"{% endif %} value=0>{{ _('No') }}</option>
-		    </select>
-                  </div>
-                </div>
-
-              <div class="box-footer">
-                <a href="{{ path_for('admin.groups.change', {'id': group_id}) }}" class="btn btn-default"><i class="fa fa-arrow-left" aria-hidden="true"></i> {{ _('Cancel') }}</a>
-                <button type="submit" class="btn btn-info pull-right"><i class="fa fa-check"></i> {{ _('Update') }}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
+{% block scripts %}
+<script>
+d3.select('section.content').call(wdRow()
+	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.groups.changeTeam', {'id': group_id, 'rid': role.id, 'tid': team.id}) }}").body(wdBox().class('box-info')
+		.title("{{ _('Update alerting for group:') }} {{ name }}").body(wdUnion()
+			.item(wdFormGroup('did').label("{{ _('Group') }}").value("{{ group_id }}","{{ name }}").type('hidden'))
+			.item(wdFormGroup('tid').label("{{ _('Team') }}").value("{{ team.id }}","{{ team.name }}").type('hidden'))
+			.item(wdFormGroup('rid').label("{{ _('Role') }}").value("{{ role.id }}","{{ role.name }}").type('hidden'))
+			.item(wdFormGroup('alert').label("{{ _('Should alert') }}").obj(
+				wdFormSelect('alert').value({{ alert }})
+					.add("{{ _('No') }}", 0)
+					.add("{{ _('Yes') }}", 1))
+		)).footer(wdButtonGroup()
+			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.groups.change', {'id': group_id}) }}"))
+			.right(wdButton().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
+))));
+</script>
 {% endblock %}
