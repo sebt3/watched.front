@@ -5,7 +5,6 @@
         <small>{{ _('on') }} {{ _('ressources') }}</small>
 {% endblock %}
 {% block scripts %}
-<script src="/js/watched.tables.js"></script>
 <script>
 d3.select('section.content').call(wdTableWidget().data({{ json(events) }}));
 </script>

@@ -5,7 +5,6 @@
         <small>{{ _('on') }} {{ e.res_name }} {{ _('from') }} {{ e.host_name }}</small>
 {% endblock %}
 {% block scripts %}
-<script src="/js/watched.line.js"></script>
 <script>
 d3.select('section.content').call(wdRow()
 	.cell('col-md-4', wdPropertyWidget().source("{{ path_for('widgets.property.event',  { 'id': e.id }) }}"))

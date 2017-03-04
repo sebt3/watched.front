@@ -5,8 +5,6 @@
         <small>{{ service.name }}</small>
 {% endblock %}
 {% block scripts %}
-<script src="/js/watched.tables.js"></script>
-<script src="/js/watched.service.js"></script>
 <script>
 chart = wdServiceChart().baseUrl("{{ path_for('apiService', { 'id': service.id }) }}");
 d3.select('section.content').call(

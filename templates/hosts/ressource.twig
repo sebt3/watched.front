@@ -5,9 +5,6 @@
         <small>{{ _('on') }} {{ a.host }} : {{ r.name }} </small>
 {% endblock %}
 {% block scripts %}
-<script src="/js/watched.tables.js"></script>
-<script src="/js/watched.donut.js"></script>
-<script src="/js/watched.line.js"></script>
 <script>
 {% if monit %}
 d3.select('section.content').call(wdRow()

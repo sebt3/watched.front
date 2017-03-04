@@ -137,8 +137,12 @@ class HostService extends CorePage {
 		$s   = $this->db->prepare('select id, name from s$services where host_id=:id');
 		$s->bindParam(':id', $id, PDO::PARAM_INT);
 		$s->execute();
-		while($r = $s->fetch())
-			$ret[] = $this->getService($r['id']);
+		while($r = $s->fetch()) {
+			$t	= $this->getService($r['id']);
+			$t['process'] = $this->getProcess($r['id']);
+			$t['sockets'] = $this->getSockets($r['id']);
+			$ret[] = $t;
+		}
 		return $ret;
 	}
 
