@@ -12,9 +12,9 @@ d3.select('section.content').call(
 		.cell('col-md-4', wdDonutWidget().source("{{ path_for('widgets.donut.dash.items') }}"))
 		.cell('col-md-4', wdDonutWidget().source("{{ path_for('widgets.donut.dash.domains') }}"))
 	).item(wdRow()
-		.cell('col-md-7', wdTableWidget().source("{{ path_for('widgets.table.dash.events') }}"))
+		.cell('col-md-12 col-lg-7', wdTableWidget().source("{{ path_for('widgets.table.dash.events') }}"))
 {% if menu.isAuth %}
-		.cell('col-md-5', wdTableWidget().source("{{ path_for('widgets.table.dash.failed') }}"))
+		.cell('col-md-12 col-lg-5', wdTableWidget().source("{{ path_for('widgets.table.dash.failed') }}"))
 {% endif %}
 ));
 </script>

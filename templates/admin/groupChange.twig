@@ -8,7 +8,7 @@
 <script src="/js/watched.tables.js"></script>
 <script>
 d3.select('section.content').call(wdRow()
-	  .cell('col-md-6',wdUnion()
+	  .cell('col-lg-6',wdUnion()
 		.item(wdForm().url("{{ path_for('admin.groups.change', {'id': group_id}) }}").body(wdBox()
 			.title("{{ _('Modify a group') }}").class('box-info').body(wdUnion()
 				.item(wdFormGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))

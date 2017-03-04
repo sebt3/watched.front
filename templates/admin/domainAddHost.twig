@@ -7,7 +7,7 @@
 {% block scripts %}
 <script>
 d3.select('section.content').call(wdRow()
-	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.domains.addHost', {'id': domain_id}) }}").body(wdBox().class('box-info')
+	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.domains.addHost', {'id': domain_id}) }}").body(wdBox().class('box-info')
 		.title("{{ _('Add an host to the domain:') }} {{ name }}").body(wdUnion()
 			.item(wdFormGroup('hid').label("{{ _('Available hosts') }}").obj(
 				wdFormSelect('hid').value({{ sid }})

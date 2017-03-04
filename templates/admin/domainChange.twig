@@ -8,7 +8,7 @@
 <script src="/js/watched.tables.js"></script>
 <script>
 d3.select('section.content').call(wdRow()
-	 .cell('col-md-6',wdUnion()
+	 .cell('col-lg-6',wdUnion()
 		 .item(wdForm().url("{{ path_for('admin.domains.change', {'id': domain_id}) }}").body(wdBox()
 			.title("{{ _('Modify a domain') }}").class('box-info').body(wdUnion()
 				.item(wdFormGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
@@ -32,7 +32,7 @@ d3.select('section.content').call(wdRow()
 		actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.domains.changeTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}" },
 			{ icon:"fa fa-trash",  target: "#deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}" } ]
 	}, {% endfor %}
-	])))).cell('col-md-6',wdBox().title("{{ _('Hosts') }}")
+	])))).cell('col-lg-6',wdBox().title("{{ _('Hosts') }}")
 		 .tool(wdAButton().class('btn-default pull-right').text("{{ _('Add') }}").icon('fa fa-plus')
 			.url("{{ path_for('admin.domains.addHost', {'id': domain_id}) }}")
 		).body(wdTableChart()

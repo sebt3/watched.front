@@ -7,7 +7,7 @@
 {% block scripts %}
 <script>
 d3.select('section.content').call(wdRow()
-	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.users.addProp', {'id': user.id}) }}").body(wdBox().class('box-info')
+	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.users.addProp', {'id': user.id}) }}").body(wdBox().class('box-info')
 		.title("{{ _('Add a property to') }} {{ user.firstname }} {{ user.lastname }}").body(wdUnion()
 			.item(wdFormGroup('pid').label("{{ _('Property') }}").obj(
 				wdFormSelect('pid').value({{ hid }})

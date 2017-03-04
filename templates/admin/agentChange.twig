@@ -7,7 +7,7 @@
 {% block scripts %}
 <script>
 d3.select('section.content').call(wdRow()
-	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.agents.change', {'id': agent_id}) }}").body(wdBox().class('box-info')
+	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.agents.change', {'id': agent_id}) }}").body(wdBox().class('box-info')
 		.title("{{ _('Modify an agent') }}").body(wdUnion()
 			.item(wdFormGroup('host').label("{{ _('Host') }}").value("{{ host }}", "{{ _('Host') }}"))
 			.item(wdFormGroup('port').label("{{ _('Port') }}").value("{% if port %}{{port}}{% else %}9080{% endif %}", "{{ _('Number') }}"))

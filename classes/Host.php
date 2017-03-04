@@ -327,7 +327,7 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
    and ar.host_id=u.host_id
    and ar.res_id=u.res_id
    and ar.host_id=:id
- order by pctused desc');
+ order by res_name asc');
 		$s7->bindParam(':id', $id, PDO::PARAM_INT);
 		$s7->execute();
 		while($r = $s7->fetch()) {

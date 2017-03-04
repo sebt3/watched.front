@@ -7,8 +7,8 @@
 {% block scripts %}
 <script>
 d3.select('section.content').call(wdRow()
-	.cell('col-md-4', wdPropertyWidget().source("{{ path_for('widgets.property.event',  { 'id': e.id }) }}"))
-	.cell('col-md-8', wdBox().title("{{ _('Graphics') }}")
+	.cell('col-md-4 col-lg-3', wdPropertyWidget().source("{{ path_for('widgets.property.event',  { 'id': e.id }) }}"))
+	.cell('col-md-8 col-lg-9', wdBox().title("{{ _('Graphics') }}")
 		.body(wdLineChart().prop("{{ e.property }}").baseUrl("{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}")
 )));
 </script>

@@ -7,7 +7,7 @@
 {% block scripts %}
 <script>
 d3.select('section.content').call(wdRow()
-	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.users.add') }}").body(wdBox().class('box-info')
+	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.users.add') }}").body(wdBox().class('box-info')
 		.title("{{ _('Create a user') }}").body(wdUnion()
 			.item(wdFormGroup('username').label("{{ _('Username') }}").value("{{ username }}", "{{ _('Username') }}"))
 			.item(wdFormGroup('firstname').label("{{ _('First name') }}").value("{{ firstname }}", "{{ _('First name') }}"))

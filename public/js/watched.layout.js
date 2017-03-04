@@ -188,7 +188,7 @@ function wdProgess() {
 	function chart(s) { s.each(chart.init); return chart; }
 	chart.title	= function(t) { title = t;return chart;}
 	chart.url	= function(t) {   url = t;return chart;}
-	chart.data	= function(t) { items = t;log(items);return chart;}
+	chart.data	= function(t) { items = t;return chart;}
 	chart.item	= function(p,c) { if (typeof c == 'undefined') c='progress-bar-success';items.push({ 'pct': p, 'class':c});return chart;}
 	chart.init	= function() {
 		var root = d3.select(this)
@@ -243,8 +243,8 @@ function wdFormGroup(p_id) {
 	chart.add	= function(t,c) { if (typeof c == 'undefined') c=false;addons.push({ 'text': t, 'before':c});return chart;}
 	chart.init	= function() {
 		var g	= d3.select(this).append('div').attr('class', 'form-group')
-		g.append('label').attr('for',id).attr('class','col-sm-2 control-label').html(label)
-		var d	= g.append('div').attr('class', 'col-sm-10')
+		g.append('label').attr('for',id).attr('class','col-sm-4 control-label').html(label)
+		var d	= g.append('div').attr('class', 'col-sm-8')
 		if (addons.length>0)
 			d = d.append('div').attr('class', 'input-group')
 		addons.forEach(function(i){

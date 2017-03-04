@@ -7,7 +7,7 @@
 {% block scripts %}
 <script>
 d3.select('section.content').call(wdRow()
-	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.apps.addService', {'id': app_id}) }}").body(wdBox().class('box-info')
+	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.apps.addService', {'id': app_id}) }}").body(wdBox().class('box-info')
 		.title("{{ _('Add a service to an application:') }} {{ name }}").body(wdUnion()
 			.item(wdFormGroup('hid').label("{{ _('Available services') }}").obj(
 				wdFormSelect('sid').value({{ sid }})

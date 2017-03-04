@@ -7,7 +7,7 @@
 {% block scripts %}
 <script>
 d3.select('section.content').call(wdRow()
-	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.domains.changeTeam', {'id': domain_id, 'rid': role.id, 'tid': team.id}) }}").body(wdBox().class('box-info')
+	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.domains.changeTeam', {'id': domain_id, 'rid': role.id, 'tid': team.id}) }}").body(wdBox().class('box-info')
 		.title("{{ _('Update alerting on domain') }}  {{ name }}").body(wdUnion()
 			.item(wdFormGroup('did').label("{{ _('Domain') }}").value("{{ domain_id }}","{{ name }}").type('hidden'))
 			.item(wdFormGroup('tid').label("{{ _('Team') }}").value("{{ team.id }}","{{ team.name }}").type('hidden'))

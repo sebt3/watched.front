@@ -8,7 +8,7 @@
 <script src="/js/watched.tables.js"></script>
 <script>
 d3.select('section.content').call(wdRow()
-	  .cell('col-md-6',wdUnion()
+	  .cell('col-lg-6',wdUnion()
 		.item(wdForm().url("{{ path_for('admin.apps.change', {'id': app_id}) }}").body(wdBox()
 			.title("{{ _('Modify an application') }}").class('box-info').body(wdUnion()
 				.item(wdFormGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
@@ -38,7 +38,7 @@ d3.select('section.content').call(wdRow()
 		actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.apps.changeTeam', { 'id': app_id, 'tid': a.team_id, 'rid': a.role_id }) }}" },
 			{ icon:"fa fa-trash",  target: "#deleteTeam{{ app_id }}-{{ a.team_id }}-{{ a.role_id }}" } ]
 	}, {% endfor %}
-	])))).cell('col-md-6',wdBox().title("{{ _('Services') }}")
+	])))).cell('col-lg-6',wdBox().title("{{ _('Services') }}")
 		 .tool(wdAButton().class('btn-default pull-right')
 			.url("{{ path_for('admin.apps.addService', {'id': app_id}) }}")
 			.text("{{ _('Add') }}").icon('fa fa-plus')

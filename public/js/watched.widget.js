@@ -60,7 +60,6 @@ function wdDonutWidget() {
 		title = chart.data().title;
 		if (typeof chart.data().footer != 'undefined')
 			footer.data(chart.data().footer);
-		log(chart.data().footer)
 	});
 	chart.dispatch.on("renderUpdate.wdDonutWidget", function() {
 		var b = wdBox().title(title)
@@ -83,7 +82,7 @@ function wdListWidget() {
 		chart.root().select('div').remove();
 		chart.root().call(wdBox().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(body)			
+			.body(body)
 		);
 	});
 	return chart;
@@ -100,7 +99,7 @@ function wdProgessListWidget() {
 		chart.root().select('div').remove();
 		chart.root().call(wdBox().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(body)			
+			.body(body)
 		);
 	});
 	return chart;
@@ -115,7 +114,7 @@ function wdPropertyWidget() {
 		chart.root().select('div').remove();
 		chart.root().call(wdBox().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(body)			
+			.body(body)
 		);
 	});
 	return chart;
@@ -130,7 +129,7 @@ function wdMemSwapWidget() {
 		chart.root().select('div').remove();
 		chart.root().call(wdBox().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(body)			
+			.body(body)
 		);
 	});
 	return chart;

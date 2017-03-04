@@ -123,10 +123,10 @@ function wdDonutChart(pClass) {
 
 	chart.dispatch.on("init.wdDonutChart", function() { 
 		var	rowHtml	= chart.root().append("div").attr("class", "row"),
-			leftHtml= rowHtml.append("div").attr("class", "col-xs-6 col-md-8")
+			leftHtml= rowHtml.append("div").attr("class", "col-xs-12 col-sm-8 col-md-12 col-lg-7")
 					.append("div").attr("class", "chart-responsive");
-		rightHtml	= rowHtml.append("div").attr("class", "col-xs-6 col-md-4");
-		rightHtml.append("ul").attr("class", "chart-legend clearfix").call(legend);
+		rightHtml	= rowHtml.append("div").attr("class", "col-xs-12 col-sm-4 col-md-12 col-lg-5");
+		rightHtml.append("ul").attr("class", "list-unstyled clearfix").call(legend);
 		leftHtml.append("svg").call(donut);
 		legend.color(chart.color()).data(chart.data());
 		width		= leftHtml.node().getBoundingClientRect().width;

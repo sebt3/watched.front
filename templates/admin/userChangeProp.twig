@@ -7,7 +7,7 @@
 {% block scripts %}
 <script>
 d3.select('section.content').call(wdRow()
-	.cell('col-md-8 col-md-offset-2', wdForm().url("{{ path_for('admin.users.changeProp', {'id': user.id, 'pid': p.id}) }}").body(wdBox().class('box-info')
+	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.users.changeProp', {'id': user.id, 'pid': p.id}) }}").body(wdBox().class('box-info')
 		.title("{{ _('Update alerting property for') }} {{ user.firstname }} {{ user.lastname }}").body(wdUnion()
 			.item(wdFormGroup('pid').label("{{ _('Property') }}").value("{{ p.id }}","{{ p.name }}").type('hidden'))
 			.item(wdFormGroup('value').label("{{ _('Value') }}").value("{{ value }}", "{{ _('Value') }}"))

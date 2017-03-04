@@ -9,8 +9,8 @@
 chart = wdServiceChart().baseUrl("{{ path_for('apiService', { 'id': service.id }) }}");
 d3.select('section.content').call(
 	wdUnion().item(wdRow()
-		 .cell('col-md-8', wdTableWidget().source("{{ path_for('widgets.table.serv.process',  { 'id': service.id }) }}"))
-		 .cell('col-md-4', wdTableWidget().source("{{ path_for('widgets.table.serv.sockets',  { 'id': service.id }) }}"))
+		 .cell('col-lg-8', wdTableWidget().source("{{ path_for('widgets.table.serv.process',  { 'id': service.id }) }}"))
+		 .cell('col-lg-4', wdTableWidget().source("{{ path_for('widgets.table.serv.sockets',  { 'id': service.id }) }}"))
 	).item(wdBox().title("{{ _('Availability') }}")
 			.tool(wdDropButton().text('Period')
 				.item("{{ _('All') }}", 'chart.setPeriod("all")')
