@@ -54,18 +54,19 @@ function wdTableWidget() {
 	return chart;
 }
 function wdDonutWidget() {
-	var chart = wdBaseWidget(),body = wdDonutChart(), title = '', footer;
+	var chart = wdBaseWidget(),body = wdDonutChart(), title = '', footer = wdPill();
 	chart.dispatch.on("dataUpdate.wdDonutWidget", function() { 
 		body.data(chart.data().body);
 		title = chart.data().title;
 		if (typeof chart.data().footer != 'undefined')
-			footer = wdPill().data(chart.data().footer);
+			footer.data(chart.data().footer);
+		log(chart.data().footer)
 	});
 	chart.dispatch.on("renderUpdate.wdDonutWidget", function() {
 		var b = wdBox().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
 			.body(body);
-		if (typeof footer != 'undefined')
+		if (typeof chart.data().footer != 'undefined' && chart.data().footer.length>0)
 			b.footer(footer);
 		chart.root().select('div').remove();
 		chart.root().call(b);
@@ -106,11 +107,11 @@ function wdProgessListWidget() {
 }
 function wdPropertyWidget() {
 	var chart = wdBaseWidget(),body = wdDescTable(), title = '';
-	chart.dispatch.on("dataUpdate.wdListWidget", function() { 
+	chart.dispatch.on("dataUpdate.wdPropertyWidget", function() { 
 		body.data(chart.data().body);
 		title = chart.data().title;
 	});
-	chart.dispatch.on("renderUpdate.wdListWidget", function() {
+	chart.dispatch.on("renderUpdate.wdPropertyWidget", function() {
 		chart.root().select('div').remove();
 		chart.root().call(wdBox().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
@@ -122,7 +123,6 @@ function wdPropertyWidget() {
 function wdMemSwapWidget() {
 	var chart = wdBaseWidget(),body = wdMemSwapChart(), title = '';
 	chart.dispatch.on("dataUpdate.wdMemSwapWidget", function() {
-		log(chart.data().body)
 		body.data(chart.data().body);
 		title = chart.data().title;
 	});

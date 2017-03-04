@@ -188,7 +188,7 @@ function wdProgess() {
 	function chart(s) { s.each(chart.init); return chart; }
 	chart.title	= function(t) { title = t;return chart;}
 	chart.url	= function(t) {   url = t;return chart;}
-	chart.data	= function(t) { items = t;return chart;}
+	chart.data	= function(t) { items = t;log(items);return chart;}
 	chart.item	= function(p,c) { if (typeof c == 'undefined') c='progress-bar-success';items.push({ 'pct': p, 'class':c});return chart;}
 	chart.init	= function() {
 		var root = d3.select(this)

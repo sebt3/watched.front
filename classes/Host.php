@@ -335,12 +335,12 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
 				'title'	=> substr($r['res_name'], 7),
 				'url'	=> $this->router->pathFor('ressource', [ 'aid' => $r['host_id'], 'rid' => $r['res_id']]),
 				'items'	=> array(
-					array('pct'	=> $r['user'],		'class'	=> 'progress-bar-red'),
-					array('pct'	=> $r['system'],	'class'	=> 'progress-bar-yellow'),
-					array('pct'	=> $r['nice'],		'class'	=> 'progress-bar-green'),
-					array('pct'	=> $r['iowait'],	'class'	=> 'progress-bar-blue'),
-					array('pct'	=> $r['irq'],		'class'	=> 'progress-bar-light-blue'),
-					array('pct'	=> $r['softirq'],	'class'	=> 'progress-bar-aqua')
+					array('pct'	=> floatval($r['user']),	'class'	=> 'progress-bar-red'),
+					array('pct'	=> floatval($r['system']),	'class'	=> 'progress-bar-yellow'),
+					array('pct'	=> floatval($r['nice']),	'class'	=> 'progress-bar-green'),
+					array('pct'	=> floatval($r['iowait']),	'class'	=> 'progress-bar-blue'),
+					array('pct'	=> floatval($r['irq']),		'class'	=> 'progress-bar-light-blue'),
+					array('pct'	=> floatval($r['softirq']),	'class'	=> 'progress-bar-aqua')
 			));
 		}
 		return $ret;
