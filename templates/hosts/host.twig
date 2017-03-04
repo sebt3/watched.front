@@ -5,95 +5,20 @@
         <small>{{ host.host }}</small>
 {% endblock %}
 {% block scripts %}
-<script src="/js/watched.donut.js"></script>
-<script src="/js/watched.bar.js"></script>
-<script src="/js/watched.tables.js"></script>
 <script>
 d3.select('section.content').call(
 	wdUnion().item(wdRow()
-		 .cell('col-md-3', wdBox().title("{{ _('Monitoring status') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdDonutChart().data([
-	{% for m in monitorStatus %}
-		{ value: "{{ m.cnt }}", color: "{{ m.color }}", label: "{{ _(m.name) }}" },
-	{% endfor %}
-			])).footer(wdPill()
-	{% for e in activeEvent %}
-		.add({color:"{{ e.color }}", url:"{{ path_for('event', { 'id': e.id|e }) }}", left:"{{ e.decode }}.{{ e.property }}", right: '{{ e.current_value }}{{ e.encode }}{{ e.value }}' })
-	{% endfor %}
-		)).cell('col-md-6', wdBox().title("{{ _('Events history') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdTableChart()
-				.col("{{ _('id') }}")
-				.col("{{ _('start') }}")
-				.col("{{ _('end') }}")
-				.col("{{ _('ressource') }}")
-				.col("{{ _('property') }}")
-				.col("{{ _('value') }}")
-				.col("{{ _('rule') }}")
-				.body([
-	{% for h in monitorHistory %} {
-		id:	{ text: "{{ h.id }}", "color": "{{ h.color }}",  "url": "{{ path_for('event', { 'id': h.id }) }}"},
-		stime:	{ text: "{{ h.start_time }}", color: "{{ h.color }}",  url: "{{ path_for('event', { 'id': h.id }) }}"},
-		etime:	{ text: "{{ h.end_time }}", color: "{{ h.color }}",  url: "{{ path_for('event', { 'id': h.id }) }}"},
-		res:	{ text: "{{ h.decode }}", color: "{{ h.color }}",  url: "{{ path_for('event', { 'id': h.id }) }}"},
-		prop:	{ text: "{{ h.property }}", color: "{{ h.color }}",  url: "{{ path_for('event', { 'id': h.id }) }}"},
-		value:	{ text: "{{ h.current_value }}", color: "{{ h.color }}", url: "{{ path_for('event', { 'id': h.id }) }}"},
-		rule:	{ text: "{{ h.encode }}{{ h.value }}", color: "{{ h.color }}", url: "{{ path_for('event', { 'id': h.id }) }}"},
-	},{% endfor %}
-		]))).cell('col-md-3', wdBox().title("{{ _('Monitoring item types') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdDonutChart().data([
-	{% for m in monitorItems %}
-		{ value: {{ m.cnt }}, color: "{{ m.color }}", label: "{{ _(m.name) }}" },
-	{% endfor %}
-			]))
-	)).item(wdRow()
-		 .cell('col-md-3', wdBox().title("{{ _('Services') }}")
-			.tool({'action':'collapse', 'icon':'fa fa-minus'})
-			.body(wdList()
-	{% for s in services %}
-		.add({text: "{{ s.name }}", color: "{{ s.color }}", url: "{{ path_for('service', { 'hid': host.id, 'sid': s.serv_id }) }}"})
-	{% endfor %}
-		)).cell('col-md-3', wdBox().title("{{ _('Memory usage (MB)') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdMemSwapChart().data([
-	{% for m in memoryUsage %}
-		{ type: '{{ m.name }}', used: {{ m.used }}, free: {{ m.free }}, url: "{{ path_for('ressource', { 'aid': m.host_id, 'rid': m.res_id }) }}" },
-	{% endfor %}
-			])
-		)).cell('col-md-2', wdBox().title("{{ _('CPU usage') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdList()
-	{% for s in cpuUsage %}
-		.add(wdProgess().title('{{ s.decode }}').url("{{ path_for('ressource', { 'aid': s.host_id, 'rid': s.res_id }) }}")
-			.item({{ s.user }},'progress-bar-red')
-			.item({{ s.system }},'progress-bar-yellow')
-			.item({{ s.nice }},'progress-bar-green')
-			.item({{ s.iowait }},'progress-bar-blue')
-			.item({{ s.irq }},'progress-bar-light-blue')
-			.item({{ s.softirq }},'progress-bar-aqua')
-		)
-	{% endfor %}
-		)).cell('col-md-2', wdBox().title("{{ _('Storage status') }}")
-			.tool({'action':'collapse', 'icon':'fa fa-minus'})
-			.body(wdList()
-	{% for s in storageStatus %}
-		.add(wdProgess().title('{{ s.decode }}').url("{{ path_for('ressource', { 'aid': s.host_id, 'rid': s.res_id }) }}").item({{ s.pctused }},'progress-bar-{{ s.color }}'))
-	{% endfor %}
-		)).cell('col-md-2', wdUnion()
-			 .item(wdBox().title("{{ _('Statistics') }}")
-				.tool({action:'collapse', icon:'fa fa-minus'})
-				.body(wdList()
-	{% for s in stats %}
-		.add({text: "{{ s.name }}", url: "{{ path_for('ressource', { 'aid': s.host_id, 'rid': s.res_id }) }}"})
-	{% endfor %}
-			)).item(wdBox().title("{{ _('Other ressources') }}")
-				.tool({action:'collapse', icon:'fa fa-minus'})
-				.body(wdList()
-	{% for s in ressources %}
-		.add({text: "{{ s.name }}", url: "{{ path_for('ressource', { 'aid': s.host_id, 'rid': s.res_id }) }}"})
-	{% endfor %}
-)))));
+		.cell('col-md-3', wdDonutWidget().source("{{ path_for('widgets.donut.host.status',  { 'id': host.id }) }}"))
+		.cell('col-md-6', wdTableWidget().source("{{ path_for('widgets.table.host.history', { 'id': host.id }) }}"))
+		.cell('col-md-3', wdDonutWidget().source("{{ path_for('widgets.donut.host.items',   { 'id': host.id }) }}"))
+	).item(wdRow()
+		.cell('col-md-3', wdListWidget().source("{{ path_for('widgets.list.host.services',  { 'id': host.id }) }}"))
+		.cell('col-md-3', wdMemSwapWidget().source("{{ path_for('widgets.custom.host.memory',{'id': host.id }) }}"))
+		.cell('col-md-2', wdProgessListWidget().source("{{ path_for('widgets.progress.host.cpu',  { 'id': host.id }) }}"))
+		.cell('col-md-2', wdProgessListWidget().source("{{ path_for('widgets.progress.host.storage',  { 'id': host.id }) }}"))
+		.cell('col-md-2', wdUnion()
+			.item(wdListWidget().source("{{ path_for('widgets.list.host.stats',         { 'id': host.id }) }}"))
+			.item(wdListWidget().source("{{ path_for('widgets.list.host.ressources',    { 'id': host.id }) }}"))
+)));
 </script>
 {% endblock %}

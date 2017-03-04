@@ -7,17 +7,6 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-d3.select('section.content').call(wdBox().body(
-	wdTableChart()
-		.col("{{ _('name') }}")
-		.col("{{ _('monitor items') }}")
-		.col("{{ _('current events') }}")
-		.body([
-    {% for r in ressources %} {
-	name:	{ text: "{{ r.name }}", 
-		url: "{{ path_for('ressource', { 'aid': host.id , 'rid': r.id }) }}"},
-	mon:	{{ r.monitors }}, events:	{{ r.events }}
-    }, {% endfor %}
-  ])));
+d3.select('section.content').call(wdTableWidget().data({{ json(ressources) }}));
 </script>
 {% endblock %}

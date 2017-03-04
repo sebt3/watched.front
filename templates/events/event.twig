@@ -8,21 +8,9 @@
 <script src="/js/watched.line.js"></script>
 <script>
 d3.select('section.content').call(wdRow()
-	 .cell('col-md-4', wdBox().title("{{ _('Event Properties') }}")
-		.body(wdDescTable()
-			.item("{{ _('id') }}", "{{ e.id }}")
-			.item("{{ _('type') }}", "{{ e.event_type }}")
-			.item("{{ _('Host') }}", "{{ e.host_name }}", "{{ path_for('host', { 'id': e.host_id }) }}")
-			.item("{{ _('ressource type') }}", "{{ e.res_type }}")
-			.item("{{ _('ressource') }}", "{{ e.res_name }}","{{ path_for('ressource', { 'aid': e.host_id, 'rid': e.res_id }) }}")
-			.item("{{ _('property') }}", "{{ e.property }}")
-			.item("{{ _('value') }}", "{{ e.current_value }}")
-			.item("{{ _('rule') }}", "{{ e.oper|e }}{{ e.value }}")
-			.item("{{ _('start') }}", "{{ e.start_time }}")
-			.item("{{ _('end') }}", "{{ e.end_time }}")
-	)).cell('col-md-8', wdBox().title("{{ _('Graphics') }}")
+	.cell('col-md-4', wdPropertyWidget().source("{{ path_for('widgets.property.event',  { 'id': e.id }) }}"))
+	.cell('col-md-8', wdBox().title("{{ _('Graphics') }}")
 		.body(wdLineChart().prop("{{ e.property }}").baseUrl("{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}")
 )));
-chart = watchedEvent('morrisChart', "{{ path_for('apiRessource', { 'aid': e.host_id|e, 'rid': e.res_id|e, 'params': e.params, 'name': e.res_type|e }) }}", "{{ e.property }}");
 </script>
 {% endblock %}

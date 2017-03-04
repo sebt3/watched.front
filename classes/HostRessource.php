@@ -20,7 +20,11 @@ class HostRessource extends CorePage {
 	}
 
 	public function getMonitoringStatus($aid, $rid) {
+		$_ = $this->trans;
 		$ret = [];
+		$ret['title'] = $_('Monitoring status');
+		$ret['body'] = [];
+		$ret['footer'] = [];
 		$s1  = $this->db->prepare('select "Ok" as name, 0 as id, t.cnt - m.cnt as cnt 
   from (
 	select count(*) as cnt 
@@ -48,16 +52,13 @@ select et.name, et.id, count(e.id) as cnt
 		$s1->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s1->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s1->execute();
-		while($r1 = $s1->fetch()) {
-			$r1['color'] = $this->getEventColor($r1['name']);
-			$r1['text']  = $this->getEventTextColor($r1['name']);
-			$ret[] = $r1;
+		while($r = $s1->fetch()) {
+			$ret['body'][] = array(
+				'value'	=> $r['cnt'],
+				'color'	=> $this->getEventColor($r['name']),
+				'label'	=> $_($r['name'])
+			);
 		}
-		return $ret;
-	}
-
-	public function getActivesEvents($aid, $rid) {
-		$ret = [];
 		$s2  = $this->db->prepare('select e.id, r.name, et.name as type, e.property, e.current_value, e.oper, e.value, e.start_time
   from h$res_events e, c$ressources r, c$event_types et 
  where e.host_id=:aid
@@ -69,18 +70,22 @@ select et.name, et.id, count(e.id) as cnt
 		$s2->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s2->execute();
 		while($r2 = $s2->fetch()) {
-			$r2['color']  = $this->getEventTextColor($r2['type']);
-			$r2['current_value'] = round($r2['current_value']);
-			$r2['value'] = round($r2['value']);
-			$r2['decode'] = urldecode($r2['name']);
-			$r2['encode'] = urldecode($r2['oper']);
-			$ret[] = $r2;
+			$ret['footer'][] = array(
+				'left'	=> $r2['property'],
+				'right'	=> round($r2['current_value']).$r2['oper'].round($r2['value']),
+				'color'	=> $this->getEventTextColor($r2['type']),
+				'url'	=> $this->router->pathFor('event', [ 'id' => $r2['id']])
+			);
 		}
 		return $ret;
 	}
 
 	public function getMonitoringItems($aid, $rid) {
+		$_ = $this->trans;
 		$ret = [];
+		$ret['title'] = $_('All monitoring item by types');
+		$ret['body'] = [];
+		$ret['footer'] = [];
 		$s3  = $this->db->prepare('select et.name, et.id, ifnull(e.cnt,0) as cnt 
   from c$event_types et 
   left join (
@@ -95,16 +100,14 @@ select et.name, et.id, count(e.id) as cnt
 		$s3->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s3->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s3->execute();
-		while($r3 = $s3->fetch()) {
-			$r3['color'] = $this->getEventColor($r3['name']);
-			$r3['text']  = $this->getEventTextColor($r3['name']);
-			$ret[] = $r3;
+		while($r = $s3->fetch()) {
+			$ret['body'][] = array(
+				'value'	=> $r['cnt'],
+				'color'	=> $this->getEventColor($r['name']),
+				'label'	=> $_($r['name'])
+			);
 		}
-		return $ret;
-	}
 
-	public function getMonitoringList($aid, $rid) {
-		$ret = [];
 		$s4  = $this->db->prepare('select res_name, res_type, event_name, property, oper, value 
   from h$monitoring_items
  where host_id=:aid 
@@ -113,18 +116,28 @@ select et.name, et.id, count(e.id) as cnt
 		$s4->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s4->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s4->execute();
-		while($r4 = $s4->fetch()) {
-			$r4['color']  = $this->getEventTextColor($r4['event_name']);
-			$r4['value'] = round($r4['value']);
-			$r4['decode'] = urldecode($r4['res_name']);
-			$r4['encode'] = urldecode($r4['oper']);
-			$ret[] = $r4;
+		while($r2 = $s4->fetch()) {
+			$ret['footer'][] = array(
+				'left'	=> $r2['property'],
+				'right'	=> $r2['oper'].round($r2['value']),
+				'color'	=> $this->getEventTextColor($r2['event_name'])
+			);
 		}
 		return $ret;
 	}
 
 	public function getMonitoringHistory($aid, $rid) {
+		$_ = $this->trans;
 		$ret = [];
+		$ret['title'] = $_('Events history');
+		$ret['cols'] = [];
+		$ret['cols'][] = array( 'text' => $_('id'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('start'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('end'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('property'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('value'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('rule'), 'class'=> 'sortable');
+		$ret['body'] = [];
 		$s5  = $this->db->prepare('select e.id, e.start_time, e.end_time, e.property, e.current_value, e.oper, e.value, et.name as event_name 
   from h$res_events e, c$event_types et 
  where e.end_time is not null 
@@ -136,17 +149,51 @@ select et.name, et.id, count(e.id) as cnt
 		$s5->bindParam(':aid', $aid, PDO::PARAM_INT);
 		$s5->bindParam(':rid', $rid, PDO::PARAM_INT);
 		$s5->execute();
-		while($r5 = $s5->fetch()) {
-			$r5['color']  = $this->getEventTextColor($r5['event_name']);
-			$r5['value'] = round($r5['value']);
-			$r5['current_value'] = round($r5['current_value']);
-			$r5['encode'] = urldecode($r5['oper']);
-			$r5['start_time'] = $this->formatTimestamp($r5['start_time']);
-			if ($r5['end_time'] != null)
-				$r5['end_time'] = $this->formatTimestamp($r5['end_time']);
-			$ret[] = $r5;
+		while($r = $s5->fetch()) {
+			$ret['body'][] = array(
+				'rowProperties'	=> array(
+					'color'	=> $this->getEventTextColor($r['event_name']),
+					'url'	=> $this->router->pathFor('event', [ 'id' => $r['id']])
+				), 'id'	=> array('text'	=> $r['id']),
+				'stime'	=> array('text'	=> $this->formatTimestamp($r['start_time'])),
+				'etime'	=> array('text'	=> $r['end_time']!=null?$this->formatTimestamp($r['end_time']):''),
+				'prop'	=> array('text'	=> $r['property']),
+				'value'	=> array('text'	=> $r['current_value']),
+				'rule'	=> array('text'	=> $r['oper'].intval($r['value']))
+			);
 		}
 		return $ret;
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// WidgetControlers
+
+	public function widgetTableHistory(Request $request, Response $response) {
+		$host_id = $request->getAttribute('host_id');
+		 $res_id = $request->getAttribute( 'res_id');
+		if ($this->getHost($host_id) == false || $this->getRessource($res_id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($host_id, $request, $response);
+		$response->getBody()->write(json_encode($this->getMonitoringHistory($host_id, $res_id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetDonutStatus(Request $request, Response $response) {
+		$host_id = $request->getAttribute('host_id');
+		 $res_id = $request->getAttribute( 'res_id');
+		if ($this->getHost($host_id) == false || $this->getRessource($res_id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($host_id, $request, $response);
+		$response->getBody()->write(json_encode($this->getMonitoringStatus($host_id, $res_id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetDonutItems(Request $request, Response $response) {
+		$host_id = $request->getAttribute('host_id');
+		 $res_id = $request->getAttribute( 'res_id');
+		if ($this->getHost($host_id) == false || $this->getRessource($res_id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($host_id, $request, $response);
+		$response->getBody()->write(json_encode($this->getMonitoringItems($host_id, $res_id)));
+		return $response->withHeader('Content-type', 'application/json');
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
@@ -169,21 +216,11 @@ select et.name, et.id, count(e.id) as cnt
 			array('name' => $agent['host'], 'url' => $this->router->pathFor('host', array('id' => $aid))), 
 			array('name' => 'resources', 'icon' => 'fa fa-area-chart', 'url' => $this->router->pathFor('ressources', array('id' => $aid))),
 			array('name' => urldecode($res['name']), 'url' => $this->router->pathFor('ressource', array('aid' => $aid, 'rid' => $rid))));
-		if($this->haveMonitoring($aid, $rid))
-			return $this->view->render($response, 'hosts/ressource.twig', [ 
-				'a'		=> $agent,
-				'r'		=> array('id' => $res['id'], 'type' => $res['data_type'], 'name' => urldecode($res['name'])),
-				'monitorStatus' => $this->getMonitoringStatus($aid, $rid),
-				'activeEvent'	=> $this->getActivesEvents($aid, $rid),
-				'monitorItems'	=> $this->getMonitoringItems($aid, $rid),
-				'monitorList'	=> $this->getMonitoringList($aid, $rid),
-				'monitorHistory' => $this->getMonitoringHistory($aid, $rid)
-				]);
-		else
-			return $this->view->render($response, 'hosts/ressource.twig', [ 
-				'a'		=> $agent,
-				'r'		=> array('id' => $res['id'], 'type' => $res['data_type'], 'name' => urldecode($res['name']))
-				]);
+		return $this->view->render($response, 'hosts/ressource.twig', [ 
+			'a'		=> $agent,
+			'r'		=> array('id' => $res['id'], 'type' => $res['data_type'], 'name' => urldecode($res['name'])),
+			'monit'		=> $this->haveMonitoring($aid, $rid)
+		]);
 	}
 }
 

@@ -11,39 +11,9 @@
 chart = wdServiceChart().baseUrl("{{ path_for('apiService', { 'id': service.id }) }}");
 d3.select('section.content').call(
 	wdUnion().item(wdRow()
-		 .cell('col-md-8', wdBox().title("{{ _('Process') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdTableChart()
-				.col("{{ _('name') }}")
-				.col("{{ _('path') }}")
-				.col("{{ _('cwd') }}")
-				.col("{{ _('username') }}")
-				.col("{{ _('last check') }}")
-				.col("{{ _('status') }}")
-				.body([
-        {% for a in service.process %}{
-		name:	"{{ a.process_name }}",
-		path:	"{{ a.full_path }}",
-		cwd:	"{{ a.cwd }}",
-		uname:	"{{ a.username }}",
-		time:	"{{ a.timestamp }}",
-		status:	{  color: "{{ a.color }}", text: "{{ a.status }}" },
-	},{% endfor %}
-				])
-		)).cell('col-md-4', wdBox().title("{{ _('Sockets') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdTableChart()
-				.col("{{ _('listen') }}")
-				.col("{{ _('last check') }}")
-				.col("{{ _('status') }}")
-				.body([
-        {% for a in service.sockets %}{
-		name:	"{{ a.socket_name }}",
-		time:	"{{ a.timestamp }}",
-		status:	{  color: "{{ a.color }}", text: "{{ a.status }}" },
-	},{% endfor %}
-				])
-	))).item(wdBox().title("{{ _('Availability') }}")
+		 .cell('col-md-8', wdTableWidget().source("{{ path_for('widgets.table.serv.process',  { 'id': service.id }) }}"))
+		 .cell('col-md-4', wdTableWidget().source("{{ path_for('widgets.table.serv.sockets',  { 'id': service.id }) }}"))
+	).item(wdBox().title("{{ _('Availability') }}")
 			.tool(wdDropButton().text('Period')
 				.item("{{ _('All') }}", 'chart.setPeriod("all")')
 				.item("{{ _('Last month') }}", 'chart.setPeriod("month")')

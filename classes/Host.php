@@ -9,9 +9,17 @@ class Host extends CorePage {
 	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-// Model
-	public function getList() {
-		$results = [];
+// Model2Widget
+	private function getList() {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['body'] = [];
+		$ret['cols'] = [];
+		$ret['cols'][] = array( 'text' => $_('name'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('monitor items'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('current events'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('ressources'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('services'), 'class'=> 'sortable');
 		$stmt = $this->db->query('select a.id, a.name as host, ifnull(m.cnt, 0)+ifnull(p.cnt, 0)+ifnull(o.cnt, 0) as monitor_items, ifnull(fo.cnt, 0)+ifnull(fp.cnt, 0) as failed, ifnull(e.cnt, 0) as events, ifnull(r.cnt, 0) as ressources, ifnull(s.cnt, 0) as services
   from h$hosts a 
   left join (
@@ -62,14 +70,38 @@ class Host extends CorePage {
 	 group by host_id
   ) fo on a.id=fo.host_id
  order by events+failed desc');
-		while($row = $stmt->fetch())
-			$results[] = $row;
-		return $results;
+		while($r = $stmt->fetch()) {
+			$ret['body'][] = array(
+				'name'	=> array('text'	=> $r['host'], 'url' => $this->router->pathFor('host', [ 'id' => $r['id']])),
+				'items'	=> array('text'	=> $r['monitor_items']),
+				'events'=> array('text'	=> $r['events']+$r['failed']),
+				'res'	=> array('text'	=> $r['ressources'], 'url' => $this->router->pathFor('ressources', [ 'id' => $r['id']])),
+				'serv'	=> array('text'	=> $r['services'], 'url' => $this->router->pathFor('services', [ 'id' => $r['id']]))
+			);
+		}
+		return $ret;
 	}
 
-	public function getMonitoringStatus($id) {
+	private function getMonitoringStatus($id) {
+		$_ = $this->trans;
 		$ret = [];
-		$s1 = $this->db->prepare('select "Ok" as name, 0 as id, t.cnt+po.cnt+so.cnt - m.cnt as cnt
+		$ret['title'] = $_('All monitoring item by types');
+		$ret['body'] = [];
+		$ret['footer'] = [];
+		$s2 = $this->db->prepare('select e.id, r.name, et.name as type, e.property, e.current_value, e.oper, e.value, e.start_time
+  from h$res_events e, c$ressources r, c$event_types et 
+ where e.host_id=:id and e.res_id=r.id and et.id=e.event_type and e.end_time is null');
+		$s2->bindParam(':id', $id, PDO::PARAM_INT);
+		$s2->execute();
+		while($r2 = $s2->fetch()) {
+			$ret['footer'][] = array(
+				'left'	=> urldecode($r2['name']).".".$r2['property'],
+				'right'	=> round($r2['current_value']).$r2['oper'].round($r2['value']),
+				'color'	=> $this->getEventTextColor($r2['type']),
+				'url'	=> $this->router->pathFor('event', [ 'id' => $r2['id']])
+			);
+		}
+		$s3 = $this->db->prepare('select "Ok" as name, 0 as id, t.cnt+po.cnt+so.cnt - m.cnt as cnt
   from (
 	select count(*) as cnt 
 	  from s$process
@@ -149,36 +181,23 @@ select et.name, et.id, count(e.id) as cnt
   ) e on et.id = e.event_type 
  group by et.name
  order by id');
-		$s1->bindParam(':id', $id, PDO::PARAM_INT);
-		$s1->execute();
-		while($r1 = $s1->fetch()) {
-			$r1['color'] = $this->getEventColor($r1['name']);
-			$r1['text']  = $this->getEventTextColor($r1['name']);
-			$ret[] = $r1;
+		$s3->bindParam(':id', $id, PDO::PARAM_INT);
+		$s3->execute();
+		while($r = $s3->fetch()) {
+			$ret['body'][] = array(
+				'value'	=> $r['cnt'],
+				'color'	=> $this->getEventColor($r['name']),
+				'label'	=> $_($r['name'])
+			);
 		}
 		return $ret;
 	}
 
-	public function getActivesEvents($id) {
+	private function getMonitoringItems($id) {
+		$_ = $this->trans;
 		$ret = [];
-		$s2 = $this->db->prepare('select e.id, r.name, et.name as type, e.property, e.current_value, e.oper, e.value, e.start_time
-  from h$res_events e, c$ressources r, c$event_types et 
- where e.host_id=:id and e.res_id=r.id and et.id=e.event_type and e.end_time is null');
-		$s2->bindParam(':id', $id, PDO::PARAM_INT);
-		$s2->execute();
-		while($r2 = $s2->fetch()) {
-			$r2['color'] = $this->getEventTextColor($r2['type']);
-			$r2['current_value'] = round($r2['current_value']);
-			$r2['value'] = round($r2['value']);
-			$r2['decode'] = urldecode($r2['name']);
-			$r2['encode'] = html_entity_decode($r2['oper']);
-			$ret[] = $r2;
-		}
-		return $ret;
-	}
-
-	public function getMonitoringItems($id) {
-		$ret = [];
+		$ret['title'] = $_('All monitoring item by types');
+		$ret['body'] = [];
 		$s3 = $this->db->prepare('select et.name, et.id, ifnull(e.cnt,0) as cnt
   from c$event_types et
   left join (
@@ -203,16 +222,29 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
  order by id');
 		$s3->bindParam(':id', $id, PDO::PARAM_INT);
 		$s3->execute();
-		while($r3 = $s3->fetch()) {
-			$r3['color'] = $this->getEventColor($r3['name']);
-			$r3['text']  = $this->getEventTextColor($r3['name']);
-			$ret[] = $r3;
+		while($r = $s3->fetch()) {
+			$ret['body'][] = array(
+				'value'	=> $r['cnt'],
+				'color'	=> $this->getEventColor($r['name']),
+				'label'	=> $_($r['name'])
+			);
 		}
 		return $ret;
 	}
 
-	public function getMonitoringHistory($id) {
+	private function getMonitoringHistory($id) {
+		$_ = $this->trans;
 		$ret = [];
+		$ret['title'] = $_('Events history');
+		$ret['cols'] = [];
+		$ret['cols'][] = array( 'text' => $_('id'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('start'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('end'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('ressource'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('property'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('value'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('rule'), 'class'=> 'sortable');
+		$ret['body'] = [];
 		$s5 = $this->db->prepare('select r.name as res_name, e.id, e.start_time, e.end_time, e.property, e.current_value, e.oper, e.value, et.name as event_name
   from h$res_events e, c$event_types et, c$ressources r
  where e.res_id=r.id
@@ -223,22 +255,28 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
  limit 6');
 		$s5->bindParam(':aid', $id, PDO::PARAM_INT);
 		$s5->execute();
-		while($r5 = $s5->fetch()) {
-			$r5['color'] = $this->getEventTextColor($r5['event_name']);
-			$r5['value'] = round($r5['value']);
-			$r5['current_value'] = round($r5['current_value']);
-			$r5['encode'] = $r5['oper'];
-			$r5['start_time'] = $this->formatTimestamp($r5['start_time']);
-			if ($r5['end_time'] != null)
-				$r5['end_time'] = $this->formatTimestamp($r5['end_time']);
-			$r5['decode'] = urldecode($r5['res_name']);
-			$ret[] = $r5;
+		while($r = $s5->fetch()) {
+			$ret['body'][] = array(
+				'rowProperties'	=> array(
+					'color'	=> $this->getEventTextColor($r['event_name']),
+					'url'	=> $this->router->pathFor('event', [ 'id' => $r['id']])
+				), 'id'	=> array('text'	=> $r['id']),
+				'stime'	=> array('text'	=> $this->formatTimestamp($r['start_time'])),
+				'etime'	=> array('text'	=> $r['end_time']!=null?$this->formatTimestamp($r['end_time']):''),
+				'res'	=> array('text'	=> urldecode($r['res_name'])),
+				'prop'	=> array('text'	=> $r['property']),
+				'value'	=> array('text'	=> $r['current_value']),
+				'rule'	=> array('text'	=> $r['oper'].intval($r['value']))
+			);
 		}
 		return $ret;
 	}
 
-	public function getStorageStatus($id) {
+	private function getStorageStatus($id) {
+		$_ = $this->trans;
 		$ret = [];
+		$ret['title'] = $_('Storage status');
+		$ret['body'] = [];
 		$s6 = $this->db->prepare('select ar.host_id, ar.res_id, r.name as res_name, d.free, d.ipctfree, d.pctfree, 100-d.pctfree pctused, d.size
   from h$ressources ar, c$ressources r, d$disk_usage d, (
 	select host_id, res_id, max(timestamp) ts
@@ -257,16 +295,24 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
  order by pctused desc');
 		$s6->bindParam(':id', $id, PDO::PARAM_INT);
 		$s6->execute();
-		while($r6 = $s6->fetch()) {
-			$r6['decode'] = urldecode(substr($r6['res_name'], 10));
-			$r6['color']  = $this->getPctColor($r6['pctused']);
-			$ret[] = $r6;
+		while($r = $s6->fetch()) {
+			$ret['body'][] = array(
+				'title'	=> urldecode(substr($r['res_name'], 10)),
+				'url'	=> $this->router->pathFor('ressource', [ 'aid' => $r['host_id'], 'rid' => $r['res_id']]),
+				'items'	=> array(
+					array(	'pct'	=> $r['pctused'],
+						'class'	=> 'progress-bar-'.$this->getPctColor($r['pctused'])
+					)
+			));
 		}
 		return $ret;
 	}
 
-	public function getCPUusage($id) {
+	private function getCPUusage($id) {
+		$_ = $this->trans;
 		$ret = [];
+		$ret['title'] = $_('CPU usage');
+		$ret['body'] = [];
 		$s7 = $this->db->prepare('select u.host_id, u.res_id, r.name as res_name, u.iowait, u.irq, u.nice, u.softirq, u.system, u.user, u.iowait+u.irq+u.nice+u.softirq+u.system+u.user as pctused
   from h$ressources ar, c$ressources r, d$cpu_usage u, (
 	select host_id, res_id, max(timestamp) as ts
@@ -284,15 +330,27 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
  order by pctused desc');
 		$s7->bindParam(':id', $id, PDO::PARAM_INT);
 		$s7->execute();
-		while($r7 = $s7->fetch()) {
-			$r7['decode'] = substr($r7['res_name'], 7);
-			$ret[] = $r7;
+		while($r = $s7->fetch()) {
+			$ret['body'][] = array(
+				'title'	=> substr($r['res_name'], 7),
+				'url'	=> $this->router->pathFor('ressource', [ 'aid' => $r['host_id'], 'rid' => $r['res_id']]),
+				'items'	=> array(
+					array('pct'	=> $r['user'],		'class'	=> 'progress-bar-red'),
+					array('pct'	=> $r['system'],	'class'	=> 'progress-bar-yellow'),
+					array('pct'	=> $r['nice'],		'class'	=> 'progress-bar-green'),
+					array('pct'	=> $r['iowait'],	'class'	=> 'progress-bar-blue'),
+					array('pct'	=> $r['irq'],		'class'	=> 'progress-bar-light-blue'),
+					array('pct'	=> $r['softirq'],	'class'	=> 'progress-bar-aqua')
+			));
 		}
 		return $ret;
 	}
 
-	public function getMemoryUsage($id) {
+	private function getMemoryUsage($id) {
+		$_ = $this->trans;
 		$ret = [];
+		$ret['title'] = $_('Memory usage (MB)');
+		$ret['body'] = [];
 		$s8 = $this->db->prepare('select m.host_id, m.res_id, "memory" as name, (m.apps+m.buffer+m.slab+m.cached)/1024 as used, m.free/1024 as free, m.pct as pctfree, 100-m.pct as pctused
   from d$memory_usage m, (
 	select host_id, res_id, max(timestamp) ts
@@ -316,14 +374,22 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
    and s.host_id=:id');
 		$s8->bindParam(':id', $id, PDO::PARAM_INT);
 		$s8->execute();
-		while($r8 = $s8->fetch()) {
-			$ret[] = $r8;
+		while($r = $s8->fetch()) {
+			$ret['body'][] = array(
+				'type'	=> $r['name'],
+				'used'	=> intval($r['used']),
+				'free'	=> intval($r['free']),
+				'url'	=> $this->router->pathFor('ressource', [ 'aid' => $r['host_id'], 'rid' => $r['res_id']])
+			);
 		}
 		return $ret;
 	}
 
-	public function getStats($id) {
+	private function getStats($id) {
+		$_ = $this->trans;
 		$ret = [];
+		$ret['title'] = $_('Statistics');
+		$ret['body'] = [];
 		$s9 = $this->db->prepare('select r.name, ar.host_id, ar.res_id
   from c$ressources r, h$ressources ar
  where r.data_type like "%stat%"
@@ -331,14 +397,20 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
    and ar.host_id=:id');
 		$s9->bindParam(':id', $id, PDO::PARAM_INT);
 		$s9->execute();
-		while($r9 = $s9->fetch()) {
-			$ret[] = $r9;
+		while($r = $s9->fetch()) {
+			$ret['body'][] = array(
+				'text'	=> $r['name'],
+				'url'	=> $this->router->pathFor('ressource', [ 'aid' => $r['host_id'], 'rid' => $r['res_id']])
+			);
 		}
 		return $ret;
 	}
 
-	public function getOtherRessources($id) {
+	private function getOtherRessources($id) {
+		$_ = $this->trans;
 		$ret = [];
+		$ret['title'] = $_('Other ressources');
+		$ret['body'] = [];
 		$s10 = $this->db->prepare('select r.name, ar.host_id, ar.res_id
   from c$ressources r, h$ressources ar
  where r.data_type not in ("disk_usage", "cpu_usage", "memory_usage", "swap_usage")
@@ -347,13 +419,53 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
    and ar.host_id=:id');
 		$s10->bindParam(':id', $id, PDO::PARAM_INT);
 		$s10->execute();
-		while($r10 = $s10->fetch()) {
-			$ret[] = $r10;
+		while($r = $s10->fetch()) {
+			$ret['body'][] = array(
+				'text'	=> $r['name'],
+				'url'	=> $this->router->pathFor('ressource', [ 'aid' => $r['host_id'], 'rid' => $r['res_id']])
+			);
 		}
 		return $ret;
 	}
 
-	public function getAllRessources($id) {
+	private function getServices($id) {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['title'] = $_('Services');
+		$ret['body'] = [];
+		$s   = $this->db->prepare('select max(late_sec) as late_sec, count(distinct status) as cnt_stat, min(status) as status, x.serv_id, s.name
+  from (
+	select (UNIX_TIMESTAMP()*1000-min(timestamp))/1000 as late_sec, status, serv_id
+	  from s$sockets
+	 group by status, serv_id
+	union
+	select (UNIX_TIMESTAMP()*1000-min(timestamp))/1000 as late_sec, status, serv_id
+	  from s$process
+	 group by status, serv_id
+  ) x, s$services s
+ where x.serv_id = s.id
+   and s.host_id=:id
+ group by x.serv_id, s.name');
+		$s->bindParam(':id', $id, PDO::PARAM_INT);
+		$s->execute();
+		while($r = $s->fetch()) {
+			$ret['body'][] = array(
+				'text'	=> $r['name'],
+				'color'	=> $this->getStatusColor($r['status'], $r['late_sec']),
+				'url'	=> $this->router->pathFor('service', [ 'hid' => $id, 'sid'=> $r['serv_id']])
+			);
+		}
+		return $ret;
+	}
+
+	private function getAllRessources($id) {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['cols'] = [];
+		$ret['cols'][] = array( 'text' => $_('name'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('monitor items'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('current events'), 'class'=> 'sortable');
+		$ret['body'] = [];
 		$stmt = $this->db->prepare('select r.*, ifnull(m.cnt,0) as monitors, ifnull(e.cnt,0) as events 
   from (
 	select *
@@ -375,38 +487,91 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
  order by events desc, monitors desc, r.name');
 		$stmt->bindParam(':id', $id, PDO::PARAM_INT);
 		$stmt->execute();
-		$results = [];
-		while($row = $stmt->fetch()) {
-			$row['name']=urldecode($row['name']);
-			$results[] = $row;
-		}
-		return $results;
-	}
-
-	public function getServices($id) {
-		$ret = [];
-		$s   = $this->db->prepare('select max(late_sec) as late_sec, count(distinct status) as cnt_stat, min(status) as status, x.serv_id, s.name
-  from (
-	select (UNIX_TIMESTAMP()*1000-min(timestamp))/1000 as late_sec, status, serv_id
-	  from s$sockets
-	 group by status, serv_id
-	union
-	select (UNIX_TIMESTAMP()*1000-min(timestamp))/1000 as late_sec, status, serv_id
-	  from s$process
-	 group by status, serv_id
-  ) x, s$services s
- where x.serv_id = s.id
-   and s.host_id=:id
- group by x.serv_id, s.name');
-		$s->bindParam(':id', $id, PDO::PARAM_INT);
-		$s->execute();
-		while($r = $s->fetch()) {
-			$r['color']	= $this->getStatusColor($r['status'], $r['late_sec']);
-			$ret[] = $r;
+		while($r = $stmt->fetch()) {
+			$ret['body'][] = array(
+				'name'	=> array('text'	=> urldecode($r['name']), 'url' => $this->router->pathFor('ressource', [ 'aid' => $id, 'rid' => $r['id']])),
+				'mon'	=> array('text'	=> $r['monitors']),
+				'events'=> array('text'	=> $r['events'])
+			);
 		}
 		return $ret;
 	}
 
+/////////////////////////////////////////////////////////////////////////////////////////////
+// WidgetControlers
+
+	public function widgetDonutStatus(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getMonitoringStatus($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetDonutItems(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getMonitoringItems($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetTableHistory(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getMonitoringHistory($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetListServices(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getServices($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetListStats(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getStats($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetListRessources(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getOtherRessources($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetProgressCpu(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getCPUusage($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetProgressStorage(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getStorageStatus($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetMemSwap(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getMemoryUsage($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
@@ -429,17 +594,7 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 			array('name' => 'hosts', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts') ), 
 			array('name' => $host['host'], 'url' => $this->router->pathFor('host', array('id' => $id)) ));
 		return $this->view->render($response, 'hosts/host.twig', [ 
-			'host'		 => $host, 
-			'monitorStatus'	 => $this->getMonitoringStatus($id),
-			'activeEvent'	 => $this->getActivesEvents($id),
-			'monitorItems'	 => $this->getMonitoringItems($id),
-			'monitorHistory' => $this->getMonitoringHistory($id),
-			'storageStatus'  => $this->getStorageStatus($id),
-			'cpuUsage'	 => $this->getCPUusage($id),
-			'memoryUsage'	 => $this->getMemoryUsage($id),
-			'stats'		 => $this->getStats($id),
-			'services'	 => $this->getServices($id),
-			'ressources' 	 => $this->getOtherRessources($id)
+			'host'		 => $host
 			]);
 	}
 

@@ -5,77 +5,17 @@
         <small>{{ _('overview') }}</small>
 {% endblock %}
 {% block scripts %}
-<script src="/js/watched.donut.js"></script>
-<script src="/js/watched.tables.js"></script>
 <script>
 d3.select('section.content').call(
 	wdUnion().item(wdRow()
-		.cell('col-md-4', wdBox().title("{{ _('Monitoring status') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdDonutChart().data([
-	{% for m in monitorStatus %}
-		{ value: {{ m.cnt }}, color: "{{ m.color }}", label: "{{ _(m.name) }}" },
-	{% endfor %}
-			])))
-		.cell('col-md-4', wdBox().title("{{ _('All monitoring item by types') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdDonutChart().data([
-	{% for m in monitorItems %}{
-		value: {{ m.cnt }}, color: "{{ m.color }}", label: "{{ _(m.name) }}"
-	},{% endfor %}
-			]))
-		)
-		.cell('col-md-4', wdBox().title("{{ _('Hosts by domain') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdDonutChart().data([
-	{% for m in domains %}{
-		value: {{ m.cnt }}, color: "{{ m.color }}", label: "{{ _(m.name) }}"
-	},{% endfor %}
-			]))
-		)
-	)	.item(wdRow()
-		.cell('col-md-7', wdBox().title("{{ _('Current events') }}")
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(wdTableChart()
-				.col('{{ _('id') }}')
-				.col('{{ _('since') }}')
-				.col('{{ _('host') }}')
-				.col('{{ _('ressource') }}')
-				.col('{{ _('property') }}')
-				.col('{{ _('value') }}')
-				.col('{{ _('rule') }}')
-				.body([
-	{% for h in events %} {
-		id:	{ color: "{{ h.color }}", text: "{{ h.id }}",  url: "{{ path_for('event', { 'id': h.id }) }}"},
-		stime:	{ color: "{{ h.color }}", text: "{{ h.start_time }}",  url: "{{ path_for('event', { 'id': h.id }) }}"},
-		hname:	{ color: "{{ h.color }}", text: "{{ h.host_name }}",  url: "{{ path_for('event', { 'id': h.id }) }}"},
-		res:	{ color: "{{ h.color }}", text: "{{ h.decode }}",  url: "{{ path_for('event', { 'id': h.id }) }}"},
-		prop:	{ color: "{{ h.color }}", text: "{{ h.property }}", url: "{{ path_for('event', { 'id': h.id }) }}"},
-		value:	{ color: "{{ h.color }}", text: "{{ h.current_value }}", url: "{{ path_for('event', { 'id': h.id }) }}"},
-		rule:	{ color: "{{ h.color }}", text: "{{ h.encode }}{{ h.value }}", url: "{{ path_for('event', { 'id': h.id }) }}"},
-	}, {% endfor %}
-			])
-		)
-	)
-    {% if menu.isAuth %}
-		.cell('col-md-5', wdBox().title("{{ _('Failed services') }}")
-			.tool({'action':'collapse', 'icon':'fa fa-minus'})
-			.body(wdTableChart()
-				.col('{{ _('host') }}')
-				.col('{{ _('service') }}')
-				.col('{{ _('since') }}')
-				.col('{{ _('status') }}')
-				.body([
-	{% for h in services %} {
-		host:	{ color: "{{ h.color }}", text: "{{ h.host }}",  url: "{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}"},
-		serv:	{ color: "{{ h.color }}", text: "{{ h.service }}",  url: "{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}"},
-		time:	{ color: "{{ h.color }}", text: "{{ h.timestamp }}",  url: "{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}"},
-		status:	{ color: "{{ h.color }}", text: "{{ _(h.status) }}",  url: "{{ path_for('service', { 'sid': h.serv_id, 'hid': h.host_id }) }}"},
-	}, {% endfor %}
-			])
-		)
-	)
-    {% endif %}
-  ));
+		.cell('col-md-4', wdDonutWidget().source("{{ path_for('widgets.donut.dash.status') }}"))
+		.cell('col-md-4', wdDonutWidget().source("{{ path_for('widgets.donut.dash.items') }}"))
+		.cell('col-md-4', wdDonutWidget().source("{{ path_for('widgets.donut.dash.domains') }}"))
+	).item(wdRow()
+		.cell('col-md-7', wdTableWidget().source("{{ path_for('widgets.table.dash.events') }}"))
+{% if menu.isAuth %}
+		.cell('col-md-5', wdTableWidget().source("{{ path_for('widgets.table.dash.failed') }}"))
+{% endif %}
+));
 </script>
 {% endblock %}

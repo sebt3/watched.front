@@ -46,6 +46,7 @@ $container['view'] = function ($container) use ($app) {
     $view->getEnvironment()->addGlobal('menu',  $container->menu);
     $view->getEnvironment()->addGlobal('flash', $container->flash);
     $view->getEnvironment()->addFunction(new Twig_SimpleFunction('_', $container->trans));
+    $view->getEnvironment()->addFunction(new Twig_SimpleFunction('json', 'json_encode', array('is_safe' => array('html'))));
 
     return $view;
 };
@@ -183,6 +184,63 @@ $app->group('/auth', function () use ($app) {
 $app->group('/api', function () use ($app) {
 	$app->get('/ressources/{name}/{aid:[0-9]+}/{rid:[0-9]+}[/{params:.*}]', '\Api:ressources')->setName('apiRessource');
 	$app->get('/services/{id:[0-9]+}[/{params:.*}]', '\Api:services')->setName('apiService');
+});
+
+$app->group('/widgets', function () use ($app) {
+	$app->group('/donut', function () use ($app) {
+		$app->group('/dash', function () use ($app) {
+			$app->get('/status', '\Dashboard:widgetDonutStatus')->setName('widgets.donut.dash.status');
+			$app->get('/items', '\Dashboard:widgetDonutItem')->setName('widgets.donut.dash.items');
+			$app->get('/domains', '\Dashboard:widgetDonutDomains')->setName('widgets.donut.dash.domains');
+		});
+		$app->group('/host', function () use ($app) {
+			$app->get('/{id:[0-9]+}/status', '\Host:widgetDonutStatus')->setName('widgets.donut.host.status');
+			$app->get('/{id:[0-9]+}/items', '\Host:widgetDonutItems')->setName('widgets.donut.host.items');
+		});
+		$app->group('/ressource', function () use ($app) {
+			$app->get('/{host_id:[0-9]+}-{res_id:[0-9]+}/status', '\HostRessource:widgetDonutStatus')->setName('widgets.donut.ress.status');
+			$app->get('/{host_id:[0-9]+}-{res_id:[0-9]+}/history', '\HostRessource:widgetDonutItems')->setName('widgets.donut.ress.items');
+		});
+	});
+	$app->group('/table', function () use ($app) {
+		$app->group('/dash', function () use ($app) {
+			$app->get('/events', '\Dashboard:widgetTableEvent')->setName('widgets.table.dash.events');
+			$app->get('/failed', '\Dashboard:widgetTableFailed')->setName('widgets.table.dash.failed');
+		});
+		$app->group('/host', function () use ($app) {
+			$app->get('/{id:[0-9]+}/history', '\Host:widgetTableHistory')->setName('widgets.table.host.history');
+		});
+		$app->group('/ressource', function () use ($app) {
+			$app->get('/{host_id:[0-9]+}-{res_id:[0-9]+}/history', '\HostRessource:widgetTableHistory')->setName('widgets.table.ress.history');
+		});
+		$app->group('/serv', function () use ($app) {
+			$app->get('/{id:[0-9]+}/process', '\HostService:widgetTableProcess')->setName('widgets.table.serv.process');
+			$app->get('/{id:[0-9]+}/sockets', '\HostService:widgetTableSockets')->setName('widgets.table.serv.sockets');
+		});
+	});
+	$app->group('/list', function () use ($app) {
+		$app->group('/host', function () use ($app) {
+			$app->get('/{id:[0-9]+}/services', '\Host:widgetListServices')->setName('widgets.list.host.services');
+			$app->get('/{id:[0-9]+}/stats', '\Host:widgetListStats')->setName('widgets.list.host.stats');
+			$app->get('/{id:[0-9]+}/ressources', '\Host:widgetListRessources')->setName('widgets.list.host.ressources');
+		});
+	});
+	$app->group('/progess', function () use ($app) {
+		$app->group('/host', function () use ($app) {
+			$app->get('/{id:[0-9]+}/cpu', '\Host:widgetProgressCpu')->setName('widgets.progress.host.cpu');
+			$app->get('/{id:[0-9]+}/storage', '\Host:widgetProgressStorage')->setName('widgets.progress.host.storage');
+		});
+	});
+	$app->group('/property', function () use ($app) {
+		$app->group('/event', function () use ($app) {
+			$app->get('/{id:[0-9]+}', '\Event:widgetProperty')->setName('widgets.property.event');
+		});
+	});
+	$app->group('/custom', function () use ($app) {
+		$app->group('/host', function () use ($app) {
+			$app->get('/{id:[0-9]+}/memory', '\Host:widgetMemSwap')->setName('widgets.custom.host.memory');
+		});
+	});
 });
 
 $app->get('/', '\Dashboard:dashboard')->setName('home');

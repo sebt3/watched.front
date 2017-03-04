@@ -104,7 +104,7 @@ function wdUnion() {
 	chart.item	= function(c) {cells.push(c);return chart;}
 	chart.init	= function() { 
 		var r = d3.select(this)
-		cells.forEach(function(d) {r.call(d);});
+		cells.forEach(function(d) {r.append('span').call(d);});
 		return chart;
 	};
 	return chart;
@@ -112,6 +112,7 @@ function wdUnion() {
 function wdPill() {
 	var pills = [];
 	function chart(s) { s.each(chart.init); return chart; }
+	chart.data	= function(t) {pills = t;return chart;}
 	chart.add	= function(t) {pills.push(t);return chart;}
 	chart.init	= function() {
 		/*if (d3.select(this).classed('box-footer'))
@@ -134,6 +135,7 @@ function wdPill() {
 function wdList() {
 	var items = [];
 	function chart(s) { s.each(chart.init); return chart; }
+	chart.data	= function(t) {items = t;;return chart;}
 	chart.add	= function(t) {items.push(t);return chart;}
 	chart.init	= function() {
 		d3.select(this).append('ul').attr('class', 'list-unstyled').selectAll('li').data(items).enter().append('li').each(function(d,i) {
@@ -167,6 +169,7 @@ function wdDesc() {
 function wdDescTable() {
 	var items = [];
 	function chart(s) { s.each(chart.init); return chart; }
+	chart.data	= function(t) { items = t;return chart;}
 	chart.item	= function(t,d,u) { items.push({ left: t, right:d, url: u});return chart;}
 	chart.init	= function() {
 		var root = d3.select(this).append('table').attr('class', 'table table-condensed table-striped table-hover').append('tbody').selectAll().data(items).enter().each(function(d,i) {
@@ -185,6 +188,7 @@ function wdProgess() {
 	function chart(s) { s.each(chart.init); return chart; }
 	chart.title	= function(t) { title = t;return chart;}
 	chart.url	= function(t) {   url = t;return chart;}
+	chart.data	= function(t) { items = t;return chart;}
 	chart.item	= function(p,c) { if (typeof c == 'undefined') c='progress-bar-success';items.push({ 'pct': p, 'class':c});return chart;}
 	chart.init	= function() {
 		var root = d3.select(this)

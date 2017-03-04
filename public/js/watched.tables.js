@@ -38,15 +38,21 @@ function wdTableBodyChart(pClass) {
 		update.exit().remove();
 		if(typeof chart.data()[0] == "undefined") return;
 		keys = Object.keys(chart.data()[0]);
-		rows = update.enter().append('tr')/*.each(function(d){
+		rows = update.enter().append('tr').each(function(d){
 			if(typeof d.rowProperties == "object" && d.rowProperties != null) {
+				if(typeof d.rowProperties.color != "undefined")
+					d3.select(this).attr("class", d.rowProperties.color);
 			}
-		});*/
+		});
 		rows.selectAll('td').data(function (d, i) {
-			var j=0, ret=[];
+			var j=0, ret=[],r={}, haverp = false;
+			if (d.hasOwnProperty('rowProperties') && typeof d.rowProperties == "object" && d.rowProperties != null) {
+				r = d['rowProperties'];
+				haverp=true;
+			}
 			for (var k in d) {
 				if(!d.hasOwnProperty(k)||k=="rowProperties") continue;
-				ret.push({ id: ++j, rowid: i, name: k, value: d[k] })
+				ret.push({ id: ++j, rowid: i, name: k, value: haverp?Object.assign({},r,d[k]):d[k] })
 			}
 			return ret;
 		}).enter().append('td').each(function(d,i) {
@@ -87,6 +93,7 @@ function wdTableChart() {
 	var body = wdTableBodyChart(), heads = [];
 	function chart(s) { s.each(chart.init); return chart; }
 	chart.body    = function(t) {  body.data(t);return chart;}
+	chart.heads   = function(t) {  heads = t;return chart;}
 	chart.col     = function(t,c) { if (typeof c == 'undefined') c='sortable';heads.push({ 'text': t, 'class':c});return chart;}
 	chart.init    = function() {
 		if (d3.select(this).classed('box-body'))

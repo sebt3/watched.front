@@ -9,48 +9,11 @@
 <script src="/js/watched.donut.js"></script>
 <script src="/js/watched.line.js"></script>
 <script>
-{% if monitorItems is defined and monitorItems is not null %}
+{% if monit %}
 d3.select('section.content').call(wdRow()
-	  .cell('col-md-3', wdBox().title("{{ _('Monitoring status') }}")
-		.tool({action:'collapse', icon:'fa fa-minus'})
-		.body(wdDonutChart().data([
-	{% for m in monitorStatus %}
-		{ value: {{ m.cnt }}, color: "{{ m.color }}", highlight: "{{ m.color }}", label: "{{ _(m.name) }}" },
-	{% endfor %}
-		])).footer(wdPill()
-	{% for e in activeEvent %}
-		.add({color:"{{ e.color }}", left:"{{ e.property }}", right: '{{ e.current_value }}{{ e.encode }}{{ e.value }}', url: "{{ path_for('event', { 'id': e.id|e }) }}" })
-	{% endfor %}
-	)).cell('col-md-6', wdBox().title("{{ _('Events history') }}")
-		.tool({action:'collapse', icon:'fa fa-minus'})
-		.body(wdTableChart()
-			.col("{{ _('id') }}")
-			.col("{{ _('start') }}")
-			.col("{{ _('end') }}")
-			.col("{{ _('property') }}")
-			.col("{{ _('value') }}")
-			.col("{{ _('rule') }}")
-			.body([
-	{% for h in monitorHistory %} {
-		id:	{ color: "{{ h.color }}", text: "{{ h.id }}",  url: "{{ path_for('event', { 'id': h.id|e }) }}"},
-		stime:	{ color: "{{ h.color }}", text: "{{ h.start_time }}",  url: "{{ path_for('event', { 'id': h.id|e }) }}"},
-		etime:	{ color: "{{ h.color }}", text: "{{ h.end_time }}",  url: "{{ path_for('event', { 'id': h.id|e }) }}"},
-		prop:	{ color: "{{ h.color }}", text: "{{ h.property }}",  url: "{{ path_for('event', { 'id': h.id|e }) }}"},
-		val:	{ color: "{{ h.color }}", text: "{{ h.current_value }}",  url: "{{ path_for('event', { 'id': h.id|e }) }}"},
-		rule:	{ color: "{{ h.color }}", text: "{{ h.encode }}{{ h.value }}", url: "{{ path_for('event', { 'id': h.id|e }) }}"},
-	},{% endfor %}
-	])
-	)).cell('col-md-3', wdBox().title("{{ _('Monitoring items') }}")
-		.tool({action:'collapse', icon:'fa fa-minus'})
-		.body(wdDonutChart().data([
-	{% for m in monitorItems %}
-		{ value: {{ m.cnt }}, color: "{{ m.color }}", highlight: "{{ m.color }}", label: "{{ _(m.name) }}" },
-	{% endfor %}
-		])).footer(wdPill()
-	{% for e in monitorList %}
-		.add({color:"{{ e.color }}", left:"{{ e.property }}", right: '{{ e.encode }}{{ e.value }}' })
-	{% endfor %}
-)));
+	.cell('col-md-3', wdDonutWidget().source("{{ path_for('widgets.donut.ress.status',  { 'host_id': a.id, 'res_id': r.id }) }}"))
+	.cell('col-md-6', wdTableWidget().source("{{ path_for('widgets.table.ress.history',  { 'host_id': a.id, 'res_id': r.id }) }}"))
+	.cell('col-md-3', wdDonutWidget().source("{{ path_for('widgets.donut.ress.items',  { 'host_id': a.id, 'res_id': r.id }) }}")));
 {% endif %}
 chart = wdLineChart().baseUrl("{{ path_for('apiRessource', { 'aid': a.id, 'rid': r.id, 'name': r.type }) }}");
 d3.select('section.content').call(wdBox().title("{{ _('Graphics') }}")

@@ -7,23 +7,6 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-d3.select('section.content').call(wdBox().body(
-	wdTableChart()
-		.col("{{ _('host name') }}")
-		.col("{{ _('ressource name') }}")
-		.col("{{ _('type') }}")
-		.col("{{ _('property') }}")
-		.col("{{ _('status') }}")
-		.col("{{ _('since') }}")
-		.body([
-    {% for a in events %} {
-	hname:	{ text: "{{ a.host_name }}", color: "{{ a.color }}",  url: "{{ path_for('host', { 'id': a.host_id }) }}"},
-	rname:	{ text: "{{ a.name }}", color: "{{ a.color }}",  url: "{{ path_for('ressource', { 'rid': a.res_id, 'aid': a.host_id }) }}"},
-	type:	{ text: "{{ a.type }}", color: "{{ a.color }}"},
-	prop:	{ text: "{{ a.property }}", color: "{{ a.color }}",  url: "{{ path_for('event', { 'id': a.id }) }}"},
-	status:	{ text: "{{ a.current_value }} {{ a.oper }} {{ a.value }}", color: "{{ a.color }}",  url: "{{ path_for('event', { 'id': a.id }) }}"},
-	start:	{ text: "{{ a.start_time }}", color: "{{ a.color }}",  url: "{{ path_for('event', { 'id': a.id }) }}"}
-    }, {% endfor %}
-  ])));
+d3.select('section.content').call(wdTableWidget().data({{ json(events) }}));
 </script>
 {% endblock %}
