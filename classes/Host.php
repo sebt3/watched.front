@@ -73,10 +73,10 @@ class Host extends CorePage {
 		while($r = $stmt->fetch()) {
 			$ret['body'][] = array(
 				'name'	=> array('text'	=> $r['host'], 'url' => $this->router->pathFor('host', [ 'id' => $r['id']])),
-				'items'	=> array('text'	=> $r['monitor_items']),
-				'events'=> array('text'	=> $r['events']+$r['failed']),
-				'res'	=> array('text'	=> $r['ressources'], 'url' => $this->router->pathFor('ressources', [ 'id' => $r['id']])),
-				'serv'	=> array('text'	=> $r['services'], 'url' => $this->router->pathFor('services', [ 'id' => $r['id']]))
+				'items'	=> array('text'	=> floatval($r['monitor_items'])),
+				'events'=> array('text'	=> floatval($r['events'])+floatval($r['failed'])),
+				'res'	=> array('text'	=> floatval($r['ressources']), 'url' => $this->router->pathFor('ressources', [ 'id' => $r['id']])),
+				'serv'	=> array('text'	=> floatval($r['services']), 'url' => $this->router->pathFor('services', [ 'id' => $r['id']]))
 			);
 		}
 		return $ret;
@@ -260,12 +260,12 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
 				'rowProperties'	=> array(
 					'color'	=> $this->getEventTextColor($r['event_name']),
 					'url'	=> $this->router->pathFor('event', [ 'id' => $r['id']])
-				), 'id'	=> array('text'	=> $r['id']),
+				), 'id'	=> array('text'	=> floatval($r['id'])),
 				'stime'	=> array('text'	=> $this->formatTimestamp($r['start_time'])),
 				'etime'	=> array('text'	=> $r['end_time']!=null?$this->formatTimestamp($r['end_time']):''),
 				'res'	=> array('text'	=> urldecode($r['res_name'])),
 				'prop'	=> array('text'	=> $r['property']),
-				'value'	=> array('text'	=> $r['current_value']),
+				'value'	=> array('text'	=> floatval($r['current_value'])),
 				'rule'	=> array('text'	=> $r['oper'].intval($r['value']))
 			);
 		}
@@ -490,8 +490,8 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 		while($r = $stmt->fetch()) {
 			$ret['body'][] = array(
 				'name'	=> array('text'	=> urldecode($r['name']), 'url' => $this->router->pathFor('ressource', [ 'aid' => $id, 'rid' => $r['id']])),
-				'mon'	=> array('text'	=> $r['monitors']),
-				'events'=> array('text'	=> $r['events'])
+				'mon'	=> array('text'	=> floatval($r['monitors'])),
+				'events'=> array('text'	=> floatval($r['events']))
 			);
 		}
 		return $ret;

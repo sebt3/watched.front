@@ -154,11 +154,11 @@ select et.name, et.id, count(e.id) as cnt
 				'rowProperties'	=> array(
 					'color'	=> $this->getEventTextColor($r['event_name']),
 					'url'	=> $this->router->pathFor('event', [ 'id' => $r['id']])
-				), 'id'	=> array('text'	=> $r['id']),
+				), 'id'	=> array('text'	=> floatval($r['id'])),
 				'stime'	=> array('text'	=> $this->formatTimestamp($r['start_time'])),
 				'etime'	=> array('text'	=> $r['end_time']!=null?$this->formatTimestamp($r['end_time']):''),
 				'prop'	=> array('text'	=> $r['property']),
-				'value'	=> array('text'	=> $r['current_value']),
+				'value'	=> array('text'	=> floatval($r['current_value'])),
 				'rule'	=> array('text'	=> $r['oper'].intval($r['value']))
 			);
 		}

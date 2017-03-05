@@ -43,6 +43,16 @@ function wdDateFormat(date) {
 		: formatYear)(date);
 }
 
+function wdNumberFormat(number) {
+	if (typeof number == 'number') {
+		var x = number, s = x<0?"-":"", v="", i = String(parseInt(Math.abs(x))), m=i.length%3, l=i.substr(0,m), r=i.slice(m);
+		if(Math.round(x)!=x)
+			v = (Math.abs(x) - parseInt(Math.abs(x))).toFixed(2);
+		return s + l + r.replace(/(.{3})/g, " $1") + v.slice(1);
+	} else
+		return number;
+}
+
 function wdBaseComponant() {
 	var	data	= [],
 		called	= false,
@@ -290,7 +300,7 @@ function wdHLegendComponant(pClass) {
 	chart.callbacks.updateValues	= function(v) {
 		labels.forEach(function (l) {
 			l.val = v[l.id]
-			chart.root().select("#"+l.id).select("text").text( l.id+": "+l.val)
+			chart.root().select("#"+l.id).select("text").text( l.id+": "+wdNumberFormat(l.val))
 		})
 	}
 	return chart;

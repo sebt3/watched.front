@@ -178,7 +178,10 @@ function wdDescTable() {
 			var x = t.append('td').attr('class','text-right')
 			if (typeof d.url != 'undefined' && d.url != null)
 				x = x.append('a').attr('href', d.url)
-			x.html(d.right)
+			if (typeof d.right == 'number')
+				x.html(wdNumberFormat(d.right))
+			else
+				x.html(d.right)
 		});
 	}
 	return chart;

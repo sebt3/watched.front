@@ -33,7 +33,7 @@ function wdDonutChartLegend(pClass) {
 				return "color:"+chart.color()(i)+";";
 			});
 		liHtml.append("span").text(function (d) {return " "+d.label;});
-		liHtml.append("span").attr("class", "pull-right").text(function (d) {return d.value;});
+		liHtml.append("span").attr("class", "pull-right").text(function (d) {if(typeof d.value == 'number') return wdNumberFormat(d.value);return d.value;});
 		liHtml	.on("mouseover", function(d, i){chart.dispatch.call("itemMouseOver", null, d, i);})
 			.on("mouseout", function(d, i) {chart.dispatch.call("itemMouseOut",  null, d, i);})
 		update.exit().remove();

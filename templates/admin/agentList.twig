@@ -24,10 +24,10 @@ d3.select('section.content').call(wdBox().body(wdTableChart()
 	.body([
 	{% for a in agents %} {
 	host:	{ "text": "{{ a.host }}", "url": "{{ path_for('admin.agents.change', { 'id': a.id }) }}"},
-	port:	{ "text": "{{ a.port }}", "url": "{{ path_for('admin.agents.change', { 'id': a.id }) }}"},
+	port:	{ "text": {{ a.port }}, "url": "{{ path_for('admin.agents.change', { 'id': a.id }) }}"},
 	ssl:	{ "text": "{{ a.ssl  }}", "url": "{{ path_for('admin.agents.change', { 'id': a.id }) }}"},
-	freq:	{ "text": "{{ a.pool_freq  }}", "url": "{{ path_for('admin.agents.change', { 'id': a.id }) }}"},
-	cent:	{ "text": "{{ a.central_id }}", "url": "{{ path_for('admin.agents.change', { 'id': a.id }) }}"},
+	freq:	{ "text": {{ a.pool_freq  }}, "url": "{{ path_for('admin.agents.change', { 'id': a.id }) }}"},
+	cent:	{ "text": {{ a.central_id }}, "url": "{{ path_for('admin.agents.change', { 'id': a.id }) }}"},
 	actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.agents.change', { 'id': a.id }) }}" },
 		   { icon:"fa fa-trash",  target: "#delete{{ a.id }}" } ]
 	}, {% endfor %}

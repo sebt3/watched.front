@@ -65,7 +65,7 @@ function wdTableBodyChart(pClass) {
 					else
 						d3.select(this).attr('href', p.url)
 							.append('i').attr('class', p.icon);
-						d3.select(this).append('span').text(' ');
+					d3.select(this).append('span').text(' ');
 				});
 			} else if (typeof d.value == "object" && d.value != null) {
 				if (typeof d.value.color != "undefined")
@@ -74,16 +74,26 @@ function wdTableBodyChart(pClass) {
 					d3.select(this).append('i').attr('class', d.value.icon)
 				if (typeof d.value.url  != "undefined") {
 					var a = d3.select(this).append('a')
-						.attr('href', d.value.url)
-						.html(' '+d.value.text);
+						.attr('href', d.value.url);
 					if (typeof d.value.color != "undefined")
 						a.attr('class', d.value.color);
+					if (typeof d.value.text == 'number') {
+						d3.select(this).classed('text-right',true);
+						a.html(' '+wdNumberFormat(d.value.text));
+					} else
+						a.html(' '+d.value.text);
 				} else {
-					d3.select(this).append('span')
-						.html(' '+d.value.text);
+					if (typeof d.value.text == 'number')
+						d3.select(this).classed('text-right',true).append('span').html(' '+wdNumberFormat(d.value.text));
+					else
+						d3.select(this).append('span').html(' '+d.value.text);
 				}
-			} else if (typeof d.value != "undefined")
-				d3.select(this).html(d.value)
+			} else if (typeof d.value != "undefined") {
+				if (typeof d.value == 'number')
+					d3.select(this).classed('text-right',true).html(wdNumberFormat(d.value));
+				else
+					d3.select(this).html(d.value)
+			}
 		});
 	});
 	return chart;

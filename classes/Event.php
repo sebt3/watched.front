@@ -67,7 +67,7 @@ order by et.id asc,e.start_time asc');
 		$ret = [];
 		$ret['title'] = $_('Event Properties');
 		$ret['body'] = [
-			array('left' => $_('id'), 'right' => $e['id']),
+			array('left' => $_('id'), 'right' => floatval($e['id'])),
 			array('left' => $_('type'), 'right' => $e['event_type']),
 			array('left' => $_('Host'), 'right' => $e['host_name'], 
 				'url' => $this->router->pathFor('host', array('id' => $e['host_id']))),
@@ -75,7 +75,7 @@ order by et.id asc,e.start_time asc');
 			array('left' => $_('ressource'), 'right' => $e['res_name'], 
 				'url' => $this->router->pathFor('ressource', array('aid' => $e['host_id'], 'rid' => $e['res_id']))),
 			array('left' => $_('property'), 'right' => $e['property']),
-			array('left' => $_('value'), 'right' => $e['current_value']),
+			array('left' => $_('value'), 'right' => floatval($e['current_value'])),
 			array('left' => $_('rule'), 'right' => $e['oper'].$e['value']),
 			array('left' => $_('start'), 'right' => $e['start_time']),
 			array('left' => $_('end'), 'right' => $e['end_time'])
