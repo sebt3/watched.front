@@ -70,6 +70,11 @@ function wdBaseComponant() {
 		if (ready)
 			chart.dispatch.call("renderUpdate");
 	}
+	chart.onTop = function(s) {
+		return s.each(function(){
+			this.parentNode.appendChild(this);
+		});
+	}
 	chart.root	= function(_) {
 		if (arguments.length) {
 			root = _;

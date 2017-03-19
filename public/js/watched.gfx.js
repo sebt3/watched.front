@@ -1,7 +1,7 @@
 function wdGfxLegend() {
 	var	chart	= wdColoredComponant();
 	var	bar, gfx;
-	chart.dispatch.register("enable", "select");
+	chart.dispatch.register("area", "enable", "select");
 	chart.setValue	= function(d,v) {
 		chart.root().select('#value_'+d).html(wdNumberFormat(v))
 		return chart;
@@ -47,11 +47,18 @@ function wdGfxLegend() {
 		chart.color().domain(chart.data());
 	});
 	chart.dispatch.on("init.wdGfxLegend", function() { 
-		bar = chart.root().append('div').attr('class', 'btn-toolbar').attr('role','toolbar');
+		bar   = chart.root().append('div').attr('class', 'btn-toolbar').attr('role','toolbar');
+		var l = bar.append('div').attr('class', 'btn-group').attr('role','group').attr('data-toggle','buttons').append('label').attr('class', 'btn btn-default item').on('click', function (d){
+				var x=d3.select(this);
+				x.classed('activated',!x.classed('activated'))
+				chart.dispatch.call("area",this,d,x.classed('activated'));
+		});
+		l.append('input').attr('type', 'checkbox');
+		l.append('i').attr('class', 'fa fa-area-chart')
 	});
 	chart.dispatch.on("renderUpdate.wdGfxLegend", function() {
-		var d = bar.selectAll('div.btn-group').data(chart.data()),
-		    g = d.enter().append('div').attr('class', 'btn-group').attr('role','group').attr('data-toggle','buttons');
+		var d = bar.selectAll('div.btn-group.legend').data(chart.data()),
+		    g = d.enter().append('div').attr('class', 'btn-group legend').attr('role','group').attr('data-toggle','buttons');
 		var l = g.append('label').attr('class', 'btn btn-default item active activated')
 			.attr('id', function (d) { return 'enable_'+d})
 			.on('click', function (d) {
@@ -80,15 +87,38 @@ function wdGfxLegend() {
 
 function wdGfxTimeLine() {
 	var	chart	= wdAxedComponant(wdMinSizedComponant(null, 500,60)),
-		legend, svg,
+		legend, svg, useArea=false,
 		brush	= d3.brushX(),
+		stack	= d3.stack(),
 		line	= d3.line().curve(d3.curveBasis)
 				.x(function(d) { return chart.xAxis(d.timestamp); })
 				.y(function(d) { return chart.yAxis(d.value); }),
+		area	= d3.area()
+			.x(function(d, i) { return chart.xAxis(d.data.timestamp); })
+			.y0(function(d) { return chart.yAxis(d[0]); })
+			.y1(function(d) { return chart.yAxis(d[1]); });
 		lines	= [];
 
 	chart.dispatch.register("brushed");
-	chart.legend	= function(_) {if (!arguments.length) return legend;legend = _;return chart};
+	chart.areaSet= function(d,v) {
+		useArea = v
+		if (v)
+			chart.yAxis.domain([0, d3.max(chart.data(), function(d) {
+				var vals = legend.cols().map(function (i) {return d[i]});
+				return d3.sum(vals);
+			})]);
+		else
+			chart.yAxis.domain([0, d3.max(chart.data(), function(d) {
+				var vals = legend.cols().map(function (i) {return d[i]});
+				return d3.max(vals);
+			})]);
+		chart.dispatch.call("renderUpdate")
+	}
+	chart.legend	= function(_) {
+		if (!arguments.length) return legend;legend = _;
+		legend.dispatch.on("area.wdGfxTimeLine", chart.areaSet);
+		return chart
+	};
 	chart.brushMove	= function(r) {
 		svg.select('.brush').call(brush.move, r);
 	}
@@ -119,6 +149,7 @@ function wdGfxTimeLine() {
 			chart.root().select(".x.axis").attr("transform", "translate(0," + chart.height() + ")");
 	});
 	chart.dispatch.on("init.wdGfxTimeLine", function() {
+		stack.keys(legend.cols());
 		var bound	= chart.root().node().getBoundingClientRect();
 		chart.width(bound.width-30);chart.height(bound.height-20);
 		svg	= chart.root().append("svg").attr("width", chart.width()).attr("height", chart.height()+20);
@@ -129,33 +160,47 @@ function wdGfxTimeLine() {
 			var s = d3.event.selection || chart.xAxis.range();
 			chart.dispatch.call("brushed", this, s, s.map(chart.xAxis.invert,chart.xAxis))
 		})
+		svg.append("g").attr("class", "brush").call(brush)
+			.call(brush.move, chart.xAxis.range());
 	})
 	chart.dispatch.on("renderUpdate.wdGfxTimeLine", function() {
 		chart.root().selectAll(".lines").remove();
-		var	update	= svg.selectAll(".lines").data(lines, function(d) { return d.timestamp }),
-			eLines	= update.enter().append("g").attr("class", "lines");
-		update.exit().remove();
-		eLines.append("path").attr("class", "line")
-			.attr("d", function(d) { return line(d.values); })
-			.style("stroke", function(d) { return legend.colColor(d.id); });
-		update.transition().select(".x.axis").duration(150).call(chart.xAxisLine);
-		
-		svg.append("g").attr("class", "brush").call(brush)
-			.call(brush.move, chart.xAxis.range());
+		if (useArea) {
+			var	update	= svg.selectAll(".lines").data(stack(chart.data()), function(d) { return d.timestamp }),
+				eLines	= update.enter().append("g").attr("class", "lines");
+			update.exit().remove();
+			eLines.append("path").attr("class", "area")
+				.style("fill", function(d) { return legend.colColor(d.key); })
+				.attr("d", area);
+		} else {
+			var	update	= svg.selectAll(".lines").data(lines, function(d) { return d.timestamp }),
+				eLines	= update.enter().append("g").attr("class", "lines");
+			update.exit().remove();
+			eLines.append("path").attr("class", "line")
+				.attr("d", function(d) { return line(d.values); })
+				.style("stroke", function(d) { return legend.colColor(d.id); });
+		}
+		svg.select("g.brush").call(chart.onTop);
+		svg.transition().select(".x.axis").duration(150).call(chart.xAxisLine);
 	})
 	return chart;
 }
 function wdGfxChart() {
 	var	chart	= wdAxesComponant(wdAxedComponant(wdMinSizedComponant(null, 500,350))),
-		legend, svg, timeline, domain, oldX = 0,
+		legend, svg, timeline, domain, oldX = 0, useArea=false,
 		margin	= {top: 10, right: 10, bottom: 20, left: 30},
 		xRev	= d3.scaleTime().domain([0, chart.width()-margin.left-margin.right]),
 		w	= chart.width()-(margin.left+margin.right+30),
 		h	= chart.height()-margin.bottom-margin.top,
 		zoom	= d3.zoom().scaleExtent([1, 100]),
+		stack	= d3.stack(),
 		line	= d3.line().curve(d3.curveBasis)
 				.x(function(d) { return chart.xAxis(d.timestamp); })
 				.y(function(d) { return chart.yAxis(d.value); }),
+		area	= d3.area()
+			.x(function(d, i) { return chart.xAxis(d.data.timestamp); })
+			.y0(function(d) { return chart.yAxis(d[0]); })
+			.y1(function(d) { return chart.yAxis(d[1]); });
 		lines	= [];
 
 	chart.dispatch.register("updateValues");
@@ -173,18 +218,30 @@ function wdGfxChart() {
 		xRev.range(domain);
 		chart.xAxis.domain(domain)
 		chart.lineChanged();
+		chart.noDots();
 		chart.dispatch.call("renderUpdate")
+	}
+	chart.noDots	= function() {
+		svg.selectAll(".dots").selectAll('circle').transition().duration(200).attr('r', 0);
+		svg.selectAll(".dots").transition().duration(200).on("end", function(){d3.select(this).remove()});
 	}
 	chart.lineChanged=function() {
 		var subData= [];
+		stack.keys(legend.cols())
 		chart.data().forEach(function(d) {
 			if(d.timestamp >= domain[0] && d.timestamp <= domain[1])
 				subData.push(d)
 		})
-		chart.yAxis.domain([0, d3.max(subData, function(d) {
-			var vals = legend.cols().map(function (i) {return d[i]});
-			return d3.max(vals);
-		})]);
+		if (useArea)
+			chart.yAxis.domain([0, d3.max(subData, function(d) {
+				var vals = legend.cols().map(function (i) {return d[i]});
+				return d3.sum(vals);
+			})]);
+		else
+			chart.yAxis.domain([0, d3.max(subData, function(d) {
+				var vals = legend.cols().map(function (i) {return d[i]});
+				return d3.max(vals);
+			})]);
 		lines = legend.cols().map(function(i) {
 			return {
 				id: i,
@@ -195,8 +252,15 @@ function wdGfxChart() {
 		});
 		return chart;
 	}
+	chart.areaSet= function(d,v) {
+		useArea = v
+		chart.lineChanged();
+		chart.noDots();
+		chart.dispatch.call("renderUpdate")
+	}
 	chart.colChanged= function (d,v) {
 		chart.lineChanged();
+		chart.noDots();
 		chart.dispatch.call("renderUpdate")
 		return chart;
 	}
@@ -206,12 +270,14 @@ function wdGfxChart() {
 		chart.xAxis.domain(domain);
 		svg.select(".zoom").call(zoom.transform, 
 			d3.zoomIdentity.scale(w / (s[1] - s[0])).translate(-s[0], 0));
+		chart.noDots();
 		chart.lineChanged();
 		chart.dispatch.call("renderUpdate")
 		return chart;
 	}
 	chart.legend	= function(_) {
 		if (!arguments.length) return legend; legend = _;
+		legend.dispatch.on("area.wdGfxChart", chart.areaSet);
 		legend.dispatch.on("enable", chart.colChanged);
 		legend.dispatch.on("select", chart.colChanged);
 		chart.dispatch.on("updateValues.legend", legend.setValues);
@@ -271,22 +337,20 @@ function wdGfxChart() {
 
 		zoom.on('zoom', chart.zoomed);
 		svg.append("rect").attr("class", "zoom")
-			.attr("width", w).attr("height", h)
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+			.attr("width", chart.width()).attr("height", chart.height())
 			.call(zoom);
 	})
 	chart.dispatch.on("updateValues.wdGfxChart", function(v) {
-		svg.selectAll(".dots").selectAll('circle').transition().duration(200).attr('r', 0);
-		svg.selectAll(".dots").transition().duration(200).on("end", function(){d3.select(this).remove()});
+		chart.noDots();
 		if (typeof v == "undefined") return;
-		var dots = legend.cols().map(function(d){
+		var dots = legend.cols().map(function(d,i){
 			return {
 				id:	d.substr(4),
 				timestamp:v.timestamp,
 				value:	v[d],
 				color:	legend.colColor(d),
 				x:	chart.xAxis(v.timestamp),
-				y:	chart.yAxis(v[d])
+				y:	chart.yAxis(useArea?stack([v])[i][0][1]:v[d])
 			};
 		}), update = svg.selectAll(".dot2s").data(dots);
 		update.enter().append('g').attr('class','dots')
@@ -297,8 +361,15 @@ function wdGfxChart() {
 				.transition().duration(200).attr('r', 5)
 
 	});
-	chart.dispatch.on("renderUpdate.wdAxesComponant", function() {
-		svg.selectAll(".lines").remove();
+	chart.drawArea	= function() {
+		var	update	= svg.selectAll(".lines").data(stack(chart.data()), function(d) { return d.timestamp }),
+			eLines	= update.enter().append("g").attr("class", "lines").attr("transform", "translate("+margin.left+", " + (margin.top) + ")");
+		update.exit().remove();
+		eLines.append("path").attr("class", "area")
+			.style("fill", function(d) { return legend.colColor(d.key); })
+			.attr("d", area);
+	}
+	chart.drawLine	= function() {
 		var	update	= svg.selectAll(".lines").data(lines, function(d) { return d.id });
 		/*update.exit().remove();
 		update.selectAll('path').attr("d", function(d) { return line(d.values); })*/
@@ -307,7 +378,15 @@ function wdGfxChart() {
 			.attr("d", function(d) { return line(d.values); })
 			.style("clip-path","url(#clip)")
 			.style("stroke", function(d) { return legend.colColor(d.id); });
-		update	= svg.transition();
+	}
+	chart.dispatch.on("renderUpdate.wdAxesComponant", function() {
+		svg.selectAll(".lines").remove();
+		if (useArea)
+			chart.drawArea();
+		else
+			chart.drawLine();
+		svg.select("rect.zoom").call(chart.onTop);
+		var update	= svg.transition();
 		update.select(".x.axis").duration(350).call(chart.xAxisLine);
 		update.select(".y.axis").duration(350).call(chart.yAxisLine);
 	})
