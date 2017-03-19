@@ -366,6 +366,7 @@ function wdGfxChart() {
 			eLines	= update.enter().append("g").attr("class", "lines").attr("transform", "translate("+margin.left+", " + (margin.top) + ")");
 		update.exit().remove();
 		eLines.append("path").attr("class", "area")
+			.style("clip-path","url(#clip)")
 			.style("fill", function(d) { return legend.colColor(d.key); })
 			.attr("d", area);
 	}
