@@ -10,7 +10,7 @@
 d3.select('section.content').call(wdRow()
 	  .cell('col-md-4', wdBox().title("{{ _('Storage informations') }}").body(wdDescTable()
     {% for s in sizes %}
-		.item("{{ _(s.name) }}","{{ s.value }}")
+		.item("{{ _(s.name) }}",{{ s.value }})
     {% endfor %}
 	)).cell('col-md-8',wdForm().url("{{ path_for('admin.tables.edit', {'name': name }) }}").body(
 	wdBox().title("{{ _('Configure data aggregate and purges') }}").body(

@@ -51,7 +51,7 @@ class Tables extends \CorePage {
 			case 'days_avg':	$name='Average days aggregate row size';break;
 			default: $name=$key;break;
 			}
-			$results[] = array('name' => $name, 'key' => $key, 'value' => $value);
+			$results[] = array('name' => $name, 'key' => $key, 'value' => floatval($value));
 		}
 		return $results;
 	}

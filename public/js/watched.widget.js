@@ -30,7 +30,7 @@ function wdBaseWidget() {
 	}
 	chart.source	= function(_) { 
 		if (arguments.length)
-			$.getJSON(_, function(results) { chart.data(results); });
+			d3.json(_, function(results) { chart.data(results); })
 		return chart;
 	}
 
@@ -130,6 +130,26 @@ function wdMemSwapWidget() {
 		chart.root().call(wdBox().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
 			.body(body)
+		);
+	});
+	return chart;
+}
+
+function wdRessourceGfxWidget() {
+	var chart = wdBaseWidget(),body = wdGfxChart(), title = '', legend = wdGfxLegend(), footer = wdGfxTimeLine();
+	body.legend(legend);body.timeline(footer);legend.gfx(body);footer.legend(legend);
+	chart.dispatch.on("dataUpdate.wdRessourceGfxWidget", function() {
+		legend.data(chart.data().cols);
+		body.data(chart.data().data);
+		footer.data(chart.data().data);
+		title = chart.data().src.obj_name+' - '+chart.data().src.res_name;
+	});
+	chart.dispatch.on("renderUpdate.wdRessourceGfxWidget", function() {
+		chart.root().select('div').remove();
+		chart.root().call(wdBox().title(title)
+			.tool(legend)
+			.body(body)
+			.footer(footer)
 		);
 	});
 	return chart;

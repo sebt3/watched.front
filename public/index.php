@@ -182,6 +182,8 @@ $app->group('/auth', function () use ($app) {
 });
 
 $app->group('/api', function () use ($app) {
+	$app->get('/host_res/{host_id:[0-9]+}/{res_id:[0-9]+}', '\Api:host_res')->setName('api.ressource.host');
+	$app->get('/serv_res/{serv_id:[0-9]+}/{res_id:[0-9]+}', '\Api:serv_res')->setName('api.ressource.serv');
 	$app->get('/ressources/{name}/{aid:[0-9]+}/{rid:[0-9]+}[/{params:.*}]', '\Api:ressources')->setName('apiRessource');
 	$app->get('/services/{id:[0-9]+}[/{params:.*}]', '\Api:services')->setName('apiService');
 });

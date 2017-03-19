@@ -56,16 +56,19 @@ function wdNumberFormat(number) {
 function wdBaseComponant() {
 	var	data	= [],
 		called	= false,
+		ready	= false,
 		root;
 	function chart(s) { called=true; s.each(chart.init); return chart; }
 
 	chart.callbacks = {};
 	chart.dispatch	= d3.dispatch("init", "renderUpdate", "dataUpdate");
 	chart.inited	= function() {return called; }
+	chart.ready	= function() {return ready; }
 	chart.init	= function() { 
 		root = d3.select(this);
 		chart.dispatch.call("init");
-		chart.dispatch.call("renderUpdate");
+		if (ready)
+			chart.dispatch.call("renderUpdate");
 	}
 	chart.root	= function(_) {
 		if (arguments.length) {
@@ -80,6 +83,7 @@ function wdBaseComponant() {
 		if (!arguments.length) return data;
 		if (typeof _!="object" || typeof _[0]=="undefined") return chart;
 		data = _;
+		ready=true;
 		chart.dispatch.call("dataUpdate");
 		if (chart.inited())
 			chart.dispatch.call("renderUpdate");
@@ -120,9 +124,7 @@ function wdPeriodComponant(pClass) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
 		baseUrl	= "",
 		download	= function(url) {
-		$.getJSON(url, function(results) {
-			chart.data(results); 
-		});
+			d3.json(url, function(results) { chart.data(results); })
 		return chart;
 	};
 	chart.baseUrl	= function(_) {
@@ -225,7 +227,7 @@ function wdAxesComponant(pClass, pW, pH) {
 		g.selectAll(".tick:not(:first-of-type) line").attr("stroke-dasharray", "5,5");
 		g.selectAll(".tick text").attr("x", -20);
 	};
-	chart.dispatch.on("init.wdAxesComponant", function() { 
+	chart.dispatch.on("init.wdAxesComponant", function() {
 		chart.root().append("g").attr("class", "x axis").attr("transform", "translate(0," + chart.height() + ")").call(chart.xAxisLine);
 		chart.root().append("g").attr("class", "y axis").call(chart.yAxisLine);
 	});
