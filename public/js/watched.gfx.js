@@ -3,7 +3,19 @@ function wdGfxLegend() {
 	var	bar, gfx;
 	chart.dispatch.register("enable", "select");
 	chart.setValue	= function(d,v) {
-		chart.root().select('#value_'+d).html(v)
+		chart.root().select('#value_'+d).html(wdNumberFormat(v))
+		return chart;
+	}
+	chart.setValues	= function(v) {
+		if (typeof v == "undefined") return chart;
+		chart.data().forEach(function(d) {
+			if(! chart.root().select('#enable_'+d).classed('activated')) return;
+			switch(chart.root().select('#select_'+d).node().value) {
+				case "Min": chart.setValue(d, v["min_"+d]);break;
+				case "Avg": chart.setValue(d, v["avg_"+d]);break;
+				case "Max": chart.setValue(d, v["max_"+d]);break;
+			}
+		})
 		return chart;
 	}
 	chart.gfx	= function(_) {
@@ -59,7 +71,7 @@ function wdGfxLegend() {
 		g.append('div').attr('class', 'item').append('b')
 			.attr('style',function (d) { return 'color:'+chart.color()(d)})
 			.html(function(d){return d})
-		g.append('div').attr('class', 'item').html("0.00")
+		g.append('div').attr('class', 'item value').html("0.00")
 			.attr('style',function (d) { return 'color:'+chart.color()(d)})
 			.attr('id', function (d) { return 'value_'+d})
 	});
@@ -135,8 +147,9 @@ function wdGfxTimeLine() {
 }
 function wdGfxChart() {
 	var	chart	= wdAxesComponant(wdAxedComponant(wdMinSizedComponant(null, 500,350))),
-		legend, svg, timeline, domain,
+		legend, svg, timeline, domain, oldX = 0,
 		margin	= {top: 10, right: 10, bottom: 20, left: 30},
+		xRev	= d3.scaleTime().domain([0, chart.width()-margin.left-margin.right]),
 		w	= chart.width()-(margin.left+margin.right+30),
 		h	= chart.height()-margin.bottom-margin.top,
 		zoom	= d3.zoom().scaleExtent([1, 100]),
@@ -145,11 +158,19 @@ function wdGfxChart() {
 				.y(function(d) { return chart.yAxis(d.value); }),
 		lines	= [];
 
+	chart.dispatch.register("updateValues");
+	chart.mouseMove	= function(x,y) {
+		if (Math.abs(x-oldX)<1) return;
+		oldX=x;
+		var v = chart.data().find(function (d) { return d.timestamp>=xRev(x) });
+		chart.dispatch.call("updateValues", null, v);
+	};
 	chart.zoomed	= function () {
 		if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
 		var t = d3.event.transform;
 		timeline.brushMove(chart.xAxis.range().map(t.invertX, t))
 		domain = t.rescaleX(timeline.xAxis).domain()
+		xRev.range(domain);
 		chart.xAxis.domain(domain)
 		chart.lineChanged();
 		chart.dispatch.call("renderUpdate")
@@ -181,6 +202,7 @@ function wdGfxChart() {
 	}
 	chart.brushChanged= function (s, r) {
 		domain = r;
+		xRev.range(domain);
 		chart.xAxis.domain(domain);
 		svg.select(".zoom").call(zoom.transform, 
 			d3.zoomIdentity.scale(w / (s[1] - s[0])).translate(-s[0], 0));
@@ -192,6 +214,7 @@ function wdGfxChart() {
 		if (!arguments.length) return legend; legend = _;
 		legend.dispatch.on("enable", chart.colChanged);
 		legend.dispatch.on("select", chart.colChanged);
+		chart.dispatch.on("updateValues.legend", legend.setValues);
 		return chart;
 	};
 	chart.timeline	= function(_) {
@@ -208,6 +231,7 @@ function wdGfxChart() {
 	};
 	chart.dispatch.on("widthUpdate.wdAxedComponant", function() {
 		w = chart.width()-(margin.left+margin.right+30)
+		xRev.domain([0, w]);
 		chart.xAxis.range([0, w ]);
 	});
 	chart.dispatch.on("heightUpdate.wdAxedComponant", function() {
@@ -217,6 +241,7 @@ function wdGfxChart() {
 	});
 	chart.dispatch.on("dataUpdate.wdAxedComponant", function() {
 		domain = d3.extent(chart.data(), function(d) { return d.timestamp; });
+		xRev.range(domain);
 		chart.xAxis.domain(domain);
 		chart.lineChanged();
 	});
@@ -226,13 +251,23 @@ function wdGfxChart() {
 	});
 	chart.dispatch.on("init.wdAxesComponant", function() {
 		var bound	= chart.root().node().getBoundingClientRect();
-		chart.width(bound.width);chart.height(bound.height);
+		chart.width(bound.width);
+		chart.height(bound.height);chart.dispatch.call("heightUpdate")
 		svg	= chart.root().append("svg").attr("width", chart.width()).attr("height", chart.height());
+		svg.on("mousemove", function() {
+			var 	bBox	= svg.node().getBoundingClientRect(),
+				x	= d3.event.pageX-bBox.left-margin.left-window.scrollX,
+				y	= d3.event.pageY-bBox.top-margin.top-window.scrollY;
+			if (	x>=0 && x<=bBox.right-bBox.left-margin.left-margin.right &&
+				y>=0 && y<=bBox.bottom-bBox.top-margin.top-margin.bottom) {
+				chart.mouseMove(x,y);
+			}
+		});
 
 		svg.append("g").attr("class", "x axis").attr("transform", "translate("+margin.left+"," + (chart.height()-margin.bottom) + ")").call(chart.xAxisLine);
 		svg.append("g").attr("class", "y axis").attr("transform", "translate("+margin.left+"," + margin.top + ")").call(chart.yAxisLine);
 
-		svg.append("defs").attr("transform", "translate("+margin.left+"," + margin.top + ")").append("clipPath").attr("id", "clip").append("rect").attr("width", w).attr("height", chart.height());
+		svg.append("defs").attr("transform", "translate("+margin.left+"," + margin.top + ")").append("clipPath").attr("id", "clip").append("rect").attr("width", w).attr("height", h);
 
 		zoom.on('zoom', chart.zoomed);
 		svg.append("rect").attr("class", "zoom")
@@ -240,12 +275,34 @@ function wdGfxChart() {
 			.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 			.call(zoom);
 	})
+	chart.dispatch.on("updateValues.wdGfxChart", function(v) {
+		svg.selectAll(".dots").selectAll('circle').transition().duration(200).attr('r', 0);
+		svg.selectAll(".dots").transition().duration(200).on("end", function(){d3.select(this).remove()});
+		if (typeof v == "undefined") return;
+		var dots = legend.cols().map(function(d){
+			return {
+				id:	d.substr(4),
+				timestamp:v.timestamp,
+				value:	v[d],
+				color:	legend.colColor(d),
+				x:	chart.xAxis(v.timestamp),
+				y:	chart.yAxis(v[d])
+			};
+		}), update = svg.selectAll(".dot2s").data(dots);
+		update.enter().append('g').attr('class','dots')
+			.attr("transform", "translate("+margin.left+", " + (margin.top) + ")")
+			.append('circle').attr('cx', function(d){return d.x})
+				.attr('cy', function(d){return d.y})
+				.attr('stroke', function(d){return d.color})
+				.transition().duration(200).attr('r', 5)
+
+	});
 	chart.dispatch.on("renderUpdate.wdAxesComponant", function() {
 		svg.selectAll(".lines").remove();
 		var	update	= svg.selectAll(".lines").data(lines, function(d) { return d.id });
 		/*update.exit().remove();
 		update.selectAll('path').attr("d", function(d) { return line(d.values); })*/
-		var	eLines	= update.enter().append("g").attr("class", "lines").attr("transform", "translate("+margin.left+", " + (-margin.bottom) + ")");
+		var	eLines	= update.enter().append("g").attr("class", "lines").attr("transform", "translate("+margin.left+", " + (margin.top) + ")");
 		eLines.append("path").attr("class", "line")
 			.attr("d", function(d) { return line(d.values); })
 			.style("clip-path","url(#clip)")

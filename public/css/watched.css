@@ -14,7 +14,10 @@
 	fill: none;
 	stroke-width: 0px;
 }
-
+.dots circle {
+	fill: none;
+	stroke-width: 3px;
+}
 .zoom {
   cursor: move;
   fill: none;
@@ -68,6 +71,11 @@ thead th.desc:after {
 	padding: 6px 0px;
 	padding-right: 20px;
 	outline:0;
+}
+
+.btn-group > .item.value {
+	min-width: 4em;
+	text-align: right;
 }
 
 
