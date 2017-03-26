@@ -25,9 +25,17 @@ class Api extends CorePage {
 		$ret['data'] = [];
 		$ret['cols'] = [];
 		$ret['src']  = $src;
+		$ret['src']['origin'] = 'detail';
 
-		$ac = "a.timestamp";
-		$dc = "d.timestamp";
+		$ac = 'a.timestamp';
+		$dc = 'd.timestamp';
+		$smin= '>ah.mint';
+		$dlim= '';
+		if(isset($src['min_timestamp']) && isset($src['max_timestamp'])) {
+			$smin=' between '.$src['min_timestamp'].' and least(ah.mint,'.$src['max_timestamp'].')';
+			$dlim=' and d.timestamp between '.$src['min_timestamp'].' and '.$src['max_timestamp'];
+		}
+
 		$sc = $this->db->prepare('select col.column_name from information_schema.columns col 
  where col.table_schema=database()
    and col.table_name=:tname
@@ -46,20 +54,20 @@ class Api extends CorePage {
 		if ($src['aggregate_day'] != null && $src['aggregate_hour'] != null)
 			$sql .= 'select '.$ac.'
 from '.$src['aggregate_day'].' a, (select min(timestamp) as mint from '.$src['aggregate_hour'].' where '.$src['drive'].'=:obj_id and res_id=:res_id) ah
-where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp>ah.mint 
+where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp'.$smin.' 
 union all ';
 		if ($src['aggregate_hour'] != null && $src['aggregate_min'] != null)
 			$sql .= 'select '.$ac.'
 from '.$src['aggregate_hour'].' a, (select min(timestamp) as mint from '.$src['aggregate_min'].' where '.$src['drive'].'=:obj_id and res_id=:res_id) ah 
-where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp>ah.mint 
+where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp'.$smin.' 
 union all ';
 		if ($src['aggregate_min'] != null)
 			$sql .= 'select '.$ac.'
 from '.$src['aggregate_min'].' a, (select min(timestamp) as mint from '.$src['data_table'].' where '.$src['drive'].'=:obj_id and res_id=:res_id) ah 
-where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp>ah.mint 
+where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp'.$smin.' 
 union all ';
 		$sql.='select '.$dc.'
-from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id';
+from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id'.$dlim;
 		$sd = $this->db->prepare($sql);
 		$sd->bindParam(':obj_id', $src['obj_id'], PDO::PARAM_STR);
 		$sd->bindParam(':res_id', $src['res_id'], PDO::PARAM_STR);
@@ -82,9 +90,21 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		$ret['data'] = [];
 		$ret['cols'] = [];
 		$ret['src']  = $src;
+		$ret['src']['origin'] = 'minut';
 
-		$ac = "a.timestamp";
-		$dc = "d.timestamp";
+		$ac = 'a.timestamp';
+		$dc = 'd.timestamp';
+		$smin= '<ah.mint';
+		$smax= '>ah.maxt';
+		$alim= '';
+		$dlim= '';
+		if(isset($src['min_timestamp']) && isset($src['max_timestamp'])) {
+			$smin=' between greatest(ah.mint,'.$src['min_timestamp'].') and '.$src['max_timestamp'];
+			$smax=' between '.$src['min_timestamp'].' and least(ah.maxt,'.$src['max_timestamp'].')';
+			$alim=' and a.timestamp between '.$src['min_timestamp'].' and '.$src['max_timestamp'];
+			$dlim=' and d.timestamp between '.$src['min_timestamp'].' and '.$src['max_timestamp'];
+		}
+		
 		$sc = $this->db->prepare('select col.column_name from information_schema.columns col 
  where col.table_schema=database()
    and col.table_name=:tname
@@ -103,22 +123,22 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		if ($src['aggregate_day'] != null && $src['aggregate_hour'] != null)
 			$sql .= 'select '.$ac.'
 from '.$src['aggregate_day'].' a, (select min(timestamp) as mint from '.$src['aggregate_hour'].' where '.$src['drive'].'=:obj_id and res_id=:res_id) ah
-where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp<ah.mint 
+where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp'.$smin.' 
 union all ';
 		if ($src['aggregate_hour'] != null && $src['aggregate_min'] != null)
 			$sql .= 'select '.$ac.'
 from '.$src['aggregate_hour'].' a, (select min(timestamp) as mint from '.$src['aggregate_min'].' where '.$src['drive'].'=:obj_id and res_id=:res_id) ah
-where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp<ah.mint 
+where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp'.$smin.' 
 union all ';
 		if ($src['aggregate_min'] != null)
 			$sql .= 'select '.$ac.' from '.$src['aggregate_min'].' a
-where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id
+where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id '.$alim.'
 union all select '.$dc.'
 from '.$src['data_table'].' d, (select max(timestamp) as maxt from '.$src['aggregate_min'].' where '.$src['drive'].'=:obj_id and res_id=:res_id) ah 
-where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id and d.timestamp>ah.maxt';
+where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id and d.timestamp'.$smax;
 		else
 			$sql.='select '.$dc.'
-from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id';
+from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id'.$dlim;
 		$sd = $this->db->prepare($sql);
 		$sd->bindParam(':obj_id', $src['obj_id'], PDO::PARAM_STR);
 		$sd->bindParam(':res_id', $src['res_id'], PDO::PARAM_STR);
@@ -141,9 +161,21 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		$ret['data'] = [];
 		$ret['cols'] = [];
 		$ret['src']  = $src;
+		$ret['src']['origin'] = 'hour';
 
-		$ac = "a.timestamp";
-		$dc = "d.timestamp";
+		$ac = 'a.timestamp';
+		$dc = 'd.timestamp';
+		$smin= '<ah.mint';
+		$smax= '>ah.maxt';
+		$alim= '';
+		$dlim= '';
+		if(isset($src['min_timestamp']) && isset($src['max_timestamp'])) {
+			$smin=' between greatest(ah.mint,'.$src['min_timestamp'].') and '.$src['max_timestamp'];
+			$smax=' between '.$src['min_timestamp'].' and least(ah.maxt,'.$src['max_timestamp'].')';
+			$alim=' and a.timestamp between '.$src['min_timestamp'].' and '.$src['max_timestamp'];
+			$dlim=' and d.timestamp between '.$src['min_timestamp'].' and '.$src['max_timestamp'];
+		}
+		
 		$sc = $this->db->prepare('select col.column_name from information_schema.columns col 
  where col.table_schema=database()
    and col.table_name=:tname
@@ -162,24 +194,24 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		if ($src['aggregate_day'] != null && $src['aggregate_hour'] != null)
 			$sql .= 'select '.$ac.'
 from '.$src['aggregate_day'].' a, (select min(timestamp) as mint from '.$src['aggregate_hour'].' where '.$src['drive'].'=:obj_id and res_id=:res_id) ah
-where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp<ah.mint 
+where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp'.$smin.' 
 union all ';
 		if ($src['aggregate_hour'] != null)
 			$sql .= 'select '.$ac.' from '.$src['aggregate_hour'].' a
-where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id
+where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id '.$alim.'
 union all ';
 		if ($src['aggregate_min'] != null && $src['aggregate_hour'] != null)
 			$sql .= 'select '.$ac.'
 from '.$src['aggregate_min'].' a, (select max(timestamp) as maxt from '.$src['aggregate_hour'].' where '.$src['drive'].'=:obj_id and res_id=:res_id) ah 
-where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp>ah.maxt 
+where a.'.$src['drive'].'=:obj_id and a.res_id=:res_id and a.timestamp'.$smax.' 
 union all ';
 		if ($src['aggregate_min'] != null)
 			$sql.='select '.$dc.'
 from '.$src['data_table'].' d, (select max(timestamp) as maxt from '.$src['aggregate_min'].' where '.$src['drive'].'=:obj_id and res_id=:res_id) ah 
-where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id and d.timestamp>ah.maxt';
+where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id and d.timestamp'.$smax;
 		else
 			$sql.='select '.$dc.'
-from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id';
+from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:res_id'.$dlim;
 		$sd = $this->db->prepare($sql);
 		$sd->bindParam(':obj_id', $src['obj_id'], PDO::PARAM_STR);
 		$sd->bindParam(':res_id', $src['res_id'], PDO::PARAM_STR);
@@ -195,32 +227,7 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		return $ret;
 	}
 
-/////////////////////////////////////////////////////////////////////////////////////////////
-// Controlers
-	public function serv_res($request, $response, $args) {
-		$serv_id = $request->getAttribute('serv_id');
-		$res_id  = $request->getAttribute('res_id');
-		$stmt = $this->db->prepare('select s.id as obj_id, s.name as obj_name, r.id as res_id, r.name as res_name, d.drive, r.data_type, d.data_table, d.aggregate_min, d.aggregate_hour, d.aggregate_day
-  from s$ressources sr, s$services s, c$ressources r, c$data_tables d
- where sr.serv_id=s.id and s.id=:sid
-   and sr.res_id=r.id  and r.id=:rid
-   and d.data_type=r.data_type');
-		$stmt->bindParam(':rid', $res_id, PDO::PARAM_INT);
-		$stmt->bindParam(':sid', $serv_id, PDO::PARAM_INT);
-		$stmt->execute();
-		$row = $stmt->fetch();
-		if ($row == false || !haveTable($this->db,$row['data_type']))
-			throw new Slim\Exception\NotFoundException($request, $response);
-		$this->auth->assertService($serv_id, $request, $response);
-		$row['res_name'] = urldecode($row['res_name']);
-		$ret = $this->getRessourcesHourHistory($row);
-		$response->getBody()->write(json_encode($ret));
-		return $response->withHeader('Content-type', 'application/json');
-	}
-
-	public function host_res($request, $response, $args) {
-		$host_id = $request->getAttribute('host_id');
-		$res_id  = $request->getAttribute('res_id');
+	private function get_host_row($host_id, $res_id, $min, $max) {
 		$stmt = $this->db->prepare('select h.id as obj_id, h.name as obj_name, r.id as res_id, r.name as res_name, d.drive, r.data_type, d.data_table, d.aggregate_min, d.aggregate_hour, d.aggregate_day
   from h$ressources hr, h$hosts h, c$ressources r, c$data_tables d
  where hr.host_id=h.id and h.id=:hid
@@ -234,7 +241,75 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 			throw new Slim\Exception\NotFoundException($request, $response);
 		$this->auth->assertHost($host_id, $request, $response);
 		$row['res_name'] = urldecode($row['res_name']);
+		if($min != null)	$row['min_timestamp'] = $min;
+		if($max != null)	$row['max_timestamp'] = $max;
+		return $row;
+	}
+
+	private function get_serv_row($serv_id, $res_id, $min, $max) {
+		$stmt = $this->db->prepare('select s.id as obj_id, s.name as obj_name, r.id as res_id, r.name as res_name, d.drive, r.data_type, d.data_table, d.aggregate_min, d.aggregate_hour, d.aggregate_day
+  from s$ressources sr, s$services s, c$ressources r, c$data_tables d
+ where sr.serv_id=s.id and s.id=:sid
+   and sr.res_id=r.id  and r.id=:rid
+   and d.data_type=r.data_type');
+		$stmt->bindParam(':rid', $res_id, PDO::PARAM_INT);
+		$stmt->bindParam(':sid', $serv_id, PDO::PARAM_INT);
+		$stmt->execute();
+		$row = $stmt->fetch();
+		if ($row == false || !haveTable($this->db,$row['data_type']))
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertService($serv_id, $request, $response);
+		$row['res_name'] = urldecode($row['res_name']);
+		if($min != null)	$row['min_timestamp'] = $min;
+		if($max != null)	$row['max_timestamp'] = $max;
+		return $row;
+	}
+
+/////////////////////////////////////////////////////////////////////////////////////////////
+// Controlers
+
+	public function serv_res($request, $response, $args) {
+		$row = $this->get_serv_row($request->getAttribute('serv_id'), $request->getAttribute('res_id'), null, null);
 		$ret = $this->getRessourcesHourHistory($row);
+		$response->getBody()->write(json_encode($ret));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+
+	public function serv_res_min($request, $response, $args) {
+		$row = $this->get_serv_row($request->getAttribute('serv_id'), $request->getAttribute('res_id'), 
+			$request->getAttribute('min'), $request->getAttribute('max'));
+		$ret = $this->getRessourcesMinHistory($row);
+		$response->getBody()->write(json_encode($ret));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+
+	public function serv_res_detail($request, $response, $args) {
+		$row = $this->get_serv_row($request->getAttribute('serv_id'), $request->getAttribute('res_id'), 
+			$request->getAttribute('min'), $request->getAttribute('max'));
+		$ret = $this->getRessourcesDetailHistory($row);
+		$response->getBody()->write(json_encode($ret));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+
+	public function host_res($request, $response, $args) {
+		$row = $this->get_host_row($request->getAttribute('host_id'), $request->getAttribute('res_id'), null, null);
+		$ret = $this->getRessourcesHourHistory($row);
+		$response->getBody()->write(json_encode($ret));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+
+	public function host_res_min($request, $response, $args) {
+		$row = $this->get_host_row($request->getAttribute('host_id'), $request->getAttribute('res_id'), 
+			$request->getAttribute('min'), $request->getAttribute('max'));
+		$ret = $this->getRessourcesMinHistory($row);
+		$response->getBody()->write(json_encode($ret));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+
+	public function host_res_detail($request, $response, $args) {
+		$row = $this->get_host_row($request->getAttribute('host_id'), $request->getAttribute('res_id'), 
+			$request->getAttribute('min'), $request->getAttribute('max'));
+		$ret = $this->getRessourcesDetailHistory($row);
 		$response->getBody()->write(json_encode($ret));
 		return $response->withHeader('Content-type', 'application/json');
 	}

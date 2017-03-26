@@ -90,7 +90,7 @@ function wdListWidget() {
 function wdProgessListWidget() {
 	var chart = wdBaseWidget(),body = wdList(), title = '';
 	chart.dispatch.on("dataUpdate.wdProgessListWidget", function() {
-		chart.data().body.forEach(function (d){
+		chart.data().body.forEach(function (d) {
 			body.add(wdProgess().title(d.title).url(d.url).data(d.items))
 		});
 		title = chart.data().title;

@@ -12,6 +12,6 @@ d3.select('section.content').call(wdRow()
 	.cell('col-md-6', wdTableWidget().source("{{ path_for('widgets.table.ress.history',  { 'host_id': a.id, 'res_id': r.id }) }}"))
 	.cell('col-md-3', wdDonutWidget().source("{{ path_for('widgets.donut.ress.items',  { 'host_id': a.id, 'res_id': r.id }) }}")));
 {% endif %}
-d3.select('section.content').append('div').call(wdRessourceGfxWidget().source("{{ path_for('api.ressource.host',  { 'host_id': a.id, 'res_id': r.id }) }}"));
+d3.select('section.content').append('div').call(wdRessourceGfxWidget().source("{{ path_for('widgets.gfx.host',  { 'host_id': a.id, 'res_id': r.id }) }}"));
 </script>
 {% endblock %}
