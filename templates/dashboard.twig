@@ -7,14 +7,14 @@
 {% block scripts %}
 <script>
 d3.select('section.content').call(
-	wdUnion().item(wdRow()
-		.cell('col-md-4', wdDonutWidget().source("{{ path_for('widgets.donut.dash.status') }}"))
-		.cell('col-md-4', wdDonutWidget().source("{{ path_for('widgets.donut.dash.items') }}"))
-		.cell('col-md-4', wdDonutWidget().source("{{ path_for('widgets.donut.dash.domains') }}"))
-	).item(wdRow()
-		.cell('col-md-12 col-lg-7', wdTableWidget().source("{{ path_for('widgets.table.dash.events') }}"))
+	bs.union().item(bs.row()
+		.cell('col-md-4', widget.donut().source("{{ path_for('widgets.donut.dash.status') }}"))
+		.cell('col-md-4', widget.donut().source("{{ path_for('widgets.donut.dash.items') }}"))
+		.cell('col-md-4', widget.donut().source("{{ path_for('widgets.donut.dash.domains') }}"))
+	).item(bs.row()
+		.cell('col-md-12 col-lg-7', widget.table().source("{{ path_for('widgets.table.dash.events') }}"))
 {% if menu.isAuth %}
-		.cell('col-md-12 col-lg-5', wdTableWidget().source("{{ path_for('widgets.table.dash.failed') }}"))
+		.cell('col-md-12 col-lg-5', widget.table().source("{{ path_for('widgets.table.dash.failed') }}"))
 {% endif %}
 ));
 </script>

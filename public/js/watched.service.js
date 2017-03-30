@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watchedService
 function wdServiceAreas(pClass, pX, pY) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdFilteredComponant( wdAxedComponant(null, pX,pY))),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored( wd.componant.filtered( wd.componant.axed(null, pX,pY))),
 		stack		= d3.stack(),
 		area		= d3.area()
 					.x(function(d, i) { return chart.xAxis(d.data.timestamp); })
@@ -17,7 +17,7 @@ function wdServiceAreas(pClass, pX, pY) {
 			.style("fill", function(d) { return chart.color()(d.key); })
 			.attr("d", area);
 	});
-	chart.dispatch.on("dataUpdate.wdAxedComponant", function() { });
+	chart.dispatch.on("dataUpdate.wd.componant.axed", function() { });
 	chart.dispatch.on("dataUpdate.wdServiceAreas", function() { 
 		stack.keys(chart.keys());
 		chart.xAxis.domain(d3.extent(chart.data(), function(d) { return d.timestamp; }));
@@ -27,7 +27,7 @@ function wdServiceAreas(pClass, pX, pY) {
 }
 
 function wdServiceAxes(pClass, pX,pY) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdAxesComponant(null,pX,pY);
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.axes(null,pX,pY);
 
 	chart.yAxisLine		= function(g) {
 		g.call(d3.axisRight(chart.yAxis).tickSize(chart.width()).ticks(chart.yAxis.domain()[1]));
@@ -37,7 +37,7 @@ function wdServiceAxes(pClass, pX,pY) {
 		g.selectAll(".tick text").attr("x", -20).attr("dy", "-4"); 
 	};
 
-	chart.dispatch.on("dataUpdate.wdAxedComponant", function() { });
+	chart.dispatch.on("dataUpdate.wd.componant.axed", function() { });
 	chart.dispatch.on("dataUpdate.wdServiceAxes", function() { 
 		chart.xAxis.domain(d3.extent(chart.data(), function(d) { return d.timestamp; }));
 		chart.yAxis.domain([0, d3.max(chart.data(), function(d) { return d.failed+d.missing+d.ok; })]);
@@ -46,12 +46,12 @@ function wdServiceAxes(pClass, pX,pY) {
 }
 
 function wdServiceLegend(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdHLegendComponant();
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.HLegend();
 	return chart;
 }
 
 function wdServiceChart(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdPeriodComponant( wdMinSizedComponant(null,500,330))),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored( wd.componant.period( wd.componant.minSized(null,500,330))),
 		margin		= {top: 30, right: 10, bottom: 20, left: 30},
 		axes 		= wdServiceAxes(null,500,300),
 		areas		= wdServiceAreas(null,500,300),

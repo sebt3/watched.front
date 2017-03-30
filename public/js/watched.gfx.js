@@ -1,9 +1,9 @@
 function wdGfxLegend() {
-	var	chart	= wdColoredComponant();
+	var	chart	= wd.componant.colored();
 	var	bar, gfx;
 	chart.dispatch.register("area", "enable", "select");
 	chart.setValue	= function(d,v) {
-		chart.root().select('#value_'+d).html(wdNumberFormat(v))
+		chart.root().select('#value_'+d).html(wd.format.number(v))
 		return chart;
 	}
 	chart.setValues	= function(v) {
@@ -86,7 +86,7 @@ function wdGfxLegend() {
 }
 
 function wdGfxTimeLine() {
-	var	chart	= wdAxedComponant(wdMinSizedComponant(null, 500,60)),
+	var	chart	= wd.componant.axed(wd.componant.minSized(null, 500,60)),
 		legend, svg, useArea=false,
 		brush	= d3.brushX(),
 		stack	= d3.stack(),
@@ -123,11 +123,11 @@ function wdGfxTimeLine() {
 		svg.select('.brush').call(brush.move, r);
 	}
 	chart.xAxisLine	= function(g) {
-		g.call(d3.axisBottom(chart.xAxis).tickFormat(wdDateFormat));
+		g.call(d3.axisBottom(chart.xAxis).tickFormat(wd.format.date));
 		g.select(".domain").remove();
 		g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1.5px");
 	}
-	chart.dispatch.on("dataUpdate.wdAxedComponant", function() { 
+	chart.dispatch.on("dataUpdate.wd.componant.axed", function() { 
 		chart.xAxis.domain(d3.extent(chart.data(), function(d) { return d.timestamp; }));
 		chart.yAxis.domain([0, d3.max(chart.data(), function(d) {
 			var vals = legend.cols().map(function (i) {return d[i]});
@@ -186,7 +186,7 @@ function wdGfxTimeLine() {
 	return chart;
 }
 function wdGfxChart() {
-	var	chart	= wdAxesComponant(wdAxedComponant(wdMinSizedComponant(null, 500,350))),
+	var	chart	= wd.componant.axes(wd.componant.axed(wd.componant.minSized(null, 500,350))),
 		legend, svg, timeline, domain, oldX = 0, useArea=false,
 		margin	= {top: 10, right: 10, bottom: 20, left: 30},
 		xRev	= d3.scaleTime().domain([0, chart.width()-margin.left-margin.right]),
@@ -295,27 +295,27 @@ function wdGfxChart() {
 		g.selectAll(".tick:not(:first-of-type) line").attr("stroke-dasharray", "5,5");
 		g.selectAll(".tick text").attr("x", -20);
 	};
-	chart.dispatch.on("widthUpdate.wdAxedComponant", function() {
+	chart.dispatch.on("widthUpdate.wd.componant.axed", function() {
 		w = chart.width()-(margin.left+margin.right+30)
 		xRev.domain([0, w]);
 		chart.xAxis.range([0, w ]);
 	});
-	chart.dispatch.on("heightUpdate.wdAxedComponant", function() {
+	chart.dispatch.on("heightUpdate.wd.componant.axed", function() {
 		h = chart.height()-margin.bottom-margin.top;
 		chart.yAxis.range([h, 0]);
 		zoom.translateExtent([[0, 0], [w, h]]).extent([[0, 0], [w, h]])
 	});
-	chart.dispatch.on("dataUpdate.wdAxedComponant", function() {
+	chart.dispatch.on("dataUpdate.wd.componant.axed", function() {
 		domain = d3.extent(chart.data(), function(d) { return d.timestamp; });
 		xRev.range(domain);
 		chart.xAxis.domain(domain);
 		chart.lineChanged();
 	});
-	chart.dispatch.on("heightUpdate.wdAxesComponant", function() { 
+	chart.dispatch.on("heightUpdate.wd.componant.axes", function() { 
 		if (chart.inited())
 			chart.root().select(".x.axis").attr("transform", "translate("+margin.left+"," +h+ ")");
 	});
-	chart.dispatch.on("init.wdAxesComponant", function() {
+	chart.dispatch.on("init.wd.componant.axes", function() {
 		var bound	= chart.root().node().getBoundingClientRect();
 		chart.width(bound.width);
 		chart.height(bound.height);chart.dispatch.call("heightUpdate")
@@ -380,7 +380,7 @@ function wdGfxChart() {
 			.style("clip-path","url(#clip)")
 			.style("stroke", function(d) { return legend.colColor(d.id); });
 	}
-	chart.dispatch.on("renderUpdate.wdAxesComponant", function() {
+	chart.dispatch.on("renderUpdate.wd.componant.axes", function() {
 		svg.selectAll(".lines").remove();
 		if (useArea)
 			chart.drawArea();

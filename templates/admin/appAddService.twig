@@ -6,17 +6,17 @@
 {% endblock %}
 {% block scripts %}
 <script>
-d3.select('section.content').call(wdRow()
-	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.apps.addService', {'id': app_id}) }}").body(wdBox().class('box-info')
-		.title("{{ _('Add a service to an application:') }} {{ name }}").body(wdUnion()
-			.item(wdFormGroup('hid').label("{{ _('Available services') }}").obj(
-				wdFormSelect('sid').value({{ sid }})
+d3.select('section.content').call(bs.row()
+	.cell('col-lg-8 col-lg-offset-2', bs.form().url("{{ path_for('admin.apps.addService', {'id': app_id}) }}").body(bs.box().class('box-info')
+		.title("{{ _('Add a service to an application:') }} {{ name }}").body(bs.union()
+			.item(bs.formGroup('hid').label("{{ _('Available services') }}").obj(
+				bs.select('sid').value({{ sid }})
 	{% for a in services %}
 					.add("{{ a.domain_name }}_{{ a.host_name }}_{{ a.name }}",{{ a.id }})
 	{% endfor %}
-		))).footer(wdButtonGroup()
-			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.apps.change', {'id': app_id}) }}"))
-			.right(wdButton().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
+		))).footer(bs.button.group()
+			.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.apps.change', {'id': app_id}) }}"))
+			.right(bs.button.form().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
 ))));
 </script>
 {% endblock %}

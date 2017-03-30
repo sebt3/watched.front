@@ -6,17 +6,17 @@
 {% endblock %}
 {% block scripts %}
 <script>
-d3.select('section.content').call(wdRow()
-	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.users.addTeam', {'id': user.id}) }}").body(wdBox().class('box-info')
-		.title("{{ _('Add a team to') }} {{ user.firstname }} {{ user.lastname }}").body(wdUnion()
-			.item(wdFormGroup('tid').label("{{ _('Team') }}").obj(
-				wdFormSelect('tid').value({{ hid }})
+d3.select('section.content').call(bs.row()
+	.cell('col-lg-8 col-lg-offset-2', bs.form().url("{{ path_for('admin.users.addTeam', {'id': user.id}) }}").body(bs.box().class('box-info')
+		.title("{{ _('Add a team to') }} {{ user.firstname }} {{ user.lastname }}").body(bs.union()
+			.item(bs.formGroup('tid').label("{{ _('Team') }}").obj(
+				bs.select('tid').value({{ hid }})
 	{% for a in teams %}
 					.add("{{ a.name }}",{{ a.id }})
 	{% endfor %}
-		))).footer(wdButtonGroup()
-			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.users.change', {'id': user.id}) }}"))
-			.right(wdButton().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
+		))).footer(bs.button.group()
+			.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.users.change', {'id': user.id}) }}"))
+			.right(bs.button.form().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
 ))));
 </script>
 {% endblock %}

@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watchedBarChart
 function wdBarChartBars(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdFilteredComponant( wdAxedComponant(null, 200, 200))),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.filtered( wd.componant.colored( wd.componant.axed(null, 200, 200))),
 		stack		= d3.stack();
 	chart.xAxis		= d3.scaleBand().padding(0.2);
 	chart.colorFunction	= function() { return chart.color(); }
@@ -22,11 +22,11 @@ function wdBarChartBars(pClass) {
 				.attr("width", chart.xAxis.bandwidth())
 				.on("click",function (d,i){chart.dispatch.call("click", this,d,i);});
 	});
-	chart.dispatch.on("widthUpdate.wdAxedComponant", function() { });
+	chart.dispatch.on("widthUpdate.wd.componant.axed", function() { });
 	chart.dispatch.on("widthUpdate.wdBarChartBars", function() {
 		chart.xAxis.rangeRound([0, chart.width()]);
 	});
-	chart.dispatch.on("dataUpdate.wdAxedComponant", function() { });
+	chart.dispatch.on("dataUpdate.wd.componant.axed", function() { });
 	chart.dispatch.on("dataUpdate.wdBarChartBars", function() {
 		var keys = [];
 		Object.keys(chart.data()[0]).map(function(k, i) {
@@ -49,17 +49,17 @@ function wdBarChartBars(pClass) {
 }
 
 function wdBarAxes(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdAxesComponant(null,500,200);
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.axes(null,500,200);
 	chart.xAxis		= d3.scaleBand().rangeRound([0, chart.width()]).paddingInner(0.05).align(0.1);
 	chart.xAxisLine		= function(g) {
 		g.call(d3.axisBottom(chart.xAxis));
 		g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1.5px");
 	}
-	chart.dispatch.on("widthUpdate.wdAxedComponant", function() { });
+	chart.dispatch.on("widthUpdate.wd.componant.axed", function() { });
 	chart.dispatch.on("widthUpdate.wdBarAxes", function() {
 		chart.xAxis.rangeRound([0, chart.width()]);
 	});
-	chart.dispatch.on("dataUpdate.wdAxedComponant", function() { });
+	chart.dispatch.on("dataUpdate.wd.componant.axed", function() { });
 	chart.dispatch.on("dataUpdate.wdBarAxes", function() { 
 		chart.xAxis.domain(chart.data().map(function(d) { return d.type; }));
 		chart.yAxis.domain([0, d3.max(chart.data(), function(d) { 
@@ -75,7 +75,7 @@ function wdBarAxes(pClass) {
 }
 
 function wdBarChart(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdPeriodComponant( wdMinSizedComponant(null,200,200))),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.filtered( wd.componant.period( wd.componant.colored( wd.componant.minSized(null,200,200)))),
 		margin		= {top: 10, right: 10, bottom: 20, left: 30},
 		axes 		= wdBarAxes(),
 		bars		= wdBarChartBars();

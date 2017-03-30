@@ -2,7 +2,7 @@
 // watchedEvent
 
 function wdLineLines(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdFilteredComponant( wdAxedComponant(null, 500,200))),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored( wd.componant.filtered( wd.componant.axed(null, 500,200))),
 		line		= d3.line().curve(d3.curveBasis)
 					.x(function(d) { return chart.xAxis(d.timestamp); })
 					.y(function(d) { return chart.yAxis(d.value); }),
@@ -32,7 +32,7 @@ function wdLineLines(pClass) {
 }
 
 function wdLineAxes(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdFilteredComponant( wdAxesComponant( null,500,200)),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.filtered( wd.componant.axes( null,500,200)),
 		marq;
 
 	chart.callbacks.mouseMove	= function(x,y) {
@@ -49,12 +49,12 @@ function wdLineAxes(pClass) {
 }
 
 function wdLineLegend(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdHLegendComponant();
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.HLegend();
 	return chart;
 }
 
 function wdLineChart(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass: wdPeriodComponant( wdColoredComponant( wdFilteredComponant(wdMinSizedComponant(null, 500,380)))),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass: wd.componant.period( wd.componant.colored( wd.componant.filtered(wd.componant.minSized(null, 500,380)))),
 		margin		= {top: 30, right: 10, bottom: 20, left: 30},
 		axes		= wdLineAxes(),
 		legend 		= wdLineLegend().color(chart.color()),

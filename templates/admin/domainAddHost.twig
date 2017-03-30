@@ -6,17 +6,17 @@
 {% endblock %}
 {% block scripts %}
 <script>
-d3.select('section.content').call(wdRow()
-	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.domains.addHost', {'id': domain_id}) }}").body(wdBox().class('box-info')
-		.title("{{ _('Add an host to the domain:') }} {{ name }}").body(wdUnion()
-			.item(wdFormGroup('hid').label("{{ _('Available hosts') }}").obj(
-				wdFormSelect('hid').value({{ sid }})
+d3.select('section.content').call(bs.row()
+	.cell('col-lg-8 col-lg-offset-2', bs.form().url("{{ path_for('admin.domains.addHost', {'id': domain_id}) }}").body(bs.box().class('box-info')
+		.title("{{ _('Add an host to the domain:') }} {{ name }}").body(bs.union()
+			.item(bs.formGroup('hid').label("{{ _('Available hosts') }}").obj(
+				bs.select('hid').value({{ sid }})
 	{% for a in hosts %}
 					.add("{{ a.name }}",{{ a.id }})
 	{% endfor %}
-		))).footer(wdButtonGroup()
-			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.domains.change', {'id': domain_id}) }}"))
-			.right(wdButton().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
+		))).footer(bs.button.group()
+			.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.domains.change', {'id': domain_id}) }}"))
+			.right(bs.button.form().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
 ))));
 </script>
 {% endblock %}

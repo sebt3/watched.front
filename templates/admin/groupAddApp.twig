@@ -6,17 +6,17 @@
 {% endblock %}
 {% block scripts %}
 <script>
-d3.select('section.content').call(wdRow()
-	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.groups.addApp', {'id': group_id}) }}").body(wdBox().class('box-info')
-		.title("{{ _('Add a app to the group') }} {{ name }}").body(wdUnion()
-			.item(wdFormGroup('sid').label("{{ _('Available apps') }}").obj(
-				wdFormSelect('sid').value({{ sid }})
+d3.select('section.content').call(bs.row()
+	.cell('col-lg-8 col-lg-offset-2', bs.form().url("{{ path_for('admin.groups.addApp', {'id': group_id}) }}").body(bs.box().class('box-info')
+		.title("{{ _('Add a app to the group') }} {{ name }}").body(bs.union()
+			.item(bs.formGroup('sid').label("{{ _('Available apps') }}").obj(
+				bs.select('sid').value({{ sid }})
 	{% for a in apps %}
 					.add("{{ a.name }}",{{ a.id }})
 	{% endfor %}
-		))).footer(wdButtonGroup()
-			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.groups.change', {'id': group_id}) }}"))
-			.right(wdButton().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
+		))).footer(bs.button.group()
+			.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.groups.change', {'id': group_id}) }}"))
+			.right(bs.button.form().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
 ))));
 </script>
 {% endblock %}

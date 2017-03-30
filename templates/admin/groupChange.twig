@@ -7,16 +7,16 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-d3.select('section.content').call(wdRow()
-	  .cell('col-lg-6',wdUnion()
-		.item(wdForm().url("{{ path_for('admin.groups.change', {'id': group_id}) }}").body(wdBox()
-			.title("{{ _('Modify a group') }}").class('box-info').body(wdUnion()
-				.item(wdFormGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
-			).footer(wdButtonGroup()
-				.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.groups.list') }}"))
-				.right(wdButton().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
-		))).item(wdBox().title("{{ _('Teams') }}")
-			.tool(wdAButton().class('btn-default pull-right')
+d3.select('section.content').call(bs.row()
+	  .cell('col-lg-6',bs.union()
+		.item(bs.form().url("{{ path_for('admin.groups.change', {'id': group_id}) }}").body(bs.box()
+			.title("{{ _('Modify a group') }}").class('box-info').body(bs.union()
+				.item(bs.formGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
+			).footer(bs.button.group()
+				.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.groups.list') }}"))
+				.right(bs.button.form().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
+		))).item(bs.box().title("{{ _('Teams') }}")
+			.tool(bs.button.a().class('btn-default pull-right')
 				.url("{{ path_for('admin.groups.addTeam', { 'id': group_id }) }}")
 				.text("{{ _('Add') }}").icon('fa fa-plus')
 			).body(wdTableChart()
@@ -32,8 +32,8 @@ d3.select('section.content').call(wdRow()
 	actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.groups.changeTeam', { 'id': group_id, 'tid': a.team_id, 'rid': a.role_id }) }}" },
 		   { icon:"fa fa-trash",  target: "#deleteTeam{{ group_id }}-{{ a.team_id }}-{{ a.role_id }}" } ]
 	}, {% endfor %}
-	])))).cell('col-md-6',wdBox().title("{{ _('Apps') }}")
-		 .tool(wdAButton().class('btn-default pull-right')
+	])))).cell('col-md-6',bs.box().title("{{ _('Apps') }}")
+		 .tool(bs.button.a().class('btn-default pull-right')
 			.url("{{ path_for('admin.groups.addApp', {'id': group_id}) }}")
 			.text("{{ _('Add') }}").icon('fa fa-plus')
 		).body(wdTableChart()
@@ -44,17 +44,17 @@ d3.select('section.content').call(wdRow()
 	{% endfor %}
 ]))));
 {% for a in apps %}
-d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.groups.deleteApp', { 'id': group_id, 'aid': a.id }) }}").id("deleteApp{{ group_id }}-{{ a.id }}").title("{{ _('Remove application from group') }}").text("{{ _('Confirm') }}").body(wdUnion()
-	.item(wdP("{{ _('Are you sure you want to remove this application from group:') }}"))
-	.item(wdDesc()
+d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.groups.deleteApp', { 'id': group_id, 'aid': a.id }) }}").id("deleteApp{{ group_id }}-{{ a.id }}").title("{{ _('Remove application from group') }}").text("{{ _('Confirm') }}").body(bs.union()
+	.item(bs.p("{{ _('Are you sure you want to remove this application from group:') }}"))
+	.item(bs.desc()
 		.item("{{ _('Group') }}","{{ name }}")
 		.item("{{ _('Application') }}","{{ a.name }}")
 )))
 {% endfor %}
 {% for a in teams %}
-d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.groups.deleteTeam', { 'id': group_id, 'tid': a.team_id, 'rid': a.role_id }) }}").id("deleteTeam{{ group_id }}-{{ a.team_id }}-{{ a.role_id }}").title("{{ _('Remove a team permission from a group') }}").text("{{ _('Confirm') }}").body(wdUnion()
-	.item(wdP("{{ _('Are you sure you want to remove this team from this group:') }}"))
-	.item(wdDesc()
+d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.groups.deleteTeam', { 'id': group_id, 'tid': a.team_id, 'rid': a.role_id }) }}").id("deleteTeam{{ group_id }}-{{ a.team_id }}-{{ a.role_id }}").title("{{ _('Remove a team permission from a group') }}").text("{{ _('Confirm') }}").body(bs.union()
+	.item(bs.p("{{ _('Are you sure you want to remove this team from this group:') }}"))
+	.item(bs.desc()
 		.item("{{ _('Group') }}","{{ name }}")
 		.item("{{ _('Team') }}","{{ a.team_name }}")
 		.item("{{ _('Type') }}","{{ _(a.type) }}")

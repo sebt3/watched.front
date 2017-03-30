@@ -7,8 +7,8 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-d3.select('section.content').call(wdRow()
-	  .cell('col-md-6',wdBox().title("{{ _('Services') }}")
+d3.select('section.content').call(bs.row()
+	  .cell('col-md-6',bs.box().title("{{ _('Services') }}")
 		 .body(wdTableChart()
 		.col("{{ _('Domain') }}")
 		.col("{{ _('Host') }}")
@@ -21,7 +21,7 @@ d3.select('section.content').call(wdRow()
 		name:	"{{ a.name }}",
 		actions: [ { icon:"fa fa-trash",  target: "#deleteServ{{ a.id }}" } ]
 	}, {% endfor %}
-	]))).cell('col-md-6',wdBox().title("{{ _('Hosts') }}")
+	]))).cell('col-md-6',bs.box().title("{{ _('Hosts') }}")
 		 .body(wdTableChart()
 		.col("{{ _('Domain') }}")
 		.col("{{ _('Host') }}")
@@ -34,18 +34,18 @@ d3.select('section.content').call(wdRow()
 	}, {% endfor %}
 ]))));
 {% for a in services %}
-d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.clean.deleteService', { 'id': a.id }) }}").id("deleteServ{{ a.id }}").title("{{ _('Remove old service') }}").text("{{ _('Confirm') }}").body(wdUnion()
-	.item(wdP("{{ _('Are you sure you want to remove this old service:') }}"))
-	.item(wdDesc()
+d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.clean.deleteService', { 'id': a.id }) }}").id("deleteServ{{ a.id }}").title("{{ _('Remove old service') }}").text("{{ _('Confirm') }}").body(bs.union()
+	.item(bs.p("{{ _('Are you sure you want to remove this old service:') }}"))
+	.item(bs.desc()
 		.item("{{ _('Domain') }}","{{ a.domain_name }}")
 		.item("{{ _('Host') }}","{{ a.host_name }}")
 		.item("{{ _('Service') }}","{{ a.name }}")
 )))
 {% endfor %}
 {% for a in hosts %}
-d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.domains.deleteHost', { 'id': domain_id, 'hid': a.id }) }}").id("deleteHost{{ a.id }}").title("{{ _('Delete old host') }}").text("{{ _('Confirm') }}").body(wdUnion()
-	.item(wdP("{{ _('Are you sure you want to delete this host:') }}"))
-	.item(wdP("{{ a.name }}")
+d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.domains.deleteHost', { 'id': domain_id, 'hid': a.id }) }}").id("deleteHost{{ a.id }}").title("{{ _('Delete old host') }}").text("{{ _('Confirm') }}").body(bs.union()
+	.item(bs.p("{{ _('Are you sure you want to delete this host:') }}"))
+	.item(bs.p("{{ a.name }}")
 )))
 {% endfor %}
 </script>

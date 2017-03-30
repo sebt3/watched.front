@@ -6,13 +6,13 @@
 {% endblock %}
 {% block scripts %}
 <script>
-d3.select('section.content').call(wdRow()
-	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.apps.add') }}").body(wdBox().class('box-info')
-		.title("{{ _('Create an application') }}").body(wdUnion()
-			.item(wdFormGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
-		).footer(wdButtonGroup()
-			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.apps.list') }}"))
-			.right(wdButton().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
+d3.select('section.content').call(bs.row()
+	.cell('col-lg-8 col-lg-offset-2', bs.form().url("{{ path_for('admin.apps.add') }}").body(bs.box().class('box-info')
+		.title("{{ _('Create an application') }}").body(bs.union()
+			.item(bs.formGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
+		).footer(bs.button.group()
+			.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.apps.list') }}"))
+			.right(bs.button.form().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
 ))));
 </script>
 {% endblock %}

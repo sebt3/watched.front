@@ -8,11 +8,11 @@
 <script>
 chart = wdServiceChart().baseUrl("{{ path_for('apiService', { 'id': service.id }) }}");
 d3.select('section.content').call(
-	wdUnion().item(wdRow()
-		 .cell('col-lg-8', wdTableWidget().source("{{ path_for('widgets.table.serv.process',  { 'id': service.id }) }}"))
-		 .cell('col-lg-4', wdTableWidget().source("{{ path_for('widgets.table.serv.sockets',  { 'id': service.id }) }}"))
-	).item(wdBox().title("{{ _('Availability') }}")
-			.tool(wdDropButton().text('Period')
+	bs.union().item(bs.row()
+		 .cell('col-lg-8', widget.table().source("{{ path_for('widgets.table.serv.process',  { 'id': service.id }) }}"))
+		 .cell('col-lg-4', widget.table().source("{{ path_for('widgets.table.serv.sockets',  { 'id': service.id }) }}"))
+	).item(bs.box().title("{{ _('Availability') }}")
+			.tool(bs.dropdown().text('Period')
 				.item("{{ _('All') }}", 'chart.setPeriod("all")')
 				.item("{{ _('Last month') }}", 'chart.setPeriod("month")')
 				.item("{{ _('Last week') }}", 'chart.setPeriod("week")')

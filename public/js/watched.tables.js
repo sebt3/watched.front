@@ -1,7 +1,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 // wdTableChart
 function wdTableBodyChart(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.base(),
 		keys	= [],
 		heads, rows;
 	chart.dispatch.on("init.wdTableBodyChart", function() {
@@ -79,18 +79,18 @@ function wdTableBodyChart(pClass) {
 						a.attr('class', d.value.color);
 					if (typeof d.value.text == 'number') {
 						d3.select(this).classed('text-right',true);
-						a.html(' '+wdNumberFormat(d.value.text));
+						a.html(' '+wd.format.number(d.value.text));
 					} else
 						a.html(' '+d.value.text);
 				} else {
 					if (typeof d.value.text == 'number')
-						d3.select(this).classed('text-right',true).append('span').html(' '+wdNumberFormat(d.value.text));
+						d3.select(this).classed('text-right',true).append('span').html(' '+wd.format.number(d.value.text));
 					else
 						d3.select(this).append('span').html(' '+d.value.text);
 				}
 			} else if (typeof d.value != "undefined") {
 				if (typeof d.value == 'number')
-					d3.select(this).classed('text-right',true).html(wdNumberFormat(d.value));
+					d3.select(this).classed('text-right',true).html(wd.format.number(d.value));
 				else
 					d3.select(this).html(d.value)
 			}

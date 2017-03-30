@@ -7,22 +7,22 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-d3.select('section.content').call(wdRow()
-	  .cell('col-lg-6',wdUnion()
-		.item(wdForm().url("{{ path_for('admin.apps.change', {'id': app_id}) }}").body(wdBox()
-			.title("{{ _('Modify an application') }}").class('box-info').body(wdUnion()
-				.item(wdFormGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
-				.item(wdFormGroup('group_id').label("{{ _('Group') }}").obj(
-					wdFormSelect('group_id').value({{ app.group_id }})
+d3.select('section.content').call(bs.row()
+	  .cell('col-lg-6',bs.union()
+		.item(bs.form().url("{{ path_for('admin.apps.change', {'id': app_id}) }}").body(bs.box()
+			.title("{{ _('Modify an application') }}").class('box-info').body(bs.union()
+				.item(bs.formGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
+				.item(bs.formGroup('group_id').label("{{ _('Group') }}").obj(
+					bs.select('group_id').value({{ app.group_id }})
 						.add("{{ _('None') }}",null)
 	{% for a in group %}
 						.add("{{ a.name }}",{{ a.id }})
 	{% endfor %}
-			))).footer(wdButtonGroup()
-				.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.apps.list') }}"))
-				.right(wdButton().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
-		))).item(wdBox().title("{{ _('Teams') }}")
-			.tool(wdAButton().class('btn-default pull-right')
+			))).footer(bs.button.group()
+				.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.apps.list') }}"))
+				.right(bs.button.form().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
+		))).item(bs.box().title("{{ _('Teams') }}")
+			.tool(bs.button.a().class('btn-default pull-right')
 				.url("{{ path_for('admin.apps.addTeam', { 'id': app_id }) }}")
 				.text("{{ _('Add') }}").icon('fa fa-plus')
 			).body(wdTableChart()
@@ -38,8 +38,8 @@ d3.select('section.content').call(wdRow()
 		actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.apps.changeTeam', { 'id': app_id, 'tid': a.team_id, 'rid': a.role_id }) }}" },
 			{ icon:"fa fa-trash",  target: "#deleteTeam{{ app_id }}-{{ a.team_id }}-{{ a.role_id }}" } ]
 	}, {% endfor %}
-	])))).cell('col-lg-6',wdBox().title("{{ _('Services') }}")
-		 .tool(wdAButton().class('btn-default pull-right')
+	])))).cell('col-lg-6',bs.box().title("{{ _('Services') }}")
+		 .tool(bs.button.a().class('btn-default pull-right')
 			.url("{{ path_for('admin.apps.addService', {'id': app_id}) }}")
 			.text("{{ _('Add') }}").icon('fa fa-plus')
 		).body(wdTableChart()
@@ -54,9 +54,9 @@ d3.select('section.content').call(wdRow()
 	}, {% endfor %}
 ]))));
 {% for a in services %}
-d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.apps.deleteService', { 'id': app_id, 'sid': a.id }) }}").id("deleteService{{ app_id }}-{{ a.id }}").title("{{ _('Remove service from this application') }}").text("{{ _('Confirm') }}").body(wdUnion()
-	.item(wdP("{{ _('Are you sure you want to remove this service from this application:') }}"))
-	.item(wdDesc()
+d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.apps.deleteService', { 'id': app_id, 'sid': a.id }) }}").id("deleteService{{ app_id }}-{{ a.id }}").title("{{ _('Remove service from this application') }}").text("{{ _('Confirm') }}").body(bs.union()
+	.item(bs.p("{{ _('Are you sure you want to remove this service from this application:') }}"))
+	.item(bs.desc()
 		.item("{{ _('Apps') }}","{{ name }}")
 		.item("{{ _('Domain') }}","{{ a.domain_name }}")
 		.item("{{ _('Host') }}","{{ a.host_name }}")
@@ -64,9 +64,9 @@ d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.apps.d
 )));
 {% endfor %}
 {% for a in teams %}
-d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.apps.deleteTeam', { 'id': app_id, 'tid': a.team_id, 'rid': a.role_id }) }}").id("deleteTeam{{ app_id }}-{{ a.team_id }}-{{ a.role_id }}").title("{{ _('Remove a team from an application') }}").text("{{ _('Confirm') }}").body(wdUnion()
-	.item(wdP("{{ _('Are you sure you want to remove this team from this application:') }}"))
-	.item(wdDesc()
+d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.apps.deleteTeam', { 'id': app_id, 'tid': a.team_id, 'rid': a.role_id }) }}").id("deleteTeam{{ app_id }}-{{ a.team_id }}-{{ a.role_id }}").title("{{ _('Remove a team from an application') }}").text("{{ _('Confirm') }}").body(bs.union()
+	.item(bs.p("{{ _('Are you sure you want to remove this team from this application:') }}"))
+	.item(bs.desc()
 		.item("{{ _('Apps') }}","{{ name }}")
 		.item("{{ _('Type') }}","{{ a.type }}")
 		.item("{{ _('Team') }}","{{ a.team_name }}")

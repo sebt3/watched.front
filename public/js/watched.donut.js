@@ -1,5 +1,19 @@
+(function(global, factory) {
+	if (typeof global.d3 !== 'object' || typeof global.d3.version !== 'string')
+		throw new Error('watched requires d3v4');
+	var v = global.d3.version.split('.');
+	if (v[0] != '4')
+		throw new Error('watched requires d3v4');
+	if (typeof global.bs !== 'object' || typeof global.bs.version !== 'string')
+		throw new Error('watched require d3-Bootstrap');
+	if (typeof global.wd !== 'object')
+		throw new Error('watched donut require watched componant');
+	
+	factory(global.wd, global);
+})(this, (function(wd, global) {
+
 function wdDonutChartLegend(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant();
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored();
 
 	chart.dispatch.register("itemMouseOver","itemMouseOut");
 	chart.callbacks.itemMouseOver	= function(d, i) {
@@ -16,11 +30,11 @@ function wdDonutChartLegend(pClass) {
 			.style("background-color", "white")
 			.style("font-weight","normal")
 	};
-	chart.dispatch.on("init.wdDonutChartLegend", function() { 
+	chart.dispatch.on("init.wd.chart.donutLegend", function() { 
 		chart.dispatch	.on("itemMouseOver.legend", chart.callbacks.itemMouseOver)
 				.on("itemMouseOut.legend",  chart.callbacks.itemMouseOut);
 	});
-	chart.dispatch.on("renderUpdate.wdDonutChartLegend", function() { 
+	chart.dispatch.on("renderUpdate.wd.chart.donutLegend", function() { 
 		chart.root().selectAll("li").selectAll("i").remove();
 		chart.root().selectAll("li").selectAll("span").remove();
 		var	update	= chart.root().selectAll("li").data(chart.data(), function(d) { return d ? d.label : this.id; }),
@@ -33,7 +47,7 @@ function wdDonutChartLegend(pClass) {
 				return "color:"+chart.color()(i)+";";
 			});
 		liHtml.append("span").text(function (d) {return " "+d.label;});
-		liHtml.append("span").attr("class", "pull-right").text(function (d) {if(typeof d.value == 'number') return wdNumberFormat(d.value);return d.value;});
+		liHtml.append("span").attr("class", "pull-right").text(function (d) {if(typeof d.value == 'number') return wd.format.number(d.value);return d.value;});
 		liHtml	.on("mouseover", function(d, i){chart.dispatch.call("itemMouseOver", null, d, i);})
 			.on("mouseout", function(d, i) {chart.dispatch.call("itemMouseOut",  null, d, i);})
 		update.exit().remove();
@@ -43,7 +57,7 @@ function wdDonutChartLegend(pClass) {
 }
 
 function wdDonutChartDonut(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant( wdMinSizedComponant( null, 150,150)),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored( wd.componant.minSized( null, 150,150)),
 		radius	= chart.width()/2-3,
 		arc	= d3.arc().outerRadius(radius).innerRadius(radius/2).padAngle(0.01).cornerRadius(3),
 		arc2	= d3.arc().outerRadius(radius+3).innerRadius(radius/2-3).padAngle(0).cornerRadius(3),
@@ -74,13 +88,13 @@ function wdDonutChartDonut(pClass) {
 	}
 	chart.dispatch	.on("itemMouseOver.donut", chart.callbacks["itemMouseOver"])
 			.on("itemMouseOut.donut",  chart.callbacks["itemMouseOut"]);
-	chart.dispatch.on("init.wdDonutChartDonut", function() { 
+	chart.dispatch.on("init.wd.chart.donutDonut", function() { 
 		chart.root().attr("width", chart.width()).attr("height", chart.height());
 		var chartLayer	= chart.root().append("g").classed("chartLayer", true);
 		allPies		= chartLayer.selectAll(".pies");
 		allPaths	= chartLayer.selectAll(".arcPath");
 	});
-	chart.dispatch.on("renderUpdate.wdDonutChartDonut", function() { 
+	chart.dispatch.on("renderUpdate.wd.chart.donutDonut", function() { 
 		chart.root().selectAll("path").remove();
 		var 	update	= allPies.data(chart.data()),
 			arcs	= d3.pie().sort(null).value(function(d) { return d.value; })(chart.data()),
@@ -101,12 +115,12 @@ function wdDonutChartDonut(pClass) {
 			}).attrTween("d", chart.loadtween);
 		update.exit().remove();
 	});
-	chart.dispatch.on("heightUpdate.wdDonutChartDonut", function() { 
+	chart.dispatch.on("heightUpdate.wd.chart.donutDonut", function() { 
 		chart.updateArcs();
 		if (chart.inited())
 			chart.root().attr("height", chart.height());
 	});
-	chart.dispatch.on("widthUpdate.wdDonutChartDonut", function() { 
+	chart.dispatch.on("widthUpdate.wd.chart.donutDonut", function() { 
 		chart.updateArcs();
 		if (chart.inited())
 			chart.root().attr("width", chart.width());
@@ -114,14 +128,13 @@ function wdDonutChartDonut(pClass) {
 
 	return chart;
 }
-
-function wdDonutChart(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdColoredComponant(),
+wd.chart.donut = function(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored(),
 		legend	= wdDonutChartLegend(),
 		donut	= wdDonutChartDonut(),
 		width, height, rightHtml;
 
-	chart.dispatch.on("init.wdDonutChart", function() { 
+	chart.dispatch.on("init.wd.chart.donut", function() { 
 		var	rowHtml	= chart.root().append("div").attr("class", "row"),
 			leftHtml= rowHtml.append("div").attr("class", "col-xs-12 col-sm-8 col-md-12 col-lg-7")
 					.append("div").attr("class", "chart-responsive");
@@ -137,11 +150,11 @@ function wdDonutChart(pClass) {
 		donut.dispatch.on("itemMouseOver.legend", legend.callbacks["itemMouseOver"]);
 		donut.dispatch.on("itemMouseOut.legend",  legend.callbacks["itemMouseOut"]);
 	});
-	chart.dispatch.on("renderUpdate.wdDonutChart", function() { 
+	chart.dispatch.on("renderUpdate.wd.chart.donut", function() { 
 		height	= rightHtml.node().getBoundingClientRect().height;
 		donut.height(height).data(chart.data());
 	});
-	chart.dispatch.on("colorUpdate.wdDonutChart", function() { 
+	chart.dispatch.on("colorUpdate.wd.chart.donut", function() { 
 		legend.color(chart.color());
 		donut.color(chart.color());
 	});
@@ -149,9 +162,5 @@ function wdDonutChart(pClass) {
 	return chart;
 }
 
-function watchedDonut(id, data) {
-	var chart = wdDonutChart().data(data);
-	d3.select("#"+id).call(chart);
-	return chart;
-}
-
+	
+}));

@@ -8,13 +8,13 @@
 <script src="/js/watched.tables.js"></script>
 <script>
 {% for a in users %}{% if a.username != 'public' and a.username != 'admin'  %}
-d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.users.delete', { 'id': a.id }) }}").id("delete{{ a.id }}").title("{{ _('Delete user') }}").text("{{ _('Confirm') }}").body(wdUnion()
-	.item(wdP("{{ _('Are you sure you want to delete this user:') }}"))
-	.item(wdP("{{ a.firstname }} {{ a.lastname }} ({{ a.username }}"))
+d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.users.delete', { 'id': a.id }) }}").id("delete{{ a.id }}").title("{{ _('Delete user') }}").text("{{ _('Confirm') }}").body(bs.union()
+	.item(bs.p("{{ _('Are you sure you want to delete this user:') }}"))
+	.item(bs.p("{{ a.firstname }} {{ a.lastname }} ({{ a.username }}"))
 ))
 {% endif %}{% endfor %}
-d3.select('section.content').call(wdAButton().url("{{ path_for('admin.users.add') }}").icon('fa fa-plus').text("{{ _('Add') }}"))
-d3.select('section.content').call(wdBox().body(wdTableChart()
+d3.select('section.content').call(bs.button.a().url("{{ path_for('admin.users.add') }}").icon('fa fa-plus').text("{{ _('Add') }}"))
+d3.select('section.content').call(bs.box().body(wdTableChart()
 	.col("{{ _('username') }}")
 	.col("{{ _('first name') }}")
 	.col("{{ _('last name') }}")

@@ -6,6 +6,6 @@
 {% endblock %}
 {% block scripts %}
 <script>
-d3.select('section.content').call(wdTableWidget().data({{ json(ressources) }}));
+d3.select('section.content').call(widget.table().data({{ json(ressources) }}));
 </script>
 {% endblock %}

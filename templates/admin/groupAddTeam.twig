@@ -6,26 +6,26 @@
 {% endblock %}
 {% block scripts %}
 <script>
-d3.select('section.content').call(wdRow()
-	.cell('col-lg-8 col-lg-offset-2', wdForm().url("{{ path_for('admin.groups.addTeam', {'id': group_id}) }}").body(wdBox().class('box-info')
-		.title("{{ _('Add a team to the group') }} {{ name }}").body(wdUnion()
-			.item(wdFormGroup('tid').label("{{ _('Team') }}").obj(
-				wdFormSelect('tid').value({{ tid }})
+d3.select('section.content').call(bs.row()
+	.cell('col-lg-8 col-lg-offset-2', bs.form().url("{{ path_for('admin.groups.addTeam', {'id': group_id}) }}").body(bs.box().class('box-info')
+		.title("{{ _('Add a team to the group') }} {{ name }}").body(bs.union()
+			.item(bs.formGroup('tid').label("{{ _('Team') }}").obj(
+				bs.select('tid').value({{ tid }})
 	{% for a in teams %}
 					.add("{{ a.name }}",{{ a.id }})
 	{% endfor %}
-			)).item(wdFormGroup('rid').label("{{ _('Role') }}").obj(
-				wdFormSelect('rid').value({{ rid }})
+			)).item(bs.formGroup('rid').label("{{ _('Role') }}").obj(
+				bs.select('rid').value({{ rid }})
 	{% for a in roles %}
 					.add("{{ a.name }}",{{ a.id }})
 	{% endfor %}
-			)).item(wdFormGroup('alert').label("{{ _('Should alert') }}").obj(
-				wdFormSelect('alert').value({{ alert }})
+			)).item(bs.formGroup('alert').label("{{ _('Should alert') }}").obj(
+				bs.select('alert').value({{ alert }})
 					.add("{{ _('No') }}",0)
 					.add("{{ _('Yes') }}",1)
-		))).footer(wdButtonGroup()
-			.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.groups.change', {'id': group_id}) }}"))
-			.right(wdButton().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
+		))).footer(bs.button.group()
+			.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.groups.change', {'id': group_id}) }}"))
+			.right(bs.button.form().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
 ))));
 </script>
 {% endblock %}

@@ -1,3 +1,17 @@
+(function(global, factory) {
+	if (typeof global.d3 !== 'object' || typeof global.d3.version !== 'string')
+		throw new Error('watched requires d3v4');
+	var v = global.d3.version.split('.');
+	if (v[0] != '4')
+		throw new Error('watched requires d3v4');
+	if (typeof global.bs !== 'object' || typeof global.bs.version !== 'string')
+		throw new Error('watched require d3-Bootstrap');
+	if (typeof global.wd !== 'object')
+		throw new Error('watched widget require watched componant');
+
+	factory(global.widget = global.widget || {}, global.wd);
+})(this, (function(widget, wd) {
+
 function wdBaseWidget() {
 	var data = {}, called = false, ready=false, root;
 	function chart(s) { called=true; s.each(chart.init); return chart; }
@@ -36,7 +50,7 @@ function wdBaseWidget() {
 
 	return chart;
 }
-function wdTableWidget() {
+widget.table = function() {
 	var chart = wdBaseWidget(),body = wdTableChart(), title = '';
 	chart.dispatch.on("dataUpdate.wdTableWidget", function() { 
 		body.body(chart.data().body);
@@ -45,7 +59,7 @@ function wdTableWidget() {
 			title = chart.data().title;
 	});
 	chart.dispatch.on("renderUpdate.wdTableWidget", function() {
-		var b = wdBox().body(body);
+		var b = bs.box().body(body);
 		if (chart.data().title != 'undefined')
 			b.title(title).tool({action:'collapse', icon:'fa fa-minus'})
 		chart.root().select('div').remove();
@@ -53,8 +67,8 @@ function wdTableWidget() {
 	});
 	return chart;
 }
-function wdDonutWidget() {
-	var chart = wdBaseWidget(),body = wdDonutChart(), title = '', footer = wdPill();
+widget.donut  = function() {
+	var chart = wdBaseWidget(),body = wd.chart.donut(), title = '', footer = bs.pills();
 	chart.dispatch.on("dataUpdate.wdDonutWidget", function() { 
 		body.data(chart.data().body);
 		title = chart.data().title;
@@ -62,7 +76,7 @@ function wdDonutWidget() {
 			footer.data(chart.data().footer);
 	});
 	chart.dispatch.on("renderUpdate.wdDonutWidget", function() {
-		var b = wdBox().title(title)
+		var b = bs.box().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
 			.body(body);
 		if (typeof chart.data().footer != 'undefined' && chart.data().footer.length>0)
@@ -72,54 +86,54 @@ function wdDonutWidget() {
 	});
 	return chart;
 }
-function wdListWidget() {
-	var chart = wdBaseWidget(),body = wdList(), title = '';
+widget.list = function() {
+	var chart = wdBaseWidget(),body = bs.list(), title = '';
 	chart.dispatch.on("dataUpdate.wdListWidget", function() { 
 		body.data(chart.data().body);
 		title = chart.data().title;
 	});
 	chart.dispatch.on("renderUpdate.wdListWidget", function() {
 		chart.root().select('div').remove();
-		chart.root().call(wdBox().title(title)
+		chart.root().call(bs.box().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
 			.body(body)
 		);
 	});
 	return chart;
 }
-function wdProgessListWidget() {
-	var chart = wdBaseWidget(),body = wdList(), title = '';
+widget.progress = function() {
+	var chart = wdBaseWidget(),body = bs.list(), title = '';
 	chart.dispatch.on("dataUpdate.wdProgessListWidget", function() {
 		chart.data().body.forEach(function (d) {
-			body.add(wdProgess().title(d.title).url(d.url).data(d.items))
+			body.add(bs.progress().title(d.title).url(d.url).data(d.items))
 		});
 		title = chart.data().title;
 	});
 	chart.dispatch.on("renderUpdate.wdProgessListWidget", function() {
 		chart.root().select('div').remove();
-		chart.root().call(wdBox().title(title)
+		chart.root().call(bs.box().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
 			.body(body)
 		);
 	});
 	return chart;
 }
-function wdPropertyWidget() {
-	var chart = wdBaseWidget(),body = wdDescTable(), title = '';
+widget.properties = function() {
+	var chart = wdBaseWidget(),body = bs.descTable(), title = '';
 	chart.dispatch.on("dataUpdate.wdPropertyWidget", function() { 
 		body.data(chart.data().body);
 		title = chart.data().title;
 	});
 	chart.dispatch.on("renderUpdate.wdPropertyWidget", function() {
 		chart.root().select('div').remove();
-		chart.root().call(wdBox().title(title)
+		chart.root().call(bs.box().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
 			.body(body)
 		);
 	});
 	return chart;
 }
-function wdMemSwapWidget() {
+widget.memSwap = function() {
 	var chart = wdBaseWidget(),body = wdMemSwapChart(), title = '';
 	chart.dispatch.on("dataUpdate.wdMemSwapWidget", function() {
 		body.data(chart.data().body);
@@ -127,15 +141,14 @@ function wdMemSwapWidget() {
 	});
 	chart.dispatch.on("renderUpdate.wdMemSwapWidget", function() {
 		chart.root().select('div').remove();
-		chart.root().call(wdBox().title(title)
+		chart.root().call(bs.box().title(title)
 			.tool({action:'collapse', icon:'fa fa-minus'})
 			.body(body)
 		);
 	});
 	return chart;
 }
-
-function wdRessourceGfxWidget() {
+widget.gfxRessource = function() {
 	var chart = wdBaseWidget(),body = wdGfxChart(), title = '', legend = wdGfxLegend(), footer = wdGfxTimeLine();
 	body.legend(legend);body.timeline(footer);legend.gfx(body);footer.legend(legend);
 	chart.dispatch.on("dataUpdate.wdRessourceGfxWidget", function() {
@@ -146,7 +159,7 @@ function wdRessourceGfxWidget() {
 	});
 	chart.dispatch.on("renderUpdate.wdRessourceGfxWidget", function() {
 		chart.root().select('div').remove();
-		chart.root().call(wdBox().title(title)
+		chart.root().call(bs.box().title(title)
 			.tool(legend)
 			.body(body)
 			.footer(footer)
@@ -154,3 +167,5 @@ function wdRessourceGfxWidget() {
 	});
 	return chart;
 }
+
+}));

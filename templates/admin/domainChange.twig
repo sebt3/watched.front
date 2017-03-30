@@ -7,16 +7,16 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-d3.select('section.content').call(wdRow()
-	 .cell('col-lg-6',wdUnion()
-		 .item(wdForm().url("{{ path_for('admin.domains.change', {'id': domain_id}) }}").body(wdBox()
-			.title("{{ _('Modify a domain') }}").class('box-info').body(wdUnion()
-				.item(wdFormGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
-			).footer(wdButtonGroup()
-				.left(wdAButton().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.domains.list') }}"))
-				.right(wdButton().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
-		))).item(wdBox().title("{{ _('Teams') }}")
-			.tool(wdAButton().class('btn-default pull-right')
+d3.select('section.content').call(bs.row()
+	 .cell('col-lg-6',bs.union()
+		 .item(bs.form().url("{{ path_for('admin.domains.change', {'id': domain_id}) }}").body(bs.box()
+			.title("{{ _('Modify a domain') }}").class('box-info').body(bs.union()
+				.item(bs.formGroup('name').label("{{ _('Name') }}").value("{{ name }}", "{{ _('Name') }}"))
+			).footer(bs.button.group()
+				.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.domains.list') }}"))
+				.right(bs.button.form().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
+		))).item(bs.box().title("{{ _('Teams') }}")
+			.tool(bs.button.a().class('btn-default pull-right')
 				.url("{{ path_for('admin.domains.addTeam', { 'id': domain_id }) }}")
 				.text("{{ _('Add') }}").icon('fa fa-plus')
 			).body(wdTableChart()
@@ -32,8 +32,8 @@ d3.select('section.content').call(wdRow()
 		actions: [ { icon:"fa fa-wrench", url: "{{ path_for('admin.domains.changeTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}" },
 			{ icon:"fa fa-trash",  target: "#deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}" } ]
 	}, {% endfor %}
-	])))).cell('col-lg-6',wdBox().title("{{ _('Hosts') }}")
-		 .tool(wdAButton().class('btn-default pull-right').text("{{ _('Add') }}").icon('fa fa-plus')
+	])))).cell('col-lg-6',bs.box().title("{{ _('Hosts') }}")
+		 .tool(bs.button.a().class('btn-default pull-right').text("{{ _('Add') }}").icon('fa fa-plus')
 			.url("{{ path_for('admin.domains.addHost', {'id': domain_id}) }}")
 		).body(wdTableChart()
 		.col("{{ _('name') }}").col("{{ _('actions') }}",'text-right')
@@ -43,18 +43,18 @@ d3.select('section.content').call(wdRow()
 	{% endfor %}
 ]))));
 {% for a in teams %}
-d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.domains.deleteTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}").id("deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}").title("{{ _('Remove team permission on domain') }} {{ name }}").text("{{ _('Confirm') }}").body(wdUnion()
-	.item(wdP("{{ _('Are you sure you want to remove this team permission on domain:') }}"))
-	.item(wdDesc()
+d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.domains.deleteTeam', { 'id': domain_id, 'tid': a.team_id, 'rid': a.role_id }) }}").id("deleteTeam{{ domain_id }}-{{ a.team_id }}-{{ a.role_id }}").title("{{ _('Remove team permission on domain') }} {{ name }}").text("{{ _('Confirm') }}").body(bs.union()
+	.item(bs.p("{{ _('Are you sure you want to remove this team permission on domain:') }}"))
+	.item(bs.desc()
 		.item("{{ _('Domain') }}","{{ name }}")
 		.item("{{ _('Team') }}","{{ a.team_name }}")
 		.item("{{ _('Role') }}","{{ a.role_name }}")
 )))
 {% endfor %}
 {% for a in hosts %}
-d3.select('section.content').call(wdModalDelete().url("{{ path_for('admin.domains.deleteHost', { 'id': domain_id, 'hid': a.id }) }}").id("deleteHost{{ domain_id }}-{{ a.id }}").title("{{ _('Remove host from the this domain') }}").text("{{ _('Confirm') }}").body(wdUnion()
-	.item(wdP("{{ _('Are you sure you want to remove this host from domain:') }}"))
-	.item(wdDesc()
+d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.domains.deleteHost', { 'id': domain_id, 'hid': a.id }) }}").id("deleteHost{{ domain_id }}-{{ a.id }}").title("{{ _('Remove host from the this domain') }}").text("{{ _('Confirm') }}").body(bs.union()
+	.item(bs.p("{{ _('Are you sure you want to remove this host from domain:') }}"))
+	.item(bs.desc()
 		.item("{{ _('Domain') }}","{{ name }}")
 		.item("{{ _('Host') }}","{{ a.name }}")
 )))

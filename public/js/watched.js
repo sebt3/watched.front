@@ -1,3 +1,5 @@
+// Helpers
+/*
 function log(text) {
   if (console && console.log) console.log(text);
   return text;
@@ -6,17 +8,32 @@ function log(text) {
 if (!Date.now) {
     Date.now = function() { return new Date().getTime(); }
 }
+*/
+/////////////////////////////////////////////////////////////////////////////////////////////
+(function(global, factory) {
+	if (typeof global.d3 !== 'object' || typeof global.d3.version !== 'string')
+		throw new Error('watched requires d3v4');
+	var v = global.d3.version.split('.');
+	if (v[0] != '4')
+		throw new Error('watched requires d3v4');
+	if (typeof global.bs !== 'object' || typeof global.bs.version !== 'string')
+		throw new Error('watched require d3-Bootstrap');
+	
+	factory(global.wd = global.wd || {}, d3, global);
+})(this, (function(wd, d3, global) {
+wd.format = wd.format || {}
+wd.componant = wd.componant || {}
+wd.chart = wd.chart || {}
 
 d3.dispatch.prototype.register = function() {
 	for (var i = 0, n = arguments.length, _ = {}, t; i < n; ++i) {
 		if (!(t = arguments[i] + "") || (t in this._)) throw new Error("illegal type: " + t);
 		this._[t] = [];
-	}	
+	}
 }
-
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watched Common Component
-function wdDateFormat(date) {
+wd.format.date		= function(date) {
 	var	locale = d3.timeFormatLocale({
 			"dateTime": "%A, le %e %B %Y, %X",
 			"date": "%Y-%m-%d",
@@ -42,8 +59,7 @@ function wdDateFormat(date) {
 		: d3.timeYear(date) < date ? formatMonth
 		: formatYear)(date);
 }
-
-function wdNumberFormat(number) {
+wd.format.number	= function(number) {
 	if (typeof number == 'number') {
 		var x = number, s = x<0?"-":"", v="", i = String(parseInt(Math.abs(x))), m=i.length%3, l=i.substr(0,m), r=i.slice(m);
 		if(Math.round(x)!=x)
@@ -52,8 +68,7 @@ function wdNumberFormat(number) {
 	} else
 		return number;
 }
-
-function wdBaseComponant() {
+wd.componant.base	= function() {
 	var	data	= [],
 		called	= false,
 		ready	= false,
@@ -96,9 +111,8 @@ function wdBaseComponant() {
 	}
 	return chart;
 }
-
-function wdFilteredComponant(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
+wd.componant.filtered	= function(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.base(),
 		keys	= [],
 		filter	= function(e){return e!="timestamp"&&!e.match("min_")&&!e.match("max_")&&!e.match("cnt_")&&!e.match("sum_")/**/;};
 
@@ -107,14 +121,13 @@ function wdFilteredComponant(pClass) {
 		if (!arguments.length) return keys;
 		keys = _;
 	}
-	chart.dispatch.on("dataUpdate.wdFilteredComponant", function() { 
+	chart.dispatch.on("dataUpdate.wd.componant.filtered", function() { 
 		chart.keys(Object.keys(chart.data()[0]).filter(filter))
 	});
 	return chart;
 }
-
-function wdColoredComponant(pClass, pColor) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
+wd.componant.colored	= function(pClass, pColor) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.base(),
 		color	= (typeof pColor!="undefined"&&pColor!=null)?pColor:d3.scaleOrdinal(d3.schemeCategory10);
 	chart.dispatch.register("colorUpdate");
 	chart.color	= function(_) { 
@@ -124,9 +137,8 @@ function wdColoredComponant(pClass, pColor) {
 	}
 	return chart;
 }
-
-function wdPeriodComponant(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
+wd.componant.period	= function(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.base(),
 		baseUrl	= "",
 		download	= function(url) {
 			d3.json(url, function(results) { chart.data(results); })
@@ -153,9 +165,8 @@ function wdPeriodComponant(pClass) {
 	}
 	return chart;
 }
-
-function wdSizedComponant(pClass, pW, pH) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdBaseComponant(),
+wd.componant.sized	= function(pClass, pW, pH) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.base(),
 		width	= (typeof pW!="undefined"&&pW!=null)?pW:0, 
 		height	= (typeof pH!="undefined"&&pH!=null)?pH:0;
 	chart.dispatch.register("heightUpdate","widthUpdate");
@@ -171,9 +182,8 @@ function wdSizedComponant(pClass, pW, pH) {
 	}
 	return chart;
 }
-
-function wdMinSizedComponant(pClass, pW, pH) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdSizedComponant(null, pW, pH),
+wd.componant.minSized	= function(pClass, pW, pH) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.sized(null, pW, pH),
 		minWidth	= (typeof pW!="undefined"&&pW!=null)?pW:0, 
 		minHeight	= (typeof pH!="undefined"&&pH!=null)?pH:0,
 		pWidth		= chart.width,
@@ -192,18 +202,17 @@ function wdMinSizedComponant(pClass, pW, pH) {
 	}
 	return chart;
 }
-
-function wdAxedComponant(pClass, pW, pH) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdSizedComponant(null, pW, pH);
+wd.componant.axed	= function(pClass, pW, pH) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.sized(null, pW, pH);
 	chart.xAxis		= d3.scaleTime().range([0, chart.width()]);
 	chart.yAxis		= d3.scaleLinear().range([chart.height(), 0]);
-	chart.dispatch.on("widthUpdate.wdAxedComponant", function() { 
+	chart.dispatch.on("widthUpdate.wd.componant.axed", function() { 
 		chart.xAxis.range([0, chart.width()]);
 	});
-	chart.dispatch.on("heightUpdate.wdAxedComponant", function() { 
+	chart.dispatch.on("heightUpdate.wd.componant.axed", function() { 
 		chart.yAxis.range([chart.height(), 0]);
 	});
-	chart.dispatch.on("dataUpdate.wdAxedComponant", function() { 
+	chart.dispatch.on("dataUpdate.wd.componant.axed", function() { 
 		chart.xAxis.domain(d3.extent(chart.data(), function(d) { return d.timestamp; }));
 		chart.yAxis.domain([0, d3.max(chart.data(), function(d) {
 			var keys;
@@ -217,11 +226,10 @@ function wdAxedComponant(pClass, pW, pH) {
 	});
 	return chart;
 }
-
-function wdAxesComponant(pClass, pW, pH) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdAxedComponant(null, pW, pH);
+wd.componant.axes	= function(pClass, pW, pH) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.axed(null, pW, pH);
 	chart.xAxisLine		= function(g) {
-		g.call(d3.axisBottom(chart.xAxis).tickFormat(wdDateFormat));
+		g.call(d3.axisBottom(chart.xAxis).tickFormat(wd.format.date));
 		g.select(".domain").remove();
 		g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1.5px");
 	}
@@ -232,34 +240,33 @@ function wdAxesComponant(pClass, pW, pH) {
 		g.selectAll(".tick:not(:first-of-type) line").attr("stroke-dasharray", "5,5");
 		g.selectAll(".tick text").attr("x", -20);
 	};
-	chart.dispatch.on("init.wdAxesComponant", function() {
+	chart.dispatch.on("init.wd.componant.axes", function() {
 		chart.root().append("g").attr("class", "x axis").attr("transform", "translate(0," + chart.height() + ")").call(chart.xAxisLine);
 		chart.root().append("g").attr("class", "y axis").call(chart.yAxisLine);
 	});
-	chart.dispatch.on("heightUpdate.wdAxesComponant", function() { 
+	chart.dispatch.on("heightUpdate.wd.componant.axes", function() { 
 		if (chart.inited())
 			chart.root().select(".x.axis").attr("transform", "translate(0," + chart.height() + ")");
 	});
-	chart.dispatch.on("renderUpdate.wdAxesComponant", function() { 
+	chart.dispatch.on("renderUpdate.wd.componant.axes", function() { 
 		var	update	= chart.root().transition();
 		update.select(".x.axis").duration(150).call(chart.xAxisLine);
 		update.select(".y.axis").duration(150).call(chart.yAxisLine);
 	});
 	return chart;
 }
-
-function wdHLegendComponant(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wdSizedComponant( wdColoredComponant( wdFilteredComponant()), 500,30),
+wd.componant.HLegend	= function(pClass) {
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.sized( wd.componant.colored( wd.componant.filtered()), 500,30),
 		labels	= [];
 
 	chart.dispatch.register("itemMouseOver","itemMouseOut");
-	chart.dispatch.on("init.wdHLegendComponant", function() { 
+	chart.dispatch.on("init.wd.componant.HLegend", function() { 
 		if (typeof chart.callbacks.itemMouseOver !== 'undefined')
 			chart.dispatch.on("itemMouseOver.legend", chart.callbacks.itemMouseOver);
 		if (typeof chart.callbacks.itemMouseOut !== 'undefined')
 			chart.dispatch.on("itemMouseOut.legend",  chart.callbacks.itemMouseOut);
 	});
-	chart.dispatch.on("dataUpdate.wdHLegendComponant", function() { 
+	chart.dispatch.on("dataUpdate.wd.componant.HLegend", function() { 
 		labels = chart.keys().map(function(i) {
 			return {
 				id: i,
@@ -268,7 +275,7 @@ function wdHLegendComponant(pClass) {
 		});
 		chart.color().domain(chart.keys());
 	});
-	chart.dispatch.on("dataUpdate.wdHLegendComponant", function() { 
+	chart.dispatch.on("dataUpdate.wd.componant.HLegend", function() { 
 		labels = chart.keys().map(function(i) {
 			return {
 				id: i,
@@ -277,7 +284,7 @@ function wdHLegendComponant(pClass) {
 		});
 		chart.color().domain(chart.keys());
 	});
-	chart.dispatch.on("renderUpdate.wdHLegendComponant", function() { 
+	chart.dispatch.on("renderUpdate.wd.componant.HLegend", function() { 
 		chart.root().selectAll('g.legend').remove();
 		var	update	= chart.root().selectAll('g.legend').data(labels),
 			gEnter	= update.enter().append('g').attr('class', 'legend').attr('id', function (d,i) { return d.id });
@@ -307,8 +314,9 @@ function wdHLegendComponant(pClass) {
 	chart.callbacks.updateValues	= function(v) {
 		labels.forEach(function (l) {
 			l.val = v[l.id]
-			chart.root().select("#"+l.id).select("text").text( l.id+": "+wdNumberFormat(l.val))
+			chart.root().select("#"+l.id).select("text").text( l.id+": "+wd.format.number(l.val))
 		})
 	}
 	return chart;
 }
+}));

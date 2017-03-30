@@ -6,14 +6,14 @@
 {% endblock %}
 {% block scripts %}
 <script>
-d3.select('section.content').call(wdRow()
+d3.select('section.content').call(bs.row()
 	{% for a in services %}
-	.cell('col-md-6',wdBox().title("{{ a.name }}").body(wdRow()
-		 .cell('col-md-6', wdList()
+	.cell('col-md-6',bs.box().title("{{ a.name }}").body(bs.row()
+		 .cell('col-md-6', bs.list()
 		{% for p in a.process %}
 			.add({color:"{{ p.color }}", text:"{{ p.process_name }}", url: "{{ path_for('service', { 'hid': h.id, 'sid': a.id }) }}"})
 		{% endfor %}
-		).cell('col-md-6', wdList()
+		).cell('col-md-6', bs.list()
 		{% for o in a.sockets %}
 			.add({color:"{{ o.color }}", text:"{{ o.socket_name }}", url: "{{ path_for('service', { 'hid': h.id, 'sid': a.id }) }}"})
 		{% endfor %}
