@@ -1,3 +1,16 @@
+(function(global, factory) {
+	if (typeof global.d3 !== 'object' || typeof global.d3.version !== 'string')
+		throw new Error('watched requires d3v4');
+	var v = global.d3.version.split('.');
+	if (v[0] != '4')
+		throw new Error('watched requires d3v4');
+	if (typeof global.bs !== 'object' || typeof global.bs.version !== 'string')
+		throw new Error('watched require d3-Bootstrap');
+	if (typeof global.wd !== 'object')
+		throw new Error('watched donut require watched componant');
+	
+	factory(global.wd, global);
+})(this, (function(wd, global) {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watchedBarChart
 function wdBarChartBars(pClass) {
@@ -74,7 +87,7 @@ function wdBarAxes(pClass) {
 	return chart;
 }
 
-function wdBarChart(pClass) {
+wd.chart.bar = function(pClass) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.filtered( wd.componant.period( wd.componant.colored( wd.componant.minSized(null,200,200)))),
 		margin		= {top: 10, right: 10, bottom: 20, left: 30},
 		axes 		= wdBarAxes(),
@@ -108,14 +121,10 @@ function wdBarChart(pClass) {
 	return chart;
 }
 
-function watchedBarChart(id, data) {
-	var chart = wdBarChart().data(data);
-	d3.select("#"+id).call(chart);
-	return chart;
-}
 
-function wdMemSwapChart() {
-	var chart = wdBarChart();
+
+wd.chart.memBar = function() {
+	var chart = wd.chart.bar();
 	var cmem  = d3.scaleOrdinal(['#00a65a','#cccccc']).domain(['used','free'])
 	var cswap = d3.scaleOrdinal(['#dd4b39','#cccccc']).domain(['used','free'])
 	chart.bars().colorFunction	= function(d) { 
@@ -126,3 +135,4 @@ function wdMemSwapChart() {
 	chart.bars().dispatch.on("click.watchedMemSwap", function(d) {window.location.href =d.data.url})
 	return chart;
 }
+}));

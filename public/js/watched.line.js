@@ -1,5 +1,17 @@
+(function(global, factory) {
+	if (typeof global.d3 !== 'object' || typeof global.d3.version !== 'string')
+		throw new Error('watched requires d3v4');
+	var v = global.d3.version.split('.');
+	if (v[0] != '4')
+		throw new Error('watched requires d3v4');
+	if (typeof global.bs !== 'object' || typeof global.bs.version !== 'string')
+		throw new Error('watched require d3-Bootstrap');
+	if (typeof global.wd !== 'object')
+		throw new Error('watched donut require watched componant');
+	
+	factory(global.wd, global);
+})(this, (function(wd, global) {
 /////////////////////////////////////////////////////////////////////////////////////////////
-// watchedEvent
 
 function wdLineLines(pClass) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored( wd.componant.filtered( wd.componant.axed(null, 500,200))),
@@ -53,7 +65,7 @@ function wdLineLegend(pClass) {
 	return chart;
 }
 
-function wdLineChart(pClass) {
+wd.chart.line = function(pClass) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass: wd.componant.period( wd.componant.colored( wd.componant.filtered(wd.componant.minSized(null, 500,380)))),
 		margin		= {top: 30, right: 10, bottom: 20, left: 30},
 		axes		= wdLineAxes(),
@@ -127,24 +139,13 @@ function wdLineChart(pClass) {
 	return chart;
 }
 
-function watchedEvent(id, baseUrl, prop) {
-	var chart = wdLineChart().prop(prop).baseUrl(baseUrl);
-	d3.select("#"+id).call(chart);
-	return chart;
-}
-
-function watchedRessource(id, baseUrl) {
-	var chart = wdLineChart().baseUrl(baseUrl);
-	d3.select("#"+id).call(chart);
-	return chart;
-}
-
-function watchedLive(id, baseUrl, freq) {
+/*function watchedLive(id, baseUrl, freq) {
 	var chart = wdLineChart().baseUrl(baseUrl);
 	setInterval(function() {
 		chart.baseUrl(baseUrl);
 	}, 1000*freq)
 	d3.select("#"+id).call(chart);
 	return chart;
-}
+}*/
 
+}));

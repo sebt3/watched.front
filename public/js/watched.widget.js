@@ -51,7 +51,7 @@ function wdBaseWidget() {
 	return chart;
 }
 widget.table = function() {
-	var chart = wdBaseWidget(),body = wdTableChart(), title = '';
+	var chart = wdBaseWidget(),body = wd.chart.table(), title = '';
 	chart.dispatch.on("dataUpdate.wdTableWidget", function() { 
 		body.body(chart.data().body);
 		body.heads(chart.data().cols);
@@ -134,7 +134,7 @@ widget.properties = function() {
 	return chart;
 }
 widget.memSwap = function() {
-	var chart = wdBaseWidget(),body = wdMemSwapChart(), title = '';
+	var chart = wdBaseWidget(),body = wd.chart.memBar(), title = '';
 	chart.dispatch.on("dataUpdate.wdMemSwapWidget", function() {
 		body.data(chart.data().body);
 		title = chart.data().title;
@@ -149,7 +149,7 @@ widget.memSwap = function() {
 	return chart;
 }
 widget.gfxRessource = function() {
-	var chart = wdBaseWidget(),body = wdGfxChart(), title = '', legend = wdGfxLegend(), footer = wdGfxTimeLine();
+	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxLegend(), footer = wd.chart.timeline();
 	body.legend(legend);body.timeline(footer);legend.gfx(body);footer.legend(legend);
 	chart.dispatch.on("dataUpdate.wdRessourceGfxWidget", function() {
 		legend.data(chart.data().cols);

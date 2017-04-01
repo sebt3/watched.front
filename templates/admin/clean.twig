@@ -9,7 +9,7 @@
 <script>
 d3.select('section.content').call(bs.row()
 	  .cell('col-md-6',bs.box().title("{{ _('Services') }}")
-		 .body(wdTableChart()
+		 .body(wd.chart.table()
 		.col("{{ _('Domain') }}")
 		.col("{{ _('Host') }}")
 		.col("{{ _('Service') }}")
@@ -22,7 +22,7 @@ d3.select('section.content').call(bs.row()
 		actions: [ { icon:"fa fa-trash",  target: "#deleteServ{{ a.id }}" } ]
 	}, {% endfor %}
 	]))).cell('col-md-6',bs.box().title("{{ _('Hosts') }}")
-		 .body(wdTableChart()
+		 .body(wd.chart.table()
 		.col("{{ _('Domain') }}")
 		.col("{{ _('Host') }}")
 		.col("{{ _('actions') }}",'text-right')

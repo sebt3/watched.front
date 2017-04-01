@@ -1,4 +1,17 @@
-function wdGfxLegend() {
+(function(global, factory) {
+	if (typeof global.d3 !== 'object' || typeof global.d3.version !== 'string')
+		throw new Error('watched requires d3v4');
+	var v = global.d3.version.split('.');
+	if (v[0] != '4')
+		throw new Error('watched requires d3v4');
+	if (typeof global.bs !== 'object' || typeof global.bs.version !== 'string')
+		throw new Error('watched require d3-Bootstrap');
+	if (typeof global.wd !== 'object')
+		throw new Error('watched donut require watched componant');
+	
+	factory(global.wd, global);
+})(this, (function(wd, global) {
+wd.chart.gfxLegend = function() {
 	var	chart	= wd.componant.colored();
 	var	bar, gfx;
 	chart.dispatch.register("area", "enable", "select");
@@ -85,7 +98,7 @@ function wdGfxLegend() {
 	return chart;
 }
 
-function wdGfxTimeLine() {
+wd.chart.timeline = function() {
 	var	chart	= wd.componant.axed(wd.componant.minSized(null, 500,60)),
 		legend, svg, useArea=false,
 		brush	= d3.brushX(),
@@ -185,7 +198,7 @@ function wdGfxTimeLine() {
 	})
 	return chart;
 }
-function wdGfxChart() {
+wd.chart.gfx = function() {
 	var	chart	= wd.componant.axes(wd.componant.axed(wd.componant.minSized(null, 500,350))),
 		legend, svg, timeline, domain, oldX = 0, useArea=false,
 		margin	= {top: 10, right: 10, bottom: 20, left: 30},
@@ -393,3 +406,4 @@ function wdGfxChart() {
 	})
 	return chart;
 }
+}));

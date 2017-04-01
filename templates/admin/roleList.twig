@@ -14,7 +14,7 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.roles
 ))
 {% endfor %}
 d3.select('section.content').call(bs.button.a().url("{{ path_for('admin.roles.add') }}").icon('fa fa-plus').text("{{ _('Add') }}"))
-d3.select('section.content').call(bs.box().body(wdTableChart()
+d3.select('section.content').call(bs.box().body(wd.chart.table()
 	.col("{{ _('name') }}")
 	.col("{{ _('Actions') }}",'text-right')
 	.body([

@@ -1,3 +1,16 @@
+(function(global, factory) {
+	if (typeof global.d3 !== 'object' || typeof global.d3.version !== 'string')
+		throw new Error('watched requires d3v4');
+	var v = global.d3.version.split('.');
+	if (v[0] != '4')
+		throw new Error('watched requires d3v4');
+	if (typeof global.bs !== 'object' || typeof global.bs.version !== 'string')
+		throw new Error('watched require d3-Bootstrap');
+	if (typeof global.wd !== 'object')
+		throw new Error('watched donut require watched componant');
+	
+	factory(global.wd, global);
+})(this, (function(wd, global) {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watchedService
 function wdServiceAreas(pClass, pX, pY) {
@@ -50,7 +63,7 @@ function wdServiceLegend(pClass) {
 	return chart;
 }
 
-function wdServiceChart(pClass) {
+wd.chart.service = function(pClass) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored( wd.componant.period( wd.componant.minSized(null,500,330))),
 		margin		= {top: 30, right: 10, bottom: 20, left: 30},
 		axes 		= wdServiceAxes(null,500,300),
@@ -115,9 +128,4 @@ function wdServiceChart(pClass) {
 
 	return chart;
 }
-
-function watchedService(id, baseUrl) {
-	var chart = wdServiceChart().baseUrl(baseUrl);
-	d3.select("#"+id).call(chart);
-	return chart;
-}
+}));

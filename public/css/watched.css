@@ -98,3 +98,19 @@ thead th.desc:after {
   border-bottom-left-radius: 0;
   border-left: 0px;
 }
+
+.sidebar-menu li > .treeview-menu {
+	max-height: 0;
+	transition: max-height 0.5s ease-out;
+	overflow: hidden;
+	display: block;
+}
+.sidebar-menu li.active > .treeview-menu {
+	max-height: 500px;
+}
+
+.sidebar-menu li > a > .fa-angle-left,
+.sidebar-menu li > a > .pull-right-container > .fa-angle-left {
+	-webkit-transition-duration: 0.5s; /* Safari */
+	transition-duration: 0.5s;
+}

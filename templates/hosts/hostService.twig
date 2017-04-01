@@ -6,7 +6,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-chart = wdServiceChart().baseUrl("{{ path_for('apiService', { 'id': service.id }) }}");
+chart = wd.chart.service().baseUrl("{{ path_for('apiService', { 'id': service.id }) }}");
 d3.select('section.content').call(
 	bs.union().item(bs.row()
 		 .cell('col-lg-8', widget.table().source("{{ path_for('widgets.table.serv.process',  { 'id': service.id }) }}"))

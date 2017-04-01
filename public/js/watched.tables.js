@@ -1,3 +1,16 @@
+(function(global, factory) {
+	if (typeof global.d3 !== 'object' || typeof global.d3.version !== 'string')
+		throw new Error('watched requires d3v4');
+	var v = global.d3.version.split('.');
+	if (v[0] != '4')
+		throw new Error('watched requires d3v4');
+	if (typeof global.bs !== 'object' || typeof global.bs.version !== 'string')
+		throw new Error('watched require d3-Bootstrap');
+	if (typeof global.wd !== 'object')
+		throw new Error('watched donut require watched componant');
+	
+	factory(global.wd, global);
+})(this, (function(wd, global) {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // wdTableChart
 function wdTableBodyChart(pClass) {
@@ -99,7 +112,7 @@ function wdTableBodyChart(pClass) {
 	return chart;
 }
 
-function wdTableChart() {
+wd.chart.table = function() {
 	var body = wdTableBodyChart(), heads = [];
 	function chart(s) { s.each(chart.init); return chart; }
 	chart.body    = function(t) {  body.data(t);return chart;}
@@ -117,9 +130,4 @@ function wdTableChart() {
 	}
 	return chart;
 }
-
-function watchedTableBody(id, data) {
-	var chart = wdTableBodyChart().data(data);
-	d3.select("#"+id).call(chart);
-	return chart;
-}
+}));

@@ -7,8 +7,7 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
-d3.select('section.content').call(bs.box().body(
-	wdTableChart()
+d3.select('section.content').call(bs.box().body(wd.chart.table()
 		.col("{{ _('Table') }}")
 		.col("{{ _('Size') }}")
 		.col("{{ _('Host cardinality') }}")

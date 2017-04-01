@@ -14,7 +14,7 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.teams
 ))
 {% endif %}{% endfor %}
 d3.select('section.content').call(bs.button.a().url("{{ path_for('admin.teams.add') }}").icon('fa fa-plus').text("{{ _('Add') }}"))
-d3.select('section.content').call(bs.box().body(wdTableChart()
+d3.select('section.content').call(bs.box().body(wd.chart.table()
 	.col("{{ _('name') }}")
 	.col("{{ _('Hosts') }}")
 	.col("{{ _('Services') }}")
