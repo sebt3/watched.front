@@ -150,7 +150,7 @@ widget.memSwap = function() {
 }
 widget.gfxRessource = function() {
 	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxLegend(), footer = wd.chart.timeline();
-	body.legend(legend);body.timeline(footer);legend.gfx(body);footer.legend(legend);
+	body.legend(legend);body.timeline(footer);footer.legend(legend);
 	chart.dispatch.on("dataUpdate.wdRessourceGfxWidget", function() {
 		legend.data(chart.data().cols);
 		body.data(chart.data().data);
@@ -158,6 +158,25 @@ widget.gfxRessource = function() {
 		title = chart.data().src.obj_name+' - '+chart.data().src.res_name;
 	});
 	chart.dispatch.on("renderUpdate.wdRessourceGfxWidget", function() {
+		chart.root().select('div').remove();
+		chart.root().call(bs.box().title(title)
+			.tool(legend)
+			.body(body)
+			.footer(footer)
+		);
+	});
+	return chart;
+}
+widget.gfxAvailability = function() {
+	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxAvailLegend(), footer = wd.chart.timeline();
+	body.legend(legend);body.timeline(footer);footer.legend(legend);
+	body.areaSet('',true);footer.areaSet('',true);
+	chart.title = function(_) {if (!arguments.length) return title;title=_;return chart;}
+	chart.dispatch.on("dataUpdate.gfxAvailability", function() {
+		body.data(chart.data());
+		footer.data(chart.data());
+	});
+	chart.dispatch.on("renderUpdate.gfxAvailability", function() {
 		chart.root().select('div').remove();
 		chart.root().call(bs.box().title(title)
 			.tool(legend)

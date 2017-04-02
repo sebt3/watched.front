@@ -13,7 +13,7 @@
 })(this, (function(wd, global) {
 wd.chart.gfxLegend = function() {
 	var	chart	= wd.componant.colored();
-	var	bar, gfx;
+	var	bar;
 	chart.dispatch.register("area", "enable", "select");
 	chart.setValue	= function(d,v) {
 		chart.root().select('#value_'+d).html(wd.format.number(v))
@@ -31,10 +31,6 @@ wd.chart.gfxLegend = function() {
 		})
 		return chart;
 	}
-	chart.gfx	= function(_) {
-		if (!arguments.length) return gfx; gfx = _;
-		return chart;
-	};
 	chart.cols	= function() {
 		var ret = [];
 		if (chart.inited() && chart.ready())
@@ -63,6 +59,7 @@ wd.chart.gfxLegend = function() {
 		bar   = chart.root().append('div').attr('class', 'btn-toolbar').attr('role','toolbar');
 		var l = bar.append('div').attr('class', 'btn-group').attr('role','group').attr('data-toggle','buttons').append('label').attr('class', 'btn btn-default item').on('click', function (d){
 				var x=d3.select(this);
+				if (d3.event) d3.event.preventDefault();
 				x.classed('activated',!x.classed('activated'))
 				chart.dispatch.call("area",this,d,x.classed('activated'));
 		});
@@ -76,6 +73,7 @@ wd.chart.gfxLegend = function() {
 			.attr('id', function (d) { return 'enable_'+d})
 			.on('click', function (d) {
 				var x=d3.select(this);
+				if (d3.event) d3.event.preventDefault();
 				x.classed('activated',!x.classed('activated'))
 				chart.dispatch.call("enable",this,d,x.classed('activated'));
 			});
@@ -95,6 +93,58 @@ wd.chart.gfxLegend = function() {
 			.attr('style',function (d) { return 'color:'+chart.color()(d)})
 			.attr('id', function (d) { return 'value_'+d})
 	});
+	return chart;
+}
+
+wd.chart.gfxAvailLegend = function() {
+	var	chart	= wd.chart.gfxLegend();
+	var	bar;
+	chart.setValues	= function(v) {
+		if (typeof v == "undefined") return chart;
+		chart.data().forEach(function(d) {
+			if(! chart.root().select('#enable_'+d).classed('activated')) return;
+			chart.setValue(d, v[d]);
+		})
+		return chart;
+	}
+	chart.cols	= function() {
+		var ret = [];
+		if (chart.inited() && chart.ready())
+			chart.data().forEach(function(d) {
+				if (chart.root().select('#enable_'+d).classed('activated')) ret.push(d)
+			})
+		else if (chart.ready())
+			return chart.data();
+		return ret;
+	};
+	chart.colColor	= function(c) {
+		return chart.color()(c)
+	};
+	chart.dispatch.on("init.wdGfxLegend", function() { 
+		bar   = chart.root().append('div').attr('class', 'btn-toolbar').attr('role','toolbar');
+	});
+	chart.dispatch.on("renderUpdate.wdGfxLegend", function() {
+		var d = bar.selectAll('div.btn-group.legend').data(chart.data()),
+		    g = d.enter().append('div').attr('class', 'btn-group legend').attr('role','group').attr('data-toggle','buttons');
+		var l = g.append('label').attr('class', 'btn btn-default item active activated')
+			.attr('id', function (d) { return 'enable_'+d})
+			.on('click', function (d) {
+				if (d3.event) d3.event.preventDefault();
+				var x=d3.select(this);
+				x.classed('activated',!x.classed('activated'))
+				chart.dispatch.call("enable",this,d,x.classed('activated'));
+			});
+		l.append('input').attr('type', 'checkbox').attr('checked','true')
+		l.append('i').attr('class', 'fa fa-circle').attr('style',function (d) { return 'color:'+chart.color()(d)})
+		g.append('div').attr('class', 'item').append('b')
+			.attr('style',function (d) { return 'color:'+chart.color()(d)})
+			.html(function(d){return d})
+		g.append('div').attr('class', 'item value').html("0.00")
+			.attr('style',function (d) { return 'color:'+chart.color()(d)})
+			.attr('id', function (d) { return 'value_'+d})
+	});
+	chart.color(d3.scaleOrdinal(['#dd4b39','#ff851b','#b3ffb3']));
+	chart.data(['failed','missing','ok']);
 	return chart;
 }
 
@@ -125,7 +175,8 @@ wd.chart.timeline = function() {
 				var vals = legend.cols().map(function (i) {return d[i]});
 				return d3.max(vals);
 			})]);
-		chart.dispatch.call("renderUpdate")
+		if (chart.inited() && chart.ready())
+			chart.dispatch.call("renderUpdate")
 	}
 	chart.legend	= function(_) {
 		if (!arguments.length) return legend;legend = _;
@@ -267,9 +318,11 @@ wd.chart.gfx = function() {
 	}
 	chart.areaSet= function(d,v) {
 		useArea = v
-		chart.lineChanged();
-		chart.noDots();
-		chart.dispatch.call("renderUpdate")
+		if (chart.inited() && chart.ready()) {
+			chart.lineChanged();
+			chart.noDots();
+			chart.dispatch.call("renderUpdate")
+		}
 	}
 	chart.colChanged= function (d,v) {
 		chart.lineChanged();

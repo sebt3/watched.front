@@ -120,6 +120,7 @@ wd.componant.filtered	= function(pClass) {
 	chart.keys	= function(_) { 
 		if (!arguments.length) return keys;
 		keys = _;
+		return chart;
 	}
 	chart.dispatch.on("dataUpdate.wd.componant.filtered", function() { 
 		chart.keys(Object.keys(chart.data()[0]).filter(filter))
