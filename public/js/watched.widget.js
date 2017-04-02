@@ -186,5 +186,23 @@ widget.gfxAvailability = function() {
 	});
 	return chart;
 }
+widget.gfxEvent = function() {
+	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxLegend();
+	body.legend(legend);
+	chart.title = function(_) {if (!arguments.length) return title;title=_;return chart;}
+	chart.prop = function(_) {if (!arguments.length) return legend.prop(); legend.prop(_);return chart;}
+	chart.dispatch.on("dataUpdate.gfxEvent", function() {
+		legend.data(chart.data().cols);
+		body.data(chart.data().data);
+	});
+	chart.dispatch.on("renderUpdate.gfxEvent", function() {
+		chart.root().select('div').remove();
+		chart.root().call(bs.box().title(title)
+			.tool(legend)
+			.body(body)
+		);
+	});
+	return chart;
+}
 
 }));

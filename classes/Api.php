@@ -31,7 +31,10 @@ class Api extends CorePage {
 		$dc = 'd.timestamp';
 		$smin= '>ah.mint';
 		$dlim= '';
-		if(isset($src['min_timestamp']) && isset($src['max_timestamp'])) {
+		if(isset($src['min_timestamp']) && isset($src['max_timestamp']) && $src['max_timestamp'] == 0) {
+			$smin=' between '.$src['min_timestamp'].' and ah.mint';
+			$dlim=' and d.timestamp > '.$src['min_timestamp'];
+		} else if(isset($src['min_timestamp']) && isset($src['max_timestamp'])) {
 			$smin=' between '.$src['min_timestamp'].' and least(ah.mint,'.$src['max_timestamp'].')';
 			$dlim=' and d.timestamp between '.$src['min_timestamp'].' and '.$src['max_timestamp'];
 		}
@@ -98,7 +101,12 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		$smax= '>ah.maxt';
 		$alim= '';
 		$dlim= '';
-		if(isset($src['min_timestamp']) && isset($src['max_timestamp'])) {
+		if(isset($src['min_timestamp']) && isset($src['max_timestamp']) && $src['max_timestamp'] == 0) {
+			$smin=' > greatest(ah.mint,'.$src['min_timestamp'].')';
+			$smax=' between '.$src['min_timestamp'].' and ah.maxt';
+			$alim=' and a.timestamp > '.$src['min_timestamp'];
+			$dlim=' and d.timestamp > '.$src['min_timestamp'];
+		} else if(isset($src['min_timestamp']) && isset($src['max_timestamp'])) {
 			$smin=' between greatest(ah.mint,'.$src['min_timestamp'].') and '.$src['max_timestamp'];
 			$smax=' between '.$src['min_timestamp'].' and least(ah.maxt,'.$src['max_timestamp'].')';
 			$alim=' and a.timestamp between '.$src['min_timestamp'].' and '.$src['max_timestamp'];
@@ -169,7 +177,12 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		$smax= '>ah.maxt';
 		$alim= '';
 		$dlim= '';
-		if(isset($src['min_timestamp']) && isset($src['max_timestamp'])) {
+		if(isset($src['min_timestamp']) && isset($src['max_timestamp']) && $src['max_timestamp'] == 0) {
+			$smin=' > greatest(ah.mint,'.$src['min_timestamp'].')';
+			$smax=' between '.$src['min_timestamp'].' and ah.maxt';
+			$alim=' and a.timestamp > '.$src['min_timestamp'];
+			$dlim=' and d.timestamp > '.$src['min_timestamp'];
+		} else if(isset($src['min_timestamp']) && isset($src['max_timestamp'])) {
 			$smin=' between greatest(ah.mint,'.$src['min_timestamp'].') and '.$src['max_timestamp'];
 			$smax=' between '.$src['min_timestamp'].' and least(ah.maxt,'.$src['max_timestamp'].')';
 			$alim=' and a.timestamp between '.$src['min_timestamp'].' and '.$src['max_timestamp'];
@@ -345,60 +358,6 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 			$ret[] = $row;
 		}
 
-
-		$response->getBody()->write(json_encode($ret));
-		return $response->withHeader('Content-type', 'application/json');
-	}
-
-	public function ressources($request, $response, $args) {
-		$name    = $request->getAttribute('name');
-		$host_id = $request->getAttribute('aid');
-		$res_id  = $request->getAttribute('rid');
-		$params  = explode('/', $request->getAttribute('params'));
-		if (!haveTable($this->ci->db,$name))
-			throw new Slim\Exception\NotFoundException($request, $response);
-		$sql = "";
-		if (isset($params[1]))
-			$sql = ' and timestamp >= :mint and timestamp <= :maxt';
-		else if (isset($params[0]))
-			$sql = ' and timestamp >= :mint';
-
-		$stmt = $this->db->prepare('SELECT count(timestamp) as cnt from ah$'.$name.' where host_id = :aid and res_id = :rid'.$sql);
-		$stmt->bindParam(':rid', $res_id, PDO::PARAM_INT);
-		$stmt->bindParam(':aid', $host_id, PDO::PARAM_INT);
-		if (isset($params[1])) {
-			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
-			$stmt->bindParam(':maxt', $params[1], PDO::PARAM_INT);
-		}
-		else if (isset($params[0]))
-			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
-		$stmt->execute();
-		$row = $stmt->fetch();
-		$prefix = 'd$';
-		if ($row['cnt']+0>5)
-			$prefix = 'ah$';
-		 else if ($row["cnt"]+0>1)
-			$prefix = 'am$';
-
-		
-		$stmt = $this->db->prepare('SELECT * from '.$prefix.$name." where host_id = :aid and res_id = :rid ".$sql);
-		$stmt->bindParam(':rid', $res_id, PDO::PARAM_INT);
-		$stmt->bindParam(':aid', $host_id, PDO::PARAM_INT);
-		if (isset($params[1])) {
-			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
-			$stmt->bindParam(':maxt', $params[1], PDO::PARAM_INT);
-		}
-		else if (isset($params[0]))
-			$stmt->bindParam(':mint', $params[0], PDO::PARAM_INT);
-		$stmt->execute();
-		$ret = [];
-		while($row = $stmt->fetch()) {
-			unset($row['host_id']);
-			unset($row['res_id']);
-			foreach($row as $i => $k)
-				$row[$i] = floatval($k);
-			$ret[] = $row;
-		}
 
 		$response->getBody()->write(json_encode($ret));
 		return $response->withHeader('Content-type', 'application/json');

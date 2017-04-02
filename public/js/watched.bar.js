@@ -14,7 +14,7 @@
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watchedBarChart
 function wdBarChartBars(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.filtered( wd.componant.colored( wd.componant.axed(null, 200, 200))),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored( wd.componant.axed(null, 200, 200)),
 		stack		= d3.stack();
 	chart.xAxis		= d3.scaleBand().padding(0.2);
 	chart.colorFunction	= function() { return chart.color(); }
@@ -88,7 +88,7 @@ function wdBarAxes(pClass) {
 }
 
 wd.chart.bar = function(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.filtered( wd.componant.period( wd.componant.colored( wd.componant.minSized(null,200,200)))),
+	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.colored( wd.componant.minSized(null,200,200)),
 		margin		= {top: 10, right: 10, bottom: 20, left: 30},
 		axes 		= wdBarAxes(),
 		bars		= wdBarChartBars();

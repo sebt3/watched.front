@@ -43,7 +43,7 @@ order by et.id asc,e.start_time asc');
 	}
 
 	private function getEvent($id) {
-		$stmt = $this->db->prepare('select e.id, et.name as event_type, et.id as event_type_id, e.res_id, r.name as res_name, r.data_type as res_type, e.host_id, a.name as host_name, e.start_time, e.end_time, e.property, e.current_value, e.oper, round(e.value) as value, concat(round(start_time-(1200000)), case when end_time is not null then concat("/",round(end_time+(1200000))) else "" end) as params 
+		$stmt = $this->db->prepare('select e.id, et.name as event_type, et.id as event_type_id, e.res_id, r.name as res_name, r.data_type as res_type, e.host_id, a.name as host_name, e.start_time, e.end_time, e.property, e.current_value, e.oper, round(e.value) as value, round(start_time-(1200000)) as min_time, case when end_time is not null then round(end_time+(1200000)) else 0 end as max_time
   from h$res_events e, h$hosts a, c$ressources r, c$event_types et 
  where e.id=:id
    and e.host_id=a.id 

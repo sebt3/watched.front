@@ -1,14 +1,8 @@
-// Helpers
 /*
-function log(text) {
-  if (console && console.log) console.log(text);
-  return text;
-}
-
-if (!Date.now) {
-    Date.now = function() { return new Date().getTime(); }
-}
-*/
+ * Shell helper:
+ *	look() { find public/js/ -name '*.js' -exec grep -nH "$1" {} \; ;find templates/ -name '*.twig' -exec grep -nH "$1" {} \; ; }
+ *	plook() { grep -nH "$1" public/index.php;find classes/ -name '*.php' -exec grep -nH "$1" {} \; ;find templates/ -name '*.twig' -exec grep -nH "$1" {} \; ; }
+ */
 /////////////////////////////////////////////////////////////////////////////////////////////
 (function(global, factory) {
 	if (typeof global.d3 !== 'object' || typeof global.d3.version !== 'string')
@@ -59,15 +53,7 @@ wd.format.date		= function(date) {
 		: d3.timeYear(date) < date ? formatMonth
 		: formatYear)(date);
 }
-wd.format.number	= function(number) {
-	if (typeof number == 'number') {
-		var x = number, s = x<0?"-":"", v="", i = String(parseInt(Math.abs(x))), m=i.length%3, l=i.substr(0,m), r=i.slice(m);
-		if(Math.round(x)!=x)
-			v = (Math.abs(x) - parseInt(Math.abs(x))).toFixed(2);
-		return s + l + r.replace(/(.{3})/g, " $1") + v.slice(1);
-	} else
-		return number;
-}
+wd.format.number	= bs.api.format.number
 wd.componant.base	= function() {
 	var	data	= [],
 		called	= false,
@@ -111,22 +97,6 @@ wd.componant.base	= function() {
 	}
 	return chart;
 }
-wd.componant.filtered	= function(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.base(),
-		keys	= [],
-		filter	= function(e){return e!="timestamp"&&!e.match("min_")&&!e.match("max_")&&!e.match("cnt_")&&!e.match("sum_")/**/;};
-
-	chart.filter	= function(_) { if (!arguments.length) return filter; filter = _; return chart; }
-	chart.keys	= function(_) { 
-		if (!arguments.length) return keys;
-		keys = _;
-		return chart;
-	}
-	chart.dispatch.on("dataUpdate.wd.componant.filtered", function() { 
-		chart.keys(Object.keys(chart.data()[0]).filter(filter))
-	});
-	return chart;
-}
 wd.componant.colored	= function(pClass, pColor) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.base(),
 		color	= (typeof pColor!="undefined"&&pColor!=null)?pColor:d3.scaleOrdinal(d3.schemeCategory10);
@@ -135,34 +105,6 @@ wd.componant.colored	= function(pClass, pColor) {
 		if (!arguments.length) return color; color = _;
 		chart.dispatch.call("colorUpdate");
 		return chart;
-	}
-	return chart;
-}
-wd.componant.period	= function(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.base(),
-		baseUrl	= "",
-		download	= function(url) {
-			d3.json(url, function(results) { chart.data(results); })
-		return chart;
-	};
-	chart.baseUrl	= function(_) {
-		if (!arguments.length) return baseUrl; baseUrl = _;
-		download(baseUrl);
-		return chart;
-	};
-	chart.setPeriod	= function(p) {
-		var url;
-		switch(p) {
-			case "month": url=baseUrl+"/"+(Math.floor(Date.now())-(3600000*24*31));break;
-			case "week": url=baseUrl+"/"+(Math.floor(Date.now())-(3600000*24*7));break;
-			case "yesterday": url=baseUrl+"/"+((Math.floor(Date.now()/(3600000*24))-1)*(3600000*24))+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
-			case "today": url=baseUrl+"/"+(Math.floor(Date.now()/(3600000*24))*(3600000*24));break;
-			case "hour": url=baseUrl+"/"+(Math.floor(Date.now()/(3600000))*(3600000));break;
-			case "all":
-			default:
-				url=baseUrl;
-		}
-		download(url);
 	}
 	return chart;
 }
@@ -254,70 +196,6 @@ wd.componant.axes	= function(pClass, pW, pH) {
 		update.select(".x.axis").duration(150).call(chart.xAxisLine);
 		update.select(".y.axis").duration(150).call(chart.yAxisLine);
 	});
-	return chart;
-}
-wd.componant.HLegend	= function(pClass) {
-	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.sized( wd.componant.colored( wd.componant.filtered()), 500,30),
-		labels	= [];
-
-	chart.dispatch.register("itemMouseOver","itemMouseOut");
-	chart.dispatch.on("init.wd.componant.HLegend", function() { 
-		if (typeof chart.callbacks.itemMouseOver !== 'undefined')
-			chart.dispatch.on("itemMouseOver.legend", chart.callbacks.itemMouseOver);
-		if (typeof chart.callbacks.itemMouseOut !== 'undefined')
-			chart.dispatch.on("itemMouseOut.legend",  chart.callbacks.itemMouseOut);
-	});
-	chart.dispatch.on("dataUpdate.wd.componant.HLegend", function() { 
-		labels = chart.keys().map(function(i) {
-			return {
-				id: i,
-				val: chart.data()[0][i]
-			};
-		});
-		chart.color().domain(chart.keys());
-	});
-	chart.dispatch.on("dataUpdate.wd.componant.HLegend", function() { 
-		labels = chart.keys().map(function(i) {
-			return {
-				id: i,
-				val: chart.data()[0][i]
-			};
-		});
-		chart.color().domain(chart.keys());
-	});
-	chart.dispatch.on("renderUpdate.wd.componant.HLegend", function() { 
-		chart.root().selectAll('g.legend').remove();
-		var	update	= chart.root().selectAll('g.legend').data(labels),
-			gEnter	= update.enter().append('g').attr('class', 'legend').attr('id', function (d,i) { return d.id });
-		gEnter.append('circle')
-			.style('fill', function(d, i){ return chart.color()(d.id) })
-			.style('stroke', function(d, i){ return chart.color()(d.id) })
-			.attr('r', 5);
-		gEnter.append('text')
-			.text(function(d) { return d.id+": "+d.val })
-			.attr('text-anchor', 'start')
-			.attr('dy', '.32em')
-			.attr('dx', '8');
-		var	x=0, newx=0,y=0;
-		gEnter.attr('transform', function(d, i) {
-			var length = (Math.floor(d3.select(this).select('text').node().getComputedTextLength()/200)+1)*200;
-			x 	 = newx;
-			newx	+=length;
-			if (newx>chart.width()) {
-				x=0;
-				newx = length;
-				y+=15;
-			}
-			return 'translate(' + x + ','+y+')'
-		})	.on("mouseover", function(d, i){chart.dispatch.call("itemMouseOver", null, d, i);})
-			.on("mouseout", function(d, i) {chart.dispatch.call("itemMouseOut",  null, d, i);})
-	});
-	chart.callbacks.updateValues	= function(v) {
-		labels.forEach(function (l) {
-			l.val = v[l.id]
-			chart.root().select("#"+l.id).select("text").text( l.id+": "+wd.format.number(l.val))
-		})
-	}
 	return chart;
 }
 }));

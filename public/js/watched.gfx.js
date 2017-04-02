@@ -13,7 +13,8 @@
 })(this, (function(wd, global) {
 wd.chart.gfxLegend = function() {
 	var	chart	= wd.componant.colored();
-	var	bar;
+	var	bar, prop = '';
+	chart.prop = function(_) {if (!arguments.length) return prop;prop=_;return chart;}
 	chart.dispatch.register("area", "enable", "select");
 	chart.setValue	= function(d,v) {
 		chart.root().select('#value_'+d).html(wd.format.number(v))
@@ -43,6 +44,8 @@ wd.chart.gfxLegend = function() {
 				}
 			}
 		})
+		else if (prop!='' && chart.ready())
+			ret.push("avg_"+prop);
 		else if (chart.ready())
 			chart.data().forEach(function(d) {
 				ret.push("avg_"+d);
@@ -69,15 +72,18 @@ wd.chart.gfxLegend = function() {
 	chart.dispatch.on("renderUpdate.wdGfxLegend", function() {
 		var d = bar.selectAll('div.btn-group.legend').data(chart.data()),
 		    g = d.enter().append('div').attr('class', 'btn-group legend').attr('role','group').attr('data-toggle','buttons');
-		var l = g.append('label').attr('class', 'btn btn-default item active activated')
-			.attr('id', function (d) { return 'enable_'+d})
+		var l = g.append('label').attr('class', function(d){
+				var ret = 'btn btn-default item', a = 'active activated';
+				if (prop==''|| d == prop) return ret+' '+a;
+				return ret;
+			}).attr('id', function (d) { return 'enable_'+d})
 			.on('click', function (d) {
 				var x=d3.select(this);
 				if (d3.event) d3.event.preventDefault();
 				x.classed('activated',!x.classed('activated'))
 				chart.dispatch.call("enable",this,d,x.classed('activated'));
 			});
-		l.append('input').attr('type', 'checkbox').attr('checked','true')
+		l.append('input').attr('type', 'checkbox').attr('checked',function(d){if (prop==''||d == prop) return 'true';return 'false'})
 		l.append('i').attr('class', 'fa fa-circle').attr('style',function (d) { return 'color:'+chart.color()(d)})
 		var s = g.append('select').attr('class', 'item')
 			.attr('style',function (d) { return 'color:'+chart.color()(d)})
@@ -251,7 +257,7 @@ wd.chart.timeline = function() {
 }
 wd.chart.gfx = function() {
 	var	chart	= wd.componant.axes(wd.componant.axed(wd.componant.minSized(null, 500,350))),
-		legend, svg, timeline, domain, oldX = 0, useArea=false,
+		legend, svg, timeline, domain, full_domain, oldX = 0, useArea=false,
 		margin	= {top: 10, right: 10, bottom: 20, left: 30},
 		xRev	= d3.scaleTime().domain([0, chart.width()-margin.left-margin.right]),
 		w	= chart.width()-(margin.left+margin.right+30),
@@ -277,9 +283,14 @@ wd.chart.gfx = function() {
 	chart.zoomed	= function () {
 		if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return;
 		var t = d3.event.transform;
-		timeline.brushMove(chart.xAxis.range().map(t.invertX, t))
-		domain = t.rescaleX(timeline.xAxis).domain()
-		xRev.range(domain);
+		if (typeof timeline !== 'undefined') {
+			timeline.brushMove(chart.xAxis.range().map(t.invertX, t))
+			domain = t.rescaleX(timeline.xAxis).domain()
+		} else {
+			chart.xAxis.domain(full_domain)
+			domain = t.rescaleX(chart.xAxis).domain()
+		}
+		xRev.range(domain)
 		chart.xAxis.domain(domain)
 		chart.lineChanged();
 		chart.noDots();
@@ -373,6 +384,7 @@ wd.chart.gfx = function() {
 	});
 	chart.dispatch.on("dataUpdate.wd.componant.axed", function() {
 		domain = d3.extent(chart.data(), function(d) { return d.timestamp; });
+		full_domain = domain;
 		xRev.range(domain);
 		chart.xAxis.domain(domain);
 		chart.lineChanged();
