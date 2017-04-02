@@ -1,22 +1,25 @@
 #/bin/sh
 
-mkdir -p public/vendor/css/skins public/vendor/js public/vendor/fonts
+mkdir -p "public/vendor/css/skins" "public/vendor/js" "public/vendor/fonts"
 
-#cp vendor/components/jquery/jquery.min.js public/vendor/js/
+BS="vendor/twbs/bootstrap/dist"
+LTE="vendor/almasaeed2010/adminlte/dist"
+FA="vendor/fortawesome/font-awesome"
+II="vendor/driftyco/ionicons"
+DB="vendor/sebt3/d3-bootstrap"
 
-#cp vendor/twbs/bootstrap/dist/js/bootstrap.min.js public/vendor/js/
-cp vendor/twbs/bootstrap/dist/fonts/* public/vendor/fonts/
-cp vendor/twbs/bootstrap/dist/css/bootstrap.min.css public/vendor/css/
+CSS="$BS/css/bootstrap.min.css $LTE/css/AdminLTE.min.css $FA/css/font-awesome.min.css $II/css/ionicons.min.css"
+FONTS="$BS/fonts $FA/fonts $II/fonts"
+JS="$DB/vendor/d3.v4.min.js $DB/dist/d3-bootstrap-all.min.js"
 
-cp vendor/almasaeed2010/adminlte/dist/css/AdminLTE.min.css public/vendor/css/
-cp vendor/almasaeed2010/adminlte/dist/css/skins/skin-blue.css public/vendor/css/skins/
-#cp vendor/almasaeed2010/adminlte/dist/js/app.min.js public/vendor/js/adminlte.min.js
+for c in $CSS;do
+	cp "$c" "public/vendor/css/"
+done
+for f in $FONTS;do
+	cp $f/* "public/vendor/fonts/"
+done
+for j in $JS;do
+	cp "$j" "public/vendor/js/"
+done
+cp "$LTE/css/skins/skin-blue.css" "public/vendor/css/skins/"
 
-cp vendor/fortawesome/font-awesome/css/font-awesome.min.css public/vendor/css/
-cp vendor/fortawesome/font-awesome/fonts/* public/vendor/fonts/
-
-cp vendor/driftyco/ionicons/css/ionicons.min.css public/vendor/css/
-cp vendor/driftyco/ionicons/fonts/* public/vendor/fonts/
-
-cp vendor/sebt3/d3-bootstrap/vendor/d3.v4.min.js public/vendor/js/
-cp vendor/sebt3/d3-bootstrap/dist/d3-bootstrap-all.min.js public/vendor/js/
