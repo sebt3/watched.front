@@ -5,7 +5,6 @@
         <small>{{ _('Modify a group') }}</small>
 {% endblock %}
 {% block scripts %}
-<script src="/js/watched.tables.js"></script>
 <script>
 d3.select('section.content').call(bs.row()
 	  .cell('col-lg-6',bs.union()
@@ -49,7 +48,7 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.group
 	.item(bs.desc()
 		.item("{{ _('Group') }}","{{ name }}")
 		.item("{{ _('Application') }}","{{ a.name }}")
-)))
+)));
 {% endfor %}
 {% for a in teams %}
 d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.groups.deleteTeam', { 'id': group_id, 'tid': a.team_id, 'rid': a.role_id }) }}").id("deleteTeam{{ group_id }}-{{ a.team_id }}-{{ a.role_id }}").title("{{ _('Remove a team permission from a group') }}").text("{{ _('Confirm') }}").body(bs.union()
@@ -59,7 +58,7 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.group
 		.item("{{ _('Team') }}","{{ a.team_name }}")
 		.item("{{ _('Type') }}","{{ _(a.type) }}")
 		.item("{{ _('Role') }}","{{ a.role_name }}")
-)))
+)));
 {% endfor %}
 </script>
 {% endblock %}

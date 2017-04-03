@@ -49,7 +49,7 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.domai
 		.item("{{ _('Domain') }}","{{ name }}")
 		.item("{{ _('Team') }}","{{ a.team_name }}")
 		.item("{{ _('Role') }}","{{ a.role_name }}")
-)))
+)));
 {% endfor %}
 {% for a in hosts %}
 d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.domains.deleteHost', { 'id': domain_id, 'hid': a.id }) }}").id("deleteHost{{ domain_id }}-{{ a.id }}").title("{{ _('Remove host from the this domain') }}").text("{{ _('Confirm') }}").body(bs.union()
@@ -57,7 +57,7 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.domai
 	.item(bs.desc()
 		.item("{{ _('Domain') }}","{{ name }}")
 		.item("{{ _('Host') }}","{{ a.name }}")
-)))
+)));
 {% endfor %}
 </script>
 {% endblock %}

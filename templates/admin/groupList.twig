@@ -11,9 +11,9 @@
 d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.groups.delete', { 'id': a.id }) }}").id("delete{{ a.id }}").title("{{ _('Delete group') }}").text("{{ _('Confirm') }}").body(bs.union()
 	.item(bs.p("{{ _('Are you sure you want to delete this group:') }}"))
 	.item(bs.p("{{ a.name }}"))
-))
+));
 {% endfor %}
-d3.select('section.content').call(bs.button.a().url("{{ path_for('admin.groups.add') }}").icon('fa fa-plus').text("{{ _('Add') }}"))
+d3.select('section.content').call(bs.button.a().url("{{ path_for('admin.groups.add') }}").icon('fa fa-plus').text("{{ _('Add') }}"));
 d3.select('section.content').call(bs.box().body(wd.chart.table()
 	.col("{{ _('name') }}")
 	.col("{{ _('Actions') }}",'text-right')

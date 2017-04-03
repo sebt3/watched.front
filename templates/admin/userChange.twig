@@ -51,7 +51,7 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.users
 		.item("{{ _('Username') }}","{{ username }}")
 		.item("{{ _('Name') }}","{{ firstname }} {{ lastname }}")
 		.item("{{ _('Team') }}","{{ a.name }}")
-)))
+)));
 {% endfor %}
 {% for a in properties %}
 d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.users.deleteProp', { 'id': user_id, 'pid': a.id }) }}").id("deleteProp{{ user_id }}-{{ a.id }}").title("{{ _('Remove alerting property from') }} {{ firstname }} {{ lastname }}").text("{{ _('Confirm') }}").body(bs.union()
@@ -59,7 +59,7 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.users
 	.item(bs.desc()
 		.item("{{ _('Property') }}","{{ a.name }}")
 		.item("{{ _('Value') }}","{{ a.value }}")
-)))
+)));
 {% endfor %}
 </script>
 {% endblock %}
