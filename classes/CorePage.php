@@ -28,6 +28,8 @@ class CorePage extends core {
 			return 'text-yellow';
 		}
 		switch($status) {
+		case 'missing':
+			return 'text-yellow';
 		case 'failed':
 			return 'text-red';
 		default:
@@ -75,11 +77,14 @@ class CorePage extends core {
 	}
 	public function getEventColor($name) {
 		switch($name) {
+		case 'ok':
 		case 'Ok':
 			return '#00a65a';
+		case 'failed':
 		case 'Failed':
 		case 'Critical':
 			return '#dd4b39';
+		case 'missing':
 		case 'Missing':
 		case 'Error':
 			return '#ff851b';

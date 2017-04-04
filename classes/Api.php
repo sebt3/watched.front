@@ -240,7 +240,7 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		return $ret;
 	}
 
-	private function get_host_row($host_id, $res_id, $min, $max) {
+	private function get_host_row($host_id, $res_id, $min, $max, $request, $response) {
 		$stmt = $this->db->prepare('select h.id as obj_id, h.name as obj_name, r.id as res_id, r.name as res_name, d.drive, r.data_type, d.data_table, d.aggregate_min, d.aggregate_hour, d.aggregate_day
   from h$ressources hr, h$hosts h, c$ressources r, c$data_tables d
  where hr.host_id=h.id and h.id=:hid
@@ -259,7 +259,7 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		return $row;
 	}
 
-	private function get_serv_row($serv_id, $res_id, $min, $max) {
+	private function get_serv_row($serv_id, $res_id, $min, $max, $request, $response) {
 		$stmt = $this->db->prepare('select s.id as obj_id, s.name as obj_name, r.id as res_id, r.name as res_name, d.drive, r.data_type, d.data_table, d.aggregate_min, d.aggregate_hour, d.aggregate_day
   from s$ressources sr, s$services s, c$ressources r, c$data_tables d
  where sr.serv_id=s.id and s.id=:sid
@@ -282,7 +282,7 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 // Controlers
 
 	public function serv_res($request, $response, $args) {
-		$row = $this->get_serv_row($request->getAttribute('serv_id'), $request->getAttribute('res_id'), null, null);
+		$row = $this->get_serv_row($request->getAttribute('serv_id'), $request->getAttribute('res_id'), null, null,$request, $response);
 		$ret = $this->getRessourcesHourHistory($row);
 		$response->getBody()->write(json_encode($ret));
 		return $response->withHeader('Content-type', 'application/json');
@@ -290,7 +290,7 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 
 	public function serv_res_min($request, $response, $args) {
 		$row = $this->get_serv_row($request->getAttribute('serv_id'), $request->getAttribute('res_id'), 
-			$request->getAttribute('min'), $request->getAttribute('max'));
+			$request->getAttribute('min'), $request->getAttribute('max'),$request, $response);
 		$ret = $this->getRessourcesMinHistory($row);
 		$response->getBody()->write(json_encode($ret));
 		return $response->withHeader('Content-type', 'application/json');
@@ -298,14 +298,14 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 
 	public function serv_res_detail($request, $response, $args) {
 		$row = $this->get_serv_row($request->getAttribute('serv_id'), $request->getAttribute('res_id'), 
-			$request->getAttribute('min'), $request->getAttribute('max'));
+			$request->getAttribute('min'), $request->getAttribute('max'), $request, $response);
 		$ret = $this->getRessourcesDetailHistory($row);
 		$response->getBody()->write(json_encode($ret));
 		return $response->withHeader('Content-type', 'application/json');
 	}
 
 	public function host_res($request, $response, $args) {
-		$row = $this->get_host_row($request->getAttribute('host_id'), $request->getAttribute('res_id'), null, null);
+		$row = $this->get_host_row($request->getAttribute('host_id'), $request->getAttribute('res_id'), null, null,$request, $response);
 		$ret = $this->getRessourcesHourHistory($row);
 		$response->getBody()->write(json_encode($ret));
 		return $response->withHeader('Content-type', 'application/json');
@@ -313,7 +313,7 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 
 	public function host_res_min($request, $response, $args) {
 		$row = $this->get_host_row($request->getAttribute('host_id'), $request->getAttribute('res_id'), 
-			$request->getAttribute('min'), $request->getAttribute('max'));
+			$request->getAttribute('min'), $request->getAttribute('max'),$request, $response);
 		$ret = $this->getRessourcesMinHistory($row);
 		$response->getBody()->write(json_encode($ret));
 		return $response->withHeader('Content-type', 'application/json');
@@ -321,7 +321,7 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 
 	public function host_res_detail($request, $response, $args) {
 		$row = $this->get_host_row($request->getAttribute('host_id'), $request->getAttribute('res_id'), 
-			$request->getAttribute('min'), $request->getAttribute('max'));
+			$request->getAttribute('min'), $request->getAttribute('max'),$request, $response);
 		$ret = $this->getRessourcesDetailHistory($row);
 		$response->getBody()->write(json_encode($ret));
 		return $response->withHeader('Content-type', 'application/json');

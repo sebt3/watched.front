@@ -232,6 +232,23 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
 		return $ret;
 	}
 
+	private function getServicesByType($id) {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['title'] = $_('Services by type');
+		$ret['body'] = [];
+		$s3 = $this->db->prepare('select t.id, t.name as label, count(s.id) as value from s$types t
+ left join s$services s on t.id=s.type_id
+where s.host_id=:id
+group by t.id');
+		$s3->bindParam(':id', $id, PDO::PARAM_INT);
+		$s3->execute();
+		while($r = $s3->fetch()) {
+			$ret['body'][] = $r;
+		}
+		return $ret;
+	}
+
 	private function getMonitoringHistory($id) {
 		$_ = $this->trans;
 		$ret = [];
@@ -506,6 +523,14 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 			throw new Slim\Exception\NotFoundException($request, $response);
 		$this->auth->assertHost($id, $request, $response);
 		$response->getBody()->write(json_encode($this->getMonitoringStatus($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetDonutServices(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getServicesByType($id)));
 		return $response->withHeader('Content-type', 'application/json');
 	}
 	public function widgetDonutItems(Request $request, Response $response) {

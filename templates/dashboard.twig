@@ -12,8 +12,10 @@ d3.select('section.content').call(
 		.cell('col-md-4', widget.donut().source("{{ path_for('widgets.donut.dash.items') }}"))
 		.cell('col-md-4', widget.donut().source("{{ path_for('widgets.donut.dash.domains') }}"))
 	).item(bs.row()
-		.cell('col-md-12 col-lg-7', widget.table().source("{{ path_for('widgets.table.dash.events') }}"))
+		.cell('col-md-12 col-lg-8', widget.table().source("{{ path_for('widgets.table.dash.events') }}"))
+		.cell('col-md-4', widget.donut().source("{{ path_for('widgets.donut.dash.services') }}"))
 {% if menu.isAuth %}
+	).item(bs.row()
 		.cell('col-md-12 col-lg-5', widget.table().source("{{ path_for('widgets.table.dash.failed') }}"))
 {% endif %}
 ));

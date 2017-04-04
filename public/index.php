@@ -57,7 +57,7 @@ $container['errorHandler']	= function ($c) {	return new \Containers\ErrorHandler
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // middlewares
-$app->add(new \Containers\Finalyse($container));
+//$app->add(new \Containers\Finalyse($container));
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Routes 
@@ -203,10 +203,15 @@ $app->group('/widgets', function () use ($app) {
 			$app->get('/status', '\Dashboard:widgetDonutStatus')->setName('widgets.donut.dash.status');
 			$app->get('/items', '\Dashboard:widgetDonutItem')->setName('widgets.donut.dash.items');
 			$app->get('/domains', '\Dashboard:widgetDonutDomains')->setName('widgets.donut.dash.domains');
+			$app->get('/services', '\Dashboard:widgetDonutServices')->setName('widgets.donut.dash.services');
 		});
 		$app->group('/host', function () use ($app) {
 			$app->get('/{id:[0-9]+}/status', '\Host:widgetDonutStatus')->setName('widgets.donut.host.status');
 			$app->get('/{id:[0-9]+}/items', '\Host:widgetDonutItems')->setName('widgets.donut.host.items');
+			$app->get('/{id:[0-9]+}/services', '\Host:widgetDonutServices')->setName('widgets.donut.host.services');
+		});
+		$app->group('/serv', function () use ($app) {
+			$app->get('/{id:[0-9]+}/avail', '\HostService:widgetDonutAvail')->setName('widgets.donut.serv.avail');
 		});
 		$app->group('/ressource', function () use ($app) {
 			$app->get('/{host_id:[0-9]+}-{res_id:[0-9]+}/status', '\HostRessource:widgetDonutStatus')->setName('widgets.donut.ress.status');
@@ -227,6 +232,7 @@ $app->group('/widgets', function () use ($app) {
 		$app->group('/serv', function () use ($app) {
 			$app->get('/{id:[0-9]+}/process', '\HostService:widgetTableProcess')->setName('widgets.table.serv.process');
 			$app->get('/{id:[0-9]+}/sockets', '\HostService:widgetTableSockets')->setName('widgets.table.serv.sockets');
+			$app->get('/{id:[0-9]+}/logs', '\HostService:widgetTableLog')->setName('widgets.table.serv.logs');
 		});
 	});
 	$app->group('/list', function () use ($app) {
@@ -234,6 +240,10 @@ $app->group('/widgets', function () use ($app) {
 			$app->get('/{id:[0-9]+}/services', '\Host:widgetListServices')->setName('widgets.list.host.services');
 			$app->get('/{id:[0-9]+}/stats', '\Host:widgetListStats')->setName('widgets.list.host.stats');
 			$app->get('/{id:[0-9]+}/ressources', '\Host:widgetListRessources')->setName('widgets.list.host.ressources');
+		});
+		$app->group('/serv', function () use ($app) {
+			$app->get('/{id:[0-9]+}/ressources', '\HostService:widgetListResources')->setName('widgets.list.serv.ressources');
+
 		});
 	});
 	$app->group('/progess', function () use ($app) {
@@ -256,6 +266,9 @@ $app->group('/widgets', function () use ($app) {
 
 $app->get('/', '\Dashboard:dashboard')->setName('home');
 
+$app->group('/services', function () use ($app) {
+	$app->get('/{serv_id:[0-9]+}/ressources/{res_id:[0-9]+}', '\HostService:serviceRessource')->setName('services.ressource');
+});
 $app->group('/hosts', function () use ($app) {
 	$app->get('', '\Host:hosts')->setName('hosts');
 	$app->get('/{id:[0-9]+}', '\Host:host')->setName('host');

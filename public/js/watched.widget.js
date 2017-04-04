@@ -168,20 +168,18 @@ widget.gfxRessource = function() {
 	return chart;
 }
 widget.gfxAvailability = function() {
-	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxAvailLegend(), footer = wd.chart.timeline();
-	body.legend(legend);body.timeline(footer);footer.legend(legend);
-	body.areaSet('',true);footer.areaSet('',true);
+	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxAvailLegend();
+	body.legend(legend);
+	body.areaSet('',true);
 	chart.title = function(_) {if (!arguments.length) return title;title=_;return chart;}
 	chart.dispatch.on("dataUpdate.gfxAvailability", function() {
 		body.data(chart.data());
-		footer.data(chart.data());
 	});
 	chart.dispatch.on("renderUpdate.gfxAvailability", function() {
 		chart.root().select('div').remove();
 		chart.root().call(bs.box().title(title)
 			.tool(legend)
 			.body(body)
-			.footer(footer)
 		);
 	});
 	return chart;

@@ -1,0 +1,11 @@
+{% extends "core.twig" %}
+{% block title %}{{ _('Ressource') }} {{ res.name }} - {{ h.host }} - {{ service.name }}  {% endblock %}
+{% block contentHeader %}
+        {{ _('Ressource') }}
+        <small> {{ res.name }} {{ _('for') }} {{ h.host }} - {{ service.name }} </small>
+{% endblock %}
+{% block scripts %}
+<script>
+d3.select('section.content').append('div').call(widget.gfxRessource().source("{{ path_for('widgets.gfx.serv',  { 'serv_id': service.id, 'res_id': res.id }) }}"));
+</script>
+{% endblock %}

@@ -31,7 +31,7 @@ class Dashboard extends CorePage {
 					'color'	=> $this->getStatusColor($r['status'],$r['late_sec']),
 					'url'	=> $this->router->pathFor('service', [ 'sid' => $r['serv_id'], 'hid'=> $r['host_id']])
 				),
-				'host'	=> array('text'	=> $this->formatTimestamp($r['start_time'])),
+				'host'	=> array('text'	=> $r['host']),
 				'serv'	=> array('text'	=> $r['service']),
 				'time'	=> array('text'	=> $this->formatTimestamp($r['timestamp'])),
 				'status'=> array('text'	=> $r['status'])
@@ -165,7 +165,6 @@ select id, name, ifnull(h.cnt, 0) as cnt
 		while($r = $s->fetch()) {
 			$ret['body'][] = array(
 				'value'	=> $r['cnt'],
-				'color'	=> $this->getEventColor($r['name']),
 				'label'	=> $_($r['name'])
 			);
 		}
@@ -207,6 +206,21 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
 		return $ret;
 	}
 
+	private function getServicesByType() {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['title'] = $_('Service by type');
+		$ret['body'] = [];
+		$s = $this->db->prepare('select t.id, t.name as label, count(s.id) as value from s$types t
+ left join s$services s on t.id=s.type_id
+group by t.id');
+		$s->execute();
+		while($r = $s->fetch()) {
+			$ret['body'][] = $r;
+		}
+		return $ret;
+	}
+
 /////////////////////////////////////////////////////////////////////////////////////////////
 // WidgetControlers
 
@@ -228,6 +242,10 @@ select "Failed" as name, 0 as id, ifnull(fp.cnt,0)+ifnull(fo.cnt,0) as cnt
 	}
 	public function widgetDonutDomains (Request $request, Response $response) {
 		$response->getBody()->write(json_encode($this->getHostDomains()));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetDonutServices (Request $request, Response $response) {
+		$response->getBody()->write(json_encode($this->getServicesByType()));
 		return $response->withHeader('Content-type', 'application/json');
 	}
 

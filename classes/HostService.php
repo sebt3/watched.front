@@ -146,11 +146,68 @@ class HostService extends CorePage {
 		return $ret;
 	}
 
-/*
-overall availability :
-select ok*100/(failed+ok+missing) as avail from (select sum(failed) as failed, sum(missing) as missing, sum(ok) as ok from serviceHistory where serv_id=11) x
-*/
+	private function getServOverAllAvail($id) {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['title'] = $_('Overall availability');
+		$ret['body'] = [];
+		$s   = $this->db->prepare('select d.id, d.name as label, if(d.id=0, x.ok, if(d.id=1,x.failed,x.missing))/(x.ok+x.failed+x.missing)*100 as value
+  from	(select 2 as id, "missing" as name from dual union all select 1 as id, "failed" as name from dual union all select 0 as id, "ok" as name from dual) d,
+	(select sum(failed) as failed, sum(missing) as missing, sum(ok) as ok from s$history where serv_id=:id) x');
+		$s->bindParam(':id', $id, PDO::PARAM_INT);
+		$s->execute();
+		while($r = $s->fetch()) {
+			$r['color'] = $this->getEventColor($r['label']);
+			$ret['body'][] = $r;
+			
+		}
+		return $ret;
+	}
 
+	private function getServRess($id) {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['title'] = $_('Ressources');
+		$ret['body'] = [];
+		$s   = $this->db->prepare('select s.serv_id, s.res_id, c.name, c.name as text, c.data_type from s$ressources s, c$ressources c where c.id=s.res_id and s.serv_id=:id');
+		$s->bindParam(':id', $id, PDO::PARAM_INT);
+		$s->execute();
+		while($r = $s->fetch()) {
+			$r['url'] = $this->router->pathFor('services.ressource', [ 'serv_id' => $r['serv_id'], 'res_id' => $r['res_id']]);
+			$ret['body'][] = $r;
+			
+		}
+		return $ret;
+	}
+	
+	private function getServLog($id) {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['title'] = $_('Logs');
+		$ret['cols'] = [];
+		$ret['cols'][] = array( 'text' => $_('type'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('time'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('source'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('line number'), 'class'=> 'sortable');
+		$ret['cols'][] = array( 'text' => $_('text'), 'class'=> 'sortable');
+		$ret['body'] = [];
+		$s   = $this->db->prepare('select l.id, l.timestamp, l.source_name, l.date_field, l.line_no, l.text, t.name as event_name from s$log_events l, c$event_types t where t.id=l.event_type and serv_id=:id order by l.timestamp desc limit 30');
+		$s->bindParam(':id', $id, PDO::PARAM_INT);
+		$s->execute();
+		while($r = $s->fetch()) {
+			$ret['body'][] = array(
+				'type'	=> array('text' => $r['event_name'], 
+						'color'	=> $this->getEventTextColor($r['event_name'])),
+				'stime'	=> array('text'	=> $this->formatTimestamp($r['timestamp'])),
+				'src'	=> array('text' => $r['source_name']),
+				'lno'	=> array('text' => floatval($r['line_no'])),
+				'text'	=> array('text' => $r['text'])
+			);
+			
+		}
+		return $ret;
+	}
+	
 /////////////////////////////////////////////////////////////////////////////////////////////
 // WidgetControlers
 
@@ -168,6 +225,30 @@ select ok*100/(failed+ok+missing) as avail from (select sum(failed) as failed, s
 			throw new Slim\Exception\NotFoundException($request, $response);
 		$this->auth->assertService($id, $request, $response);
 		$response->getBody()->write(json_encode($this->getSocketsTable($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetDonutAvail(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getService($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertService($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getServOverAllAvail($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetListResources(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getService($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertService($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getServRess($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetTableLog(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getService($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertService($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getServLog($id)));
 		return $response->withHeader('Content-type', 'application/json');
 	}
 
@@ -210,6 +291,31 @@ select ok*100/(failed+ok+missing) as avail from (select sum(failed) as failed, s
 			array('name' => $serv['name'], 'url' => $this->router->pathFor('service', array('hid' => $hid, 'sid' => $sid))));
 		return $this->view->render($response, 'hosts/hostService.twig', [ 
 			'h'		=> $host,
+			'service'	=> $serv
+		]);
+	}
+	public function serviceRessource (Request $request, Response $response) {
+		$rid = $request->getAttribute('res_id');
+		$sid = $request->getAttribute('serv_id');
+		$serv = $this->getService($sid);
+		$host = $this->getHost($serv['host_id']);
+		$res = $this->getRessource($rid);
+		if ($host == false || $serv == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($serv['host_id'], $request, $response);
+		$this->auth->assertService($sid, $request, $response);
+
+		$this->menu->activateHost($host['host']);
+		$this->menu->breadcrumb = array(
+			array('name' => 'host', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
+			array('name' => $host['host'], 'url' => $this->router->pathFor('host', array('id' => $host['id']))), 
+			array('name' => 'services', 'icon' => 'fa fa-building-o', 'url' => $this->router->pathFor('services', array('id' => $host['id']))),
+			array('name' => $serv['name'], 'url' => $this->router->pathFor('service', array('hid' => $host['id'], 'sid' => $sid))),
+			array('name' => $res['name'], 'url' => $this->router->pathFor('services.ressource', array('serv_id' => $sid, 'res_id' => $rid)))
+		);
+		return $this->view->render($response, 'hosts/servRessource.twig', [ 
+			'h'		=> $host,
+			'res'		=> $res,
 			'service'	=> $serv
 		]);
 	}
