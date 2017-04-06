@@ -13,7 +13,7 @@
 })(this, (function(widget, wd) {
 
 function wdBaseWidget() {
-	var data = {}, called = false, ready=false, root;
+	var data = {}, called = false, ready=false, root, box = bs.box();
 	function chart(s) { called=true; s.each(chart.init); return chart; }
 	chart.dispatch	= d3.dispatch("init", "renderUpdate", "dataUpdate");
 	chart.inited	= function() {return called; }
@@ -21,9 +21,12 @@ function wdBaseWidget() {
 	chart.init	= function() { 
 		root = d3.select(this);
 		chart.dispatch.call("init");
-		if (ready)
+		if (ready) {
 			chart.dispatch.call("renderUpdate");
+			box.update();
+		}
 	}
+	chart.box	= function() {return box;}
 	chart.root	= function(_) {
 		if (arguments.length) {
 			root = _;
@@ -38,8 +41,12 @@ function wdBaseWidget() {
 		data = _;
 		ready=true;
 		chart.dispatch.call("dataUpdate");
-		if (chart.inited())
+		if (data.title != 'undefined')
+			box.title(data.title).tool({action:'collapse', icon:'fa fa-minus'});
+		if (called) {
 			chart.dispatch.call("renderUpdate");
+			box.update();
+		}
 		return chart;
 	}
 	chart.source	= function(_) { 
@@ -47,123 +54,74 @@ function wdBaseWidget() {
 			d3.json(_, function(results) { chart.data(results); })
 		return chart;
 	}
+	chart.dispatch.on("init.wdBaseWidget", function() {chart.root().call(box);});
 
 	return chart;
 }
 widget.table = function() {
-	var chart = wdBaseWidget(),body = wd.chart.table(), title = '';
+	var chart = wdBaseWidget(),body = wd.chart.table();
+	chart.box().body(body);
 	chart.dispatch.on("dataUpdate.wdTableWidget", function() { 
 		body.body(chart.data().body);
 		body.heads(chart.data().cols);
-		if (chart.data().title != 'undefined')
-			title = chart.data().title;
-	});
-	chart.dispatch.on("renderUpdate.wdTableWidget", function() {
-		var b = bs.box().body(body);
-		if (chart.data().title != 'undefined')
-			b.title(title).tool({action:'collapse', icon:'fa fa-minus'})
-		chart.root().select('div').remove();
-		chart.root().call(b);
 	});
 	return chart;
 }
 widget.donut  = function() {
-	var chart = wdBaseWidget(),body = wd.chart.donut(), title = '', footer = bs.pills();
+	var chart = wdBaseWidget(),body = wd.chart.donut(), footer = bs.pills();
+	chart.box().body(body);
 	chart.dispatch.on("dataUpdate.wdDonutWidget", function() { 
 		body.data(chart.data().body);
-		title = chart.data().title;
-		if (typeof chart.data().footer != 'undefined')
+		if (typeof chart.data().footer != 'undefined'  && chart.data().footer.length>0) {
 			footer.data(chart.data().footer);
-	});
-	chart.dispatch.on("renderUpdate.wdDonutWidget", function() {
-		var b = bs.box().title(title)
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(body);
-		if (typeof chart.data().footer != 'undefined' && chart.data().footer.length>0)
-			b.footer(footer);
-		chart.root().select('div').remove();
-		chart.root().call(b);
+			chart.box().footer(footer);
+		}
 	});
 	return chart;
 }
 widget.list = function() {
 	var chart = wdBaseWidget(),body = bs.list(), title = '';
+	chart.box().body(body);
 	chart.dispatch.on("dataUpdate.wdListWidget", function() { 
 		body.data(chart.data().body);
-		title = chart.data().title;
-	});
-	chart.dispatch.on("renderUpdate.wdListWidget", function() {
-		chart.root().select('div').remove();
-		chart.root().call(bs.box().title(title)
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(body)
-		);
 	});
 	return chart;
 }
 widget.progress = function() {
-	var chart = wdBaseWidget(),body = bs.list(), title = '';
+	var chart = wdBaseWidget(),body = bs.list();
+	chart.box().body(body);
 	chart.dispatch.on("dataUpdate.wdProgessListWidget", function() {
 		chart.data().body.forEach(function (d) {
 			body.add(bs.progress().title(d.title).url(d.url).data(d.items))
 		});
-		title = chart.data().title;
-	});
-	chart.dispatch.on("renderUpdate.wdProgessListWidget", function() {
-		chart.root().select('div').remove();
-		chart.root().call(bs.box().title(title)
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(body)
-		);
 	});
 	return chart;
 }
 widget.properties = function() {
-	var chart = wdBaseWidget(),body = bs.descTable(), title = '';
+	var chart = wdBaseWidget(),body = bs.descTable();
+	chart.box().body(body);
 	chart.dispatch.on("dataUpdate.wdPropertyWidget", function() { 
 		body.data(chart.data().body);
-		title = chart.data().title;
-	});
-	chart.dispatch.on("renderUpdate.wdPropertyWidget", function() {
-		chart.root().select('div').remove();
-		chart.root().call(bs.box().title(title)
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(body)
-		);
 	});
 	return chart;
 }
 widget.memSwap = function() {
-	var chart = wdBaseWidget(),body = wd.chart.memBar(), title = '';
+	var chart = wdBaseWidget(),body = wd.chart.memBar();
+	chart.box().body(body);
 	chart.dispatch.on("dataUpdate.wdMemSwapWidget", function() {
 		body.data(chart.data().body);
-		title = chart.data().title;
-	});
-	chart.dispatch.on("renderUpdate.wdMemSwapWidget", function() {
-		chart.root().select('div').remove();
-		chart.root().call(bs.box().title(title)
-			.tool({action:'collapse', icon:'fa fa-minus'})
-			.body(body)
-		);
 	});
 	return chart;
 }
 widget.gfxRessource = function() {
-	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxLegend(), footer = wd.chart.timeline();
+	var chart = wdBaseWidget(),body = wd.chart.gfx(), legend = wd.chart.gfxLegend(), footer = wd.chart.timeline();
+	chart.box().body(body).tool(legend).footer(footer);
 	body.legend(legend);body.timeline(footer);footer.legend(legend);
 	chart.dispatch.on("dataUpdate.wdRessourceGfxWidget", function() {
 		legend.data(chart.data().cols);
 		body.data(chart.data().data);
 		footer.data(chart.data().data);
-		title = chart.data().src.obj_name+' - '+chart.data().src.res_name;
-	});
-	chart.dispatch.on("renderUpdate.wdRessourceGfxWidget", function() {
-		chart.root().select('div').remove();
-		chart.root().call(bs.box().title(title)
-			.tool(legend)
-			.body(body)
-			.footer(footer)
-		);
+		chart.box().title(chart.data().src.obj_name+' - '+chart.data().src.res_name);
 	});
 	return chart;
 }
@@ -171,22 +129,20 @@ widget.gfxAvailability = function() {
 	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxAvailLegend();
 	body.legend(legend);
 	body.areaSet('',true);
+	chart.box().body(body).tool(legend);
 	chart.title = function(_) {if (!arguments.length) return title;title=_;return chart;}
 	chart.dispatch.on("dataUpdate.gfxAvailability", function() {
 		body.data(chart.data());
 	});
 	chart.dispatch.on("renderUpdate.gfxAvailability", function() {
-		chart.root().select('div').remove();
-		chart.root().call(bs.box().title(title)
-			.tool(legend)
-			.body(body)
-		);
+		chart.box().title(title);
 	});
 	return chart;
 }
 widget.gfxEvent = function() {
 	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxLegend();
 	body.legend(legend);
+	chart.box().body(body).tool(legend);
 	chart.title = function(_) {if (!arguments.length) return title;title=_;return chart;}
 	chart.prop = function(_) {if (!arguments.length) return legend.prop(); legend.prop(_);return chart;}
 	chart.dispatch.on("dataUpdate.gfxEvent", function() {
@@ -194,11 +150,7 @@ widget.gfxEvent = function() {
 		body.data(chart.data().data);
 	});
 	chart.dispatch.on("renderUpdate.gfxEvent", function() {
-		chart.root().select('div').remove();
-		chart.root().call(bs.box().title(title)
-			.tool(legend)
-			.body(body)
-		);
+		chart.box().title(title);
 	});
 	return chart;
 }

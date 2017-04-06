@@ -14,12 +14,13 @@ d3.select('section.content').call(
 	).item(bs.row()
 		.cell('col-xs-6 col-md-4 col-lg-2', widget.progress().source("{{ path_for('widgets.progress.host.cpu',  { 'id': host.id }) }}"))
 		.cell('col-xs-6 col-md-4 col-lg-2', widget.memSwap().source("{{ path_for('widgets.custom.host.memory',{'id': host.id }) }}"))
-		.cell('col-xs-6 col-md-4 col-lg-3', widget.progress().source("{{ path_for('widgets.progress.host.storage',  { 'id': host.id }) }}"))
+		.cell('col-xs-6 col-md-4 col-lg-2', widget.progress().source("{{ path_for('widgets.progress.host.storage',  { 'id': host.id }) }}"))
+		.cell('col-xs-6 col-md-4 col-lg-2', widget.progress().source("{{ path_for('widgets.progress.host.diskstat',    { 'id': host.id }) }}"))
+		.cell('col-xs-6 col-md-4 col-lg-2', widget.progress().source("{{ path_for('widgets.progress.host.netstat',    { 'id': host.id }) }}"))
+		.cell('col-xs-6 col-md-4 col-lg-2', widget.list().source("{{ path_for('widgets.list.host.ressources',    { 'id': host.id }) }}"))
+	).item(bs.row()
 		.cell('col-xs-6 col-md-4 col-lg-2', widget.list().source("{{ path_for('widgets.list.host.services',  { 'id': host.id }) }}"))
 		.cell('col-md-3 col-lg-3', widget.donut().source("{{ path_for('widgets.donut.host.services',  { 'id': host.id }) }}"))
-	).item(bs.row()
-		.cell('col-xs-6 col-md-4 col-lg-2', widget.list().source("{{ path_for('widgets.list.host.stats',         { 'id': host.id }) }}"))
-		.cell('col-xs-6 col-md-4 col-lg-2', widget.list().source("{{ path_for('widgets.list.host.ressources',    { 'id': host.id }) }}"))
 ));
 </script>
 {% endblock %}

@@ -325,6 +325,76 @@ group by t.id');
 		return $ret;
 	}
 
+	private function getDiskStat($id) {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['title'] = $_('Disk statistics');
+		$ret['body'] = [];
+		$s6 = $this->db->prepare('select ar.host_id, ar.res_id, r.name res_name, u.rtime*100/cu.delta pct_read, u.wtime*100/cu.delta pct_write
+  from c$ressources r, h$ressources ar, d$disk_stats u,
+	(select d.host_id, d.res_id, max(d.timestamp) as tmu, m.ts, m.ts-max(d.timestamp) as delta from d$disk_stats d, (select host_id, res_id, max(timestamp) as ts from d$disk_stats group by host_id, res_id) m
+ where d.host_id=m.host_id and d.res_id=m.res_id and d.timestamp<m.ts
+ group by host_id, res_id) cu
+ where r.data_type= "disk_stats"
+   and ar.res_id  = r.id
+   and cu.host_id = ar.host_id
+   and cu.res_id  = r.id
+   and cu.host_id = u.host_id
+   and cu.res_id  = u.res_id
+   and u.timestamp= cu.ts
+   and ar.host_id = :id');
+		$s6->bindParam(':id', $id, PDO::PARAM_INT);
+		$s6->execute();
+		while($r = $s6->fetch()) {
+			$ret['body'][] = array(
+				'title'	=> urldecode(substr($r['res_name'], 10)),
+				'url'	=> $this->router->pathFor('ressource', [ 'aid' => $r['host_id'], 'rid' => $r['res_id']]),
+				'items'	=> array(
+					array(	'pct'	=> floatval($r['pct_read']),
+						'class'	=> 'progress-bar-blue'
+					),
+					array(	'pct'	=> floatval($r['pct_write']),
+						'class'	=> 'progress-bar-red'
+					)
+			));
+		}
+		return $ret;
+	}
+
+	private function getNetStat($id) {
+		$_ = $this->trans;
+		$ret = [];
+		$ret['title'] = $_('Network statistics');
+		$ret['body'] = [];
+		$s6 = $this->db->prepare('select ar.host_id, ar.res_id, r.name as res_name, u.rbytes*100/m.total rbytes, u.tbytes*100/m.total tbytes
+  from c$ressources r, h$ressources ar, d$network_stat u,
+	(select host_id, res_id, max(timestamp) as ts, max(rbytes+tbytes) total from d$network_stat group by host_id, res_id) m
+ where r.data_type = "network_stat"
+   and ar.res_id   = r.id
+   and ar.host_id  = m.host_id
+   and ar.res_id   = m.res_id
+   and ar.host_id  = u.host_id
+   and ar.res_id   = u.res_id
+   and u.timestamp = m.ts
+   and ar.host_id  = :id');
+		$s6->bindParam(':id', $id, PDO::PARAM_INT);
+		$s6->execute();
+		while($r = $s6->fetch()) {
+			$ret['body'][] = array(
+				'title'	=> urldecode(substr($r['res_name'], 7)),
+				'url'	=> $this->router->pathFor('ressource', [ 'aid' => $r['host_id'], 'rid' => $r['res_id']]),
+				'items'	=> array(
+					array(	'pct'	=> floatval($r['rbytes']),
+						'class'	=> 'progress-bar-blue'
+					),
+					array(	'pct'	=> floatval($r['tbytes']),
+						'class'	=> 'progress-bar-red'
+					)
+			));
+		}
+		return $ret;
+	}
+
 	private function getCPUusage($id) {
 		$_ = $this->trans;
 		$ret = [];
@@ -402,27 +472,6 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 		return $ret;
 	}
 
-	private function getStats($id) {
-		$_ = $this->trans;
-		$ret = [];
-		$ret['title'] = $_('Statistics');
-		$ret['body'] = [];
-		$s9 = $this->db->prepare('select r.name, ar.host_id, ar.res_id
-  from c$ressources r, h$ressources ar
- where r.data_type like "%stat%"
-   and ar.res_id=r.id
-   and ar.host_id=:id');
-		$s9->bindParam(':id', $id, PDO::PARAM_INT);
-		$s9->execute();
-		while($r = $s9->fetch()) {
-			$ret['body'][] = array(
-				'text'	=> $r['name'],
-				'url'	=> $this->router->pathFor('ressource', [ 'aid' => $r['host_id'], 'rid' => $r['res_id']])
-			);
-		}
-		return $ret;
-	}
-
 	private function getOtherRessources($id) {
 		$_ = $this->trans;
 		$ret = [];
@@ -430,8 +479,7 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 		$ret['body'] = [];
 		$s10 = $this->db->prepare('select r.name, ar.host_id, ar.res_id
   from c$ressources r, h$ressources ar
- where r.data_type not in ("disk_usage", "cpu_usage", "memory_usage", "swap_usage")
-   and r.data_type not like "%stat%"
+ where r.data_type not in ("disk_usage", "cpu_usage", "memory_usage", "swap_usage", "disk_stats", "network_stat")
    and ar.res_id=r.id
    and ar.host_id=:id');
 		$s10->bindParam(':id', $id, PDO::PARAM_INT);
@@ -557,14 +605,6 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 		$response->getBody()->write(json_encode($this->getServices($id)));
 		return $response->withHeader('Content-type', 'application/json');
 	}
-	public function widgetListStats(Request $request, Response $response) {
-		$id = $request->getAttribute('id');
-		if ($this->getHost($id) == false)
-			throw new Slim\Exception\NotFoundException($request, $response);
-		$this->auth->assertHost($id, $request, $response);
-		$response->getBody()->write(json_encode($this->getStats($id)));
-		return $response->withHeader('Content-type', 'application/json');
-	}
 	public function widgetListRessources(Request $request, Response $response) {
 		$id = $request->getAttribute('id');
 		if ($this->getHost($id) == false)
@@ -587,6 +627,22 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 			throw new Slim\Exception\NotFoundException($request, $response);
 		$this->auth->assertHost($id, $request, $response);
 		$response->getBody()->write(json_encode($this->getStorageStatus($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetProgressDiskStat(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getDiskStat($id)));
+		return $response->withHeader('Content-type', 'application/json');
+	}
+	public function widgetProgressNetStat(Request $request, Response $response) {
+		$id = $request->getAttribute('id');
+		if ($this->getHost($id) == false)
+			throw new Slim\Exception\NotFoundException($request, $response);
+		$this->auth->assertHost($id, $request, $response);
+		$response->getBody()->write(json_encode($this->getNetStat($id)));
 		return $response->withHeader('Content-type', 'application/json');
 	}
 	public function widgetMemSwap(Request $request, Response $response) {

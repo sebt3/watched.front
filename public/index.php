@@ -238,7 +238,6 @@ $app->group('/widgets', function () use ($app) {
 	$app->group('/list', function () use ($app) {
 		$app->group('/host', function () use ($app) {
 			$app->get('/{id:[0-9]+}/services', '\Host:widgetListServices')->setName('widgets.list.host.services');
-			$app->get('/{id:[0-9]+}/stats', '\Host:widgetListStats')->setName('widgets.list.host.stats');
 			$app->get('/{id:[0-9]+}/ressources', '\Host:widgetListRessources')->setName('widgets.list.host.ressources');
 		});
 		$app->group('/serv', function () use ($app) {
@@ -246,10 +245,12 @@ $app->group('/widgets', function () use ($app) {
 
 		});
 	});
-	$app->group('/progess', function () use ($app) {
+	$app->group('/progress', function () use ($app) {
 		$app->group('/host', function () use ($app) {
 			$app->get('/{id:[0-9]+}/cpu', '\Host:widgetProgressCpu')->setName('widgets.progress.host.cpu');
 			$app->get('/{id:[0-9]+}/storage', '\Host:widgetProgressStorage')->setName('widgets.progress.host.storage');
+			$app->get('/{id:[0-9]+}/diskstat', '\Host:widgetProgressDiskStat')->setName('widgets.progress.host.diskstat');
+			$app->get('/{id:[0-9]+}/netstat', '\Host:widgetProgressNetStat')->setName('widgets.progress.host.netstat');
 		});
 	});
 	$app->group('/property', function () use ($app) {
