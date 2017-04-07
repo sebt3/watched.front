@@ -27,6 +27,27 @@ function wdBaseWidget() {
 		}
 	}
 	chart.box	= function() {return box;}
+	chart.body	= function(t) {
+		if (arguments.length) {
+			box.body(t);
+			return chart;
+		}
+		return box.body();
+	}
+	chart.footer	= function(t) {
+		if (arguments.length) {
+			box.footer(t);
+			return chart;
+		}
+		return box.footer();
+	}
+	chart.title	= function(t) {
+		if (arguments.length) {
+			box.title(t);
+			return chart;
+		}
+		return box.title();
+	}
 	chart.root	= function(_) {
 		if (arguments.length) {
 			root = _;
@@ -41,8 +62,10 @@ function wdBaseWidget() {
 		data = _;
 		ready=true;
 		chart.dispatch.call("dataUpdate");
-		if (data.title != 'undefined')
-			box.title(data.title).tool({action:'collapse', icon:'fa fa-minus'});
+		if (typeof data.title != 'undefined') {
+			box.title(data.title);
+			box.tool({action:'collapse', icon:'fa fa-minus'});
+		}
 		if (called) {
 			chart.dispatch.call("renderUpdate");
 			box.update();
@@ -59,57 +82,50 @@ function wdBaseWidget() {
 	return chart;
 }
 widget.table = function() {
-	var chart = wdBaseWidget(),body = wd.chart.table();
-	chart.box().body(body);
+	var chart = wdBaseWidget();	chart.body(wd.chart.table());
 	chart.dispatch.on("dataUpdate.wdTableWidget", function() { 
-		body.body(chart.data().body);
-		body.heads(chart.data().cols);
+		chart.body().body(chart.data().body);
+		chart.body().heads(chart.data().cols);
 	});
 	return chart;
 }
 widget.donut  = function() {
-	var chart = wdBaseWidget(),body = wd.chart.donut(), footer = bs.pills();
-	chart.box().body(body);
+	var chart = wdBaseWidget();	chart.body(wd.chart.donut());
 	chart.dispatch.on("dataUpdate.wdDonutWidget", function() { 
-		body.data(chart.data().body);
+		chart.body().data(chart.data().body);
 		if (typeof chart.data().footer != 'undefined'  && chart.data().footer.length>0) {
-			footer.data(chart.data().footer);
-			chart.box().footer(footer);
+			chart.footer(bs.pills().data(chart.data().footer));
 		}
 	});
 	return chart;
 }
 widget.list = function() {
-	var chart = wdBaseWidget(),body = bs.list(), title = '';
-	chart.box().body(body);
+	var chart = wdBaseWidget();	chart.body(bs.list());
 	chart.dispatch.on("dataUpdate.wdListWidget", function() { 
-		body.data(chart.data().body);
+		chart.body().data(chart.data().body);
 	});
 	return chart;
 }
 widget.progress = function() {
-	var chart = wdBaseWidget(),body = bs.list();
-	chart.box().body(body);
+	var chart = wdBaseWidget();	chart.body(bs.list());
 	chart.dispatch.on("dataUpdate.wdProgessListWidget", function() {
 		chart.data().body.forEach(function (d) {
-			body.add(bs.progress().title(d.title).url(d.url).data(d.items))
+			chart.body().add(bs.progress().title(d.title).url(d.url).data(d.items));
 		});
 	});
 	return chart;
 }
 widget.properties = function() {
-	var chart = wdBaseWidget(),body = bs.descTable();
-	chart.box().body(body);
+	var chart = wdBaseWidget();	chart.body(bs.descTable());
 	chart.dispatch.on("dataUpdate.wdPropertyWidget", function() { 
-		body.data(chart.data().body);
+		chart.body().data(chart.data().body);
 	});
 	return chart;
 }
 widget.memSwap = function() {
-	var chart = wdBaseWidget(),body = wd.chart.memBar();
-	chart.box().body(body);
+	var chart = wdBaseWidget();	chart.box().body(wd.chart.memBar());
 	chart.dispatch.on("dataUpdate.wdMemSwapWidget", function() {
-		body.data(chart.data().body);
+		chart.body().data(chart.data().body);
 	});
 	return chart;
 }
@@ -126,31 +142,24 @@ widget.gfxRessource = function() {
 	return chart;
 }
 widget.gfxAvailability = function() {
-	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxAvailLegend();
+	var chart = wdBaseWidget(),body = wd.chart.gfx(), legend = wd.chart.gfxAvailLegend();
 	body.legend(legend);
 	body.areaSet('',true);
 	chart.box().body(body).tool(legend);
-	chart.title = function(_) {if (!arguments.length) return title;title=_;return chart;}
 	chart.dispatch.on("dataUpdate.gfxAvailability", function() {
 		body.data(chart.data());
-	});
-	chart.dispatch.on("renderUpdate.gfxAvailability", function() {
-		chart.box().title(title);
 	});
 	return chart;
 }
 widget.gfxEvent = function() {
-	var chart = wdBaseWidget(),body = wd.chart.gfx(), title = '', legend = wd.chart.gfxLegend();
+	var chart = wdBaseWidget(),body = wd.chart.gfx(), legend = wd.chart.gfxLegend();
 	body.legend(legend);
 	chart.box().body(body).tool(legend);
-	chart.title = function(_) {if (!arguments.length) return title;title=_;return chart;}
 	chart.prop = function(_) {if (!arguments.length) return legend.prop(); legend.prop(_);return chart;}
+	chart.legend = function(_) {if (!arguments.length) return legend; legend = _;return chart;}
 	chart.dispatch.on("dataUpdate.gfxEvent", function() {
 		legend.data(chart.data().cols);
 		body.data(chart.data().data);
-	});
-	chart.dispatch.on("renderUpdate.gfxEvent", function() {
-		chart.box().title(title);
 	});
 	return chart;
 }
