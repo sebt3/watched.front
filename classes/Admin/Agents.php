@@ -150,5 +150,3 @@ order by central_id desc, host asc, port asc');
 		}
 	}
 }
-
-?>

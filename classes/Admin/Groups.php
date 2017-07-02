@@ -427,7 +427,3 @@ order by name asc');
 	}
 
 }
-
-?>
-
-

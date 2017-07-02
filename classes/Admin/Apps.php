@@ -459,6 +459,3 @@ order by name asc');
 	}
 
 }
-
-?>
-

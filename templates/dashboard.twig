@@ -6,6 +6,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(
 	bs.union().item(bs.row()
 		.cell('col-md-4', widget.donut().source("{{ path_for('widgets.donut.dash.status') }}"))
@@ -19,5 +20,6 @@ d3.select('section.content').call(
 		.cell('col-md-12 col-lg-5', widget.table().source("{{ path_for('widgets.table.dash.failed') }}"))
 {% endif %}
 ));
+});
 </script>
 {% endblock %}

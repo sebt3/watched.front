@@ -89,9 +89,9 @@ wd.chart.gfxLegend = function() {
 			.attr('style',function (d) { return 'color:'+chart.color()(d)})
 			.attr('id', function (d) { return 'select_'+d})
 			.on('change', function(d,i){chart.dispatch.call("select",this,chart.data()[i],chart.root().select('#select_'+chart.data()[i]).node().value)})
-		s.append('option').text('Min');
-		s.append('option').text('Avg').attr('selected','true');
-		s.append('option').text('Max');
+		s.append('option').text(wd.lang.tr('Min'));
+		s.append('option').text(wd.lang.tr('Avg')).attr('selected','true');
+		s.append('option').text(wd.lang.tr('Max'));
 		g.append('div').attr('class', 'item').append('b')
 			.attr('style',function (d) { return 'color:'+chart.color()(d)})
 			.html(function(d){return d})
@@ -193,7 +193,7 @@ wd.chart.timeline = function() {
 		svg.select('.brush').call(brush.move, r);
 	}
 	chart.xAxisLine	= function(g) {
-		g.call(d3.axisBottom(chart.xAxis).tickFormat(wd.format.date));
+		g.call(d3.axisBottom(chart.xAxis).tickFormat(wd.format.dateAxe));
 		g.select(".domain").remove();
 		g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1.5px");
 	}

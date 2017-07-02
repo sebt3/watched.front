@@ -7,10 +7,6 @@ use \PDO as PDO;
 
 // TODO: support for login attempt count
 
-//throw new Slim\Exception\MethodNotAllowedException($request, $response, array());
-//return $response->withStatus(405);
-//throw new Slim\Exception\NotFoundException($request, $response);
-
 if (!function_exists('random_bytes')) {
 	function random_bytes($bytes) {
 		if (function_exists('mcrypt_create_iv') && version_compare(PHP_VERSION, '5.3.7') >= 0) {
@@ -176,6 +172,17 @@ class AuthContainer extends \core {
 		$s->bindParam(':id', $this->user_id, PDO::PARAM_INT);
 		$s->bindParam(':pass', password_hash($pass, PASSWORD_DEFAULT), PDO::PARAM_STR);
 		$s->execute();
+	}
+
+	public function checkPassword($pass) {
+		if (!$this->authenticated())
+			return false;
+		$s = $this->db->prepare('select passhash from users where id = :id');
+		$s->bindParam(':id', $this->user_id, PDO::PARAM_INT);
+		$s->execute();
+		if( !($r = $s->fetch()) )
+			return false;
+		return password_verify($pass, $r['passhash']);
 	}
 
 	public function authenticate($login, $pass) {
@@ -351,6 +358,3 @@ class AuthContainer extends \core {
  		return $response->withRedirect($this->router->pathFor('home'));
 	}
 }
-
-?>
-

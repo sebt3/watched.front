@@ -96,4 +96,3 @@ class MenuObject extends \core {
 			array_unshift($this->domains, array('name' => 'unset', 'hosts' => $lst));
 	}
 }
-?>

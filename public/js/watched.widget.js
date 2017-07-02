@@ -131,6 +131,7 @@ widget.memSwap = function() {
 }
 widget.gfxRessource = function() {
 	var chart = wdBaseWidget(),body = wd.chart.gfx(), legend = wd.chart.gfxLegend(), footer = wd.chart.timeline();
+	chart.legend = function(_) {if (!arguments.length) return legend; legend = _;return chart;}
 	chart.box().body(body).tool(legend).footer(footer);
 	body.legend(legend);body.timeline(footer);footer.legend(legend);
 	chart.dispatch.on("dataUpdate.wdRessourceGfxWidget", function() {
@@ -143,6 +144,7 @@ widget.gfxRessource = function() {
 }
 widget.gfxAvailability = function() {
 	var chart = wdBaseWidget(),body = wd.chart.gfx(), legend = wd.chart.gfxAvailLegend();
+	chart.legend = function(_) {if (!arguments.length) return legend; legend = _;return chart;}
 	body.legend(legend);
 	body.areaSet('',true);
 	chart.box().body(body).tool(legend);
@@ -153,10 +155,10 @@ widget.gfxAvailability = function() {
 }
 widget.gfxEvent = function() {
 	var chart = wdBaseWidget(),body = wd.chart.gfx(), legend = wd.chart.gfxLegend();
+	chart.legend = function(_) {if (!arguments.length) return legend; legend = _;return chart;}
+	chart.prop = function(_) {if (!arguments.length) return legend.prop(); legend.prop(_);return chart;}
 	body.legend(legend);
 	chart.box().body(body).tool(legend);
-	chart.prop = function(_) {if (!arguments.length) return legend.prop(); legend.prop(_);return chart;}
-	chart.legend = function(_) {if (!arguments.length) return legend; legend = _;return chart;}
 	chart.dispatch.on("dataUpdate.gfxEvent", function() {
 		legend.data(chart.data().cols);
 		body.data(chart.data().data);

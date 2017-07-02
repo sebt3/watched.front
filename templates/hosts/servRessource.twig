@@ -6,6 +6,8 @@
 {% endblock %}
 {% block scripts %}
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').append('div').call(widget.gfxRessource().source("{{ path_for('widgets.gfx.serv',  { 'serv_id': service.id, 'res_id': res.id }) }}"));
+});
 </script>
 {% endblock %}

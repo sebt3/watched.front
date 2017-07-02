@@ -96,6 +96,3 @@ class Clean extends \CorePage {
 		}
 	}
 }
-
-?>
-

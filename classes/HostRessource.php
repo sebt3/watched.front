@@ -223,5 +223,3 @@ select et.name, et.id, count(e.id) as cnt
 		]);
 	}
 }
-
-?>

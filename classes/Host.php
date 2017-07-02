@@ -694,5 +694,3 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 		return $this->view->render($response, 'hosts/ressources.twig', [ 'host' => $host, 'ressources' => $this->getAllRessources($id) ]);
 	}
 }
-
-?>

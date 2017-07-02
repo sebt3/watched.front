@@ -15,9 +15,13 @@
 	
 	factory(global.wd = global.wd || {}, d3, global);
 })(this, (function(wd, d3, global) {
-wd.format = wd.format || {}
-wd.componant = wd.componant || {}
-wd.chart = wd.chart || {}
+	var lang = 'en-US';
+	var langArray = {};
+
+wd.format	= wd.format	|| {};
+wd.componant	= wd.componant	|| {};
+wd.chart	= wd.chart	|| {};
+wd.lang		= wd.lang	|| {};
 
 d3.dispatch.prototype.register = function() {
 	for (var i = 0, n = arguments.length, _ = {}, t; i < n; ++i) {
@@ -27,7 +31,7 @@ d3.dispatch.prototype.register = function() {
 }
 /////////////////////////////////////////////////////////////////////////////////////////////
 // watched Common Component
-wd.format.date		= function(date) {
+wd.format.dateAxe	= function(date) {
 	var	locale = d3.timeFormatLocale({
 			"dateTime": "%A, le %e %B %Y, %X",
 			"date": "%Y-%m-%d",
@@ -53,7 +57,34 @@ wd.format.date		= function(date) {
 		: d3.timeYear(date) < date ? formatMonth
 		: formatYear)(date);
 }
-wd.format.number	= bs.api.format.number
+wd.format.date		= function(date) {
+	var	locale = d3.timeFormatLocale({
+			"dateTime": "%A, le %e %B %Y, %X",
+			"date": "%Y-%m-%d",
+			"time": "%H:%M",
+			"periods": ["AM", "PM"],
+			"days": ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"],
+			"shortDays": ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."],
+			"months": ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"],
+			"shortMonths": ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
+		});
+	return locale.format("%x %X")(date);
+}
+wd.format.number	= bs.api.format.number;
+wd.dispatch		= d3.dispatch('ready');
+wd.lang.set		= function(l, f) {
+	lang=l;
+	d3.json(f, function(results) { langArray = results; wd.dispatch.call('ready');})
+}
+wd.lang.tr		= function(txt) {
+	if (typeof txt !== 'string')
+		return '';
+	if(typeof langArray !== 'object')
+		return txt;
+	if(typeof langArray[txt] === 'string')
+		return langArray[txt];
+	return txt;
+}
 wd.componant.base	= function() {
 	var	data	= [],
 		called	= false,
@@ -172,7 +203,7 @@ wd.componant.axed	= function(pClass, pW, pH) {
 wd.componant.axes	= function(pClass, pW, pH) {
 	var	chart	= (typeof pClass!="undefined"&&pClass!=null)?pClass:wd.componant.axed(null, pW, pH);
 	chart.xAxisLine		= function(g) {
-		g.call(d3.axisBottom(chart.xAxis).tickFormat(wd.format.date));
+		g.call(d3.axisBottom(chart.xAxis).tickFormat(wd.format.dateAxe));
 		g.select(".domain").remove();
 		g.selectAll(".tick line").attr("stroke", "lightgrey").style("stroke-width", "1.5px");
 	}

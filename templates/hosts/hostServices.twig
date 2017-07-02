@@ -6,6 +6,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(bs.row()
 	{% for a in services %}
 	.cell('col-md-6',bs.box().title("{{ a.name }}").body(bs.row()
@@ -20,5 +21,6 @@ d3.select('section.content').call(bs.row()
 	)))
 	{% endfor %}
 );
+});
 </script>
 {% endblock %}

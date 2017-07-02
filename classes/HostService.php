@@ -320,5 +320,3 @@ class HostService extends CorePage {
 		]);
 	}
 }
-
-?>

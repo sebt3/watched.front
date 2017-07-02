@@ -6,6 +6,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(
 	bs.union().item(bs.row()
 		.cell('col-md-3', widget.donut().source("{{ path_for('widgets.donut.host.status',  { 'id': host.id }) }}"))
@@ -21,6 +22,8 @@ d3.select('section.content').call(
 	).item(bs.row()
 		.cell('col-xs-6 col-md-4 col-lg-2', widget.list().source("{{ path_for('widgets.list.host.services',  { 'id': host.id }) }}"))
 		.cell('col-md-3 col-lg-3', widget.donut().source("{{ path_for('widgets.donut.host.services',  { 'id': host.id }) }}"))
+
 ));
+});
 </script>
 {% endblock %}

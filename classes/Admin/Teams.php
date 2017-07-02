@@ -155,5 +155,3 @@ order by superadmin desc, hosts desc, services desc, name asc');
 		}
 	}
 }
-
-?>

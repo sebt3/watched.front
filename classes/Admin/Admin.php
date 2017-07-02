@@ -78,6 +78,3 @@ class Admin extends \CorePage {
 		]);
 	}
 }
-
-?>
-

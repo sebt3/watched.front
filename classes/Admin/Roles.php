@@ -134,5 +134,3 @@ order by name asc');
 		}
 	}
 }
-
-?>

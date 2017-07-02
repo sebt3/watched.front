@@ -412,5 +412,3 @@ class Users extends \CorePage {
 	}
 
 }
-
-?>

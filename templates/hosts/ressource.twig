@@ -6,6 +6,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+wd.dispatch.on('ready', function() {
 {% if monit %}
 d3.select('section.content').call(bs.row()
 	.cell('col-md-3', widget.donut().source("{{ path_for('widgets.donut.ress.status',  { 'host_id': a.id, 'res_id': r.id }) }}"))
@@ -13,5 +14,6 @@ d3.select('section.content').call(bs.row()
 	.cell('col-md-3', widget.donut().source("{{ path_for('widgets.donut.ress.items',  { 'host_id': a.id, 'res_id': r.id }) }}")));
 {% endif %}
 d3.select('section.content').append('div').call(widget.gfxRessource().source("{{ path_for('widgets.gfx.host',  { 'host_id': a.id, 'res_id': r.id }) }}"));
+});
 </script>
 {% endblock %}

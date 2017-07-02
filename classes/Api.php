@@ -363,5 +363,3 @@ from '.$src['data_table'].' d where d.'.$src['drive'].'=:obj_id and d.res_id=:re
 		return $response->withHeader('Content-type', 'application/json');
 	}
 }
-
-?>

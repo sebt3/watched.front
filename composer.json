@@ -10,7 +10,8 @@
         "almasaeed2010/AdminLTE": "^2.3",
         "fortawesome/font-awesome": "^4.7",
         "driftyco/ionicons": "^2.0",
-        "sebt3/d3-bootstrap": "dev-master"
+        "sebt3/d3-bootstrap": "dev-master",
+        "dflydev/fig-cookies": "^1.0"
     },
     "scripts": {
 	"post-update-cmd": [

@@ -119,5 +119,3 @@ order by et.id asc,e.start_time asc');
 		return $this->view->render($response, 'events/event.twig', [ 'e' => $event, 'prop' => $this->getEventProperty($event) ]);
 	}
 }
-
-?>

@@ -426,6 +426,3 @@ order by name asc');
 	}
 
 }
-
-?>
-

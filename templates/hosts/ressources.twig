@@ -6,6 +6,8 @@
 {% endblock %}
 {% block scripts %}
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(widget.table().data({{ json(ressources) }}));
+});
 </script>
 {% endblock %}

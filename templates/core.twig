@@ -89,7 +89,12 @@
 
 <script src="/vendor/js/d3.v4.min.js"></script>
 <script src="/vendor/js/d3-bootstrap-all.min.js"></script>
-<script src="/js/dist/watched.min.js"></script> <!-- ->
+<script src="/js/dist/watched.min.js"></script>
+<script>
+base= "{{ base }}";
+wd.lang.set('{{ lang }}', '/langs/{{ lang }}.json');
+</script>
+<!-- ->
 <script src="/js/watched.js"></script>
 <script src="/js/watched.bar.js"></script>
 <script src="/js/watched.donut.js"></script>

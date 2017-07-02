@@ -258,5 +258,3 @@ group by t.id');
  		return $this->view->render($response, 'dashboard.twig', []);
 	}
 }
-
-?>
