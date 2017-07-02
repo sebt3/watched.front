@@ -25,6 +25,7 @@ class Tables extends \CorePage {
 	}
 
 	private function getSizes($data_type) {
+		$_ = $this->trans;
 		$results = [];
 		$s = $this->db->prepare('select * from c$data_sizes where data_type=:dt');
 		$s->bindParam(':dt', $data_type,  PDO::PARAM_STR);
@@ -33,22 +34,22 @@ class Tables extends \CorePage {
 		foreach ($row as $key => $value) {
 			if ($value==null || $key=='data_type') continue;
 			switch ($key) {
-			case 'total_size':	$name='Total size (MB)';break;
-			case 'data_size':	$name='Details size (MB)';break;
-			case 'min_size':	$name='Minuts aggregate size (MB)';break;
-			case 'hour_size':	$name='Hours aggregate size (MB)';break;
-			case 'day_size':	$name='Days aggregate size (MB)';break;
-			case 'host_card':	$name='Host cardinality';break;
-			case 'serv_card':	$name='Service cardinality';break;
-			case 'res_card':	$name='Ressource cardinality';break;
-			case 'data_rows':	$name='Details rows count';break;
-			case 'min_rows':	$name='Minuts aggregate rows count';break;
-			case 'hour_rows':	$name='Hours aggregate rows count';break;
-			case 'days_rows':	$name='Days aggregate rows count';break;
-			case 'data_avg':	$name='Average details row size';break;
-			case 'min_avg':		$name='Average minuts aggregate row size';break;
-			case 'hour_avg':	$name='Average hours aggregate row size';break;
-			case 'days_avg':	$name='Average days aggregate row size';break;
+			case 'total_size':	$name=$_('Total size (MB)');break;
+			case 'data_size':	$name=$_('Details size (MB)');break;
+			case 'min_size':	$name=$_('Minuts aggregate size (MB)');break;
+			case 'hour_size':	$name=$_('Hours aggregate size (MB)');break;
+			case 'day_size':	$name=$_('Days aggregate size (MB)');break;
+			case 'host_card':	$name=$_('Host cardinality');break;
+			case 'serv_card':	$name=$_('Service cardinality');break;
+			case 'res_card':	$name=$_('Ressource cardinality');break;
+			case 'data_rows':	$name=$_('Details rows count');break;
+			case 'min_rows':	$name=$_('Minuts aggregate rows count');break;
+			case 'hour_rows':	$name=$_('Hours aggregate rows count');break;
+			case 'days_rows':	$name=$_('Days aggregate rows count');break;
+			case 'data_avg':	$name=$_('Average details row size');break;
+			case 'min_avg':		$name=$_('Average minuts aggregate row size');break;
+			case 'hour_avg':	$name=$_('Average hours aggregate row size');break;
+			case 'days_avg':	$name=$_('Average days aggregate row size');break;
 			default: $name=$key;break;
 			}
 			$results[] = array('name' => $name, 'key' => $key, 'value' => floatval($value));
@@ -105,30 +106,33 @@ class Tables extends \CorePage {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function postConfig($request, $response, $args) {
+		$_ = $this->trans;
 		$data_type = $request->getAttribute('name');
 		if ($this->upsertConfig($data_type, $request->getParam('delay_am'), $request->getParam('delay_ah'), $request->getParam('delay_ad'), $request->getParam('retention_d'), $request->getParam('retention_am'), $request->getParam('retention_ah'), $request->getParam('retention_ad'))) {
-			$this->flash->addMessage('success', 'Configuration updated successfully');
+			$this->flash->addMessage('success', $_('Configuration updated successfully'));
 			return $response->withRedirect($this->router->pathFor('admin.tables.edit', array('name' => $data_type)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to update configuration');
+			$this->flash->addMessage('error', $_('Failed to update configuration'));
 			return $response->withRedirect($this->router->pathFor('admin.tables.edit', array('name' => $data_type)));
 		}
 	}
 	public function removeConfig($request, $response, $args) {
+		$_ = $this->trans;
 		$data_type = $request->getAttribute('name');
 		if ($this->deleteConfig($data_type)) {
-			$this->flash->addMessage('success', 'Configuration reverted to default successfully');
+			$this->flash->addMessage('success', $_('Configuration reverted to default successfully'));
 			return $response->withRedirect($this->router->pathFor('admin.tables.edit', array('name' => $data_type)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to update configuration');
+			$this->flash->addMessage('error', $_('Failed to update configuration'));
 			return $response->withRedirect($this->router->pathFor('admin.tables.edit', array('name' => $data_type)));
 		}
 	}
 	public function viewTable($request, $response, $args) {
+		$_ = $this->trans;
 		$data_type = $request->getAttribute('name');
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')),
-			array('name' => 'tables', 'icon' => 'fa fa-table', 'url' => $this->router->pathFor('admin.tables')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')),
+			array('name' => $_('tables'), 'icon' => 'fa fa-table', 'url' => $this->router->pathFor('admin.tables')),
 			array('name' => $data_type, 'url' => $this->router->pathFor('admin.tables.edit', array('name' => $data_type))),
 			); 
 		$this->menu->activateAdmin('Tables');
@@ -141,9 +145,10 @@ class Tables extends \CorePage {
 	}
 
 	public function listAll($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')),
-			array('name' => 'tables', 'icon' => 'fa fa-table', 'url' => $this->router->pathFor('admin.tables'))); 
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')),
+			array('name' => $_('tables'), 'icon' => 'fa fa-table', 'url' => $this->router->pathFor('admin.tables'))); 
 		$this->menu->activateAdmin('Tables');
 		return $this->view->render($response, 'admin/tablesList.twig', [ 
 			'tables'	=> $this->getAllTables()

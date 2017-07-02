@@ -13,14 +13,15 @@ class Agents extends \CorePage {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Model
 	private function getList() {
+		$_ = $this->trans;
 		$results = [];
 		$stmt = $this->db->query('select id, host, port, pool_freq, central_id, use_ssl from c$agents
 order by central_id desc, host asc, port asc');
 		while($row = $stmt->fetch()) {
 			if ($row['use_ssl']==1)
-				$row['ssl'] = 'yes';
+				$row['ssl'] = $_('yes');
 			else
-				$row['ssl'] = 'no';
+				$row['ssl'] = $_('no');
 			$results[] = $row;
 		}
 		return $results;
@@ -81,9 +82,10 @@ order by central_id desc, host asc, port asc');
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'agents', 'icon' => 'fa fa-id-badge', 'url' => $this->router->pathFor('admin.agents.list')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('agents'), 'icon' => 'fa fa-id-badge', 'url' => $this->router->pathFor('admin.agents.list')));
 		$this->menu->activateAdmin('Agents');
 		return $this->view->render($response, 'admin/agentList.twig', [ 
 			'agents'		=> $this->getList()
@@ -91,11 +93,12 @@ order by central_id desc, host asc, port asc');
 	}
 
 	public function agent($request, $response, $args) {
+		$_ = $this->trans;
 		$agent_id = $request->getAttribute('id');
 		$u = $this->getAgent($agent_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'agents', 'icon' => 'fa fa-id-badge', 'url' => $this->router->pathFor('admin.agents.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('agents'), 'icon' => 'fa fa-id-badge', 'url' => $this->router->pathFor('admin.agents.list')),
 			array('name' => $u['host'].':'.$u['port'], 'url' => $this->router->pathFor('admin.agents.change', array('id'=> $agent_id))));
 		$this->menu->activateAdmin('Agents');
 		return $this->view->render($response, 'admin/agentChange.twig', [
@@ -109,20 +112,22 @@ order by central_id desc, host asc, port asc');
 	}
 
 	public function add($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'agents', 'icon' => 'fa fa-id-badge', 'url' => $this->router->pathFor('admin.agents.list')),
-			array('name' => 'add', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.agents.add')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('agents'), 'icon' => 'fa fa-id-badge', 'url' => $this->router->pathFor('admin.agents.list')),
+			array('name' => $_('add'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.agents.add')));
 		$this->menu->activateAdmin('Agents');
 		return $this->view->render($response, 'admin/agentAdd.twig', $args);
 	}
 
 	public function addPost($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->addAgent($request->getParam('host'),$request->getParam('port'),$request->getParam('ssl'), $request->getParam('freq'), $request->getParam('central'))) {
-			$this->flash->addMessage('success', 'Agent added successfully.');
+			$this->flash->addMessage('success', $_('Agent added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.agents.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to add agent');
+			$this->flash->addMessageNow('warning', $_('Failed to add agent'));
 			return $this->add($request, $response, [
 				'name'  => $request->getParam('name')
 			]);
@@ -130,22 +135,24 @@ order by central_id desc, host asc, port asc');
 	}
 
 	public function change($request, $response, $args) {
+		$_ = $this->trans;
 		$agent_id = $request->getAttribute('id');
 		if ($this->changeAgent($agent_id,$request->getParam('host'), $request->getParam('port'), $request->getParam('freq'), $request->getParam('central'), $request->getParam('ssl'))) {
-			$this->flash->addMessage('success', 'Agent updated successfully.');
+			$this->flash->addMessage('success', $_('Agent updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.agents.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to update agent');
+			$this->flash->addMessageNow('warning', $_('Failed to update agent'));
 			return $this->agent($request, $response, []);
 		}
 	}
 
 	public function del($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->delete($request->getAttribute('id'))) {
-			$this->flash->addMessage('success', 'Agent deleted successfully.');
+			$this->flash->addMessage('success', $_('Agent deleted successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.agents.list'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to delete agent');
+			$this->flash->addMessage('error', $_('Failed to delete agent'));
 			return $response->withRedirect($this->router->pathFor('admin.agents.list'));
 		}
 	}

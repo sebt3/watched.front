@@ -657,12 +657,13 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function Hosts (Request $request, Response $response) {
-		//$this->logger->addInfo("Host list");
-		$this->menu->breadcrumb = array( array('name' => 'Hosts', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')) );
+		$_ = $this->trans;
+		$this->menu->breadcrumb = array( array('name' => $_('Hosts'), 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')) );
 		return $this->view->render($response, 'hosts/hosts.twig', [ 'hosts' => $this->getList() ]);
 	}
 
 	public function Host (Request $request, Response $response) {
+		$_ = $this->trans;
 		$id = $request->getAttribute('id');
 		//$this->logger->addInfo("Host $id");
 		$host = $this->getHost($id);
@@ -672,7 +673,7 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 
 		$this->menu->activateHost($host['host']);
 		$this->menu->breadcrumb = array(
-			array('name' => 'hosts', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts') ), 
+			array('name' => $_('hosts'), 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts') ), 
 			array('name' => $host['host'], 'url' => $this->router->pathFor('host', array('id' => $id)) ));
 		return $this->view->render($response, 'hosts/host.twig', [ 
 			'host'		 => $host
@@ -680,6 +681,7 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 	}
 
 	public function ressources(Request $request, Response $response) {
+		$_ = $this->trans;
 		$id = $request->getAttribute('id');
 		$this->auth->assertHost($id, $request, $response);
 		//$this->logger->addInfo("Host $id");
@@ -688,9 +690,9 @@ select s.host_id, s.res_id, "swap" as name, s.used/1024 as used, s.free/1024 as 
 			throw new Slim\Exception\NotFoundException($request, $response);
 		$this->menu->activateHost($host['host']);
 		$this->menu->breadcrumb = array(
-			array('name' => 'hosts', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts') ), 
+			array('name' => $_('hosts'), 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts') ), 
 			array('name' => $host['host'], 'url' => $this->router->pathFor('host', array('id' => $id)) ), 
-			array('name' => 'resources', 'icon' => 'fa fa-area-chart', 'url' => $this->router->pathFor('ressources', array('id' => $id))) );
+			array('name' => $_('resources'), 'icon' => 'fa fa-area-chart', 'url' => $this->router->pathFor('ressources', array('id' => $id))) );
 		return $this->view->render($response, 'hosts/ressources.twig', [ 'host' => $host, 'ressources' => $this->getAllRessources($id) ]);
 	}
 }

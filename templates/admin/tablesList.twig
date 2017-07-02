@@ -7,6 +7,7 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(bs.box().body(wd.chart.table()
 		.col("{{ _('Table') }}")
 		.col("{{ _('Size') }}")
@@ -26,5 +27,6 @@ d3.select('section.content').call(bs.box().body(wd.chart.table()
 	actions: [ { icon:"fa fa-cogs", url: "{{ path_for('admin.tables.edit', { 'name': a.data_type }) }}" } ]
     }, {% endfor %}
   ])));
+});
 </script>
 {% endblock %}

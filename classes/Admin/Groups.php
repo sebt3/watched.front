@@ -68,6 +68,7 @@ order by name asc');
 
 ///////
 	private function getTeams($aid) {
+		$_ = $this->trans;
 		$results = [];
 		$s = $this->db->prepare('select d.role_id, r.name as role_name, d.team_id, t.name as team_name, d.alert 
   from p$groups d, p$teams t, p$roles r 
@@ -78,11 +79,11 @@ order by name asc');
 		$s->execute();
 		while($row = $s->fetch()) {
 			if ($row['alert']==1) {
-				$row['send']  = 'yes';
-				$row['type']  = 'alerting';
+				$row['send']  = $_('yes');
+				$row['type']  = $_('alerting');
 			} else {
-				$row['send']  = 'no';
-				$row['type']  = 'permission';
+				$row['send']  = $_('no');
+				$row['type']  = $_('permission');
 			}
 			$results[] = $row;
 		}
@@ -235,9 +236,10 @@ order by name asc');
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'groups', 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('groups'), 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')));
 		$this->menu->activateAdmin('Groups');
 		return $this->view->render($response, 'admin/groupList.twig', [ 
 			'groups'		=> $this->getList()
@@ -245,11 +247,12 @@ order by name asc');
 	}
 
 	public function group($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id = $request->getAttribute('id');
 		$u = $this->getGroup($group_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'groups', 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('groups'), 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.groups.change', array('id' => $group_id))));
 		$this->menu->activateAdmin('Groups');
 		return $this->view->render($response, 'admin/groupChange.twig', [
@@ -261,28 +264,30 @@ order by name asc');
 	}
 
 	public function add($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'groups', 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
-			array('name' => 'add', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.groups.add')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('groups'), 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
+			array('name' => $_('add'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.groups.add')));
 		$this->menu->activateAdmin('Groups');
 		return $this->view->render($response, 'admin/groupAdd.twig', $args);
 	}
 //////
 	public function addApp($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id = $request->getAttribute('id');
 		$u = $this->getGroup($group_id);
 		$hl = $this->getAvailableApps();
 		if (count($hl)==0) {
-			$this->flash->addMessage('warning', 'No available app to add.');
+			$this->flash->addMessage('warning', $_('No available app to add.'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.change', array('id' => $group_id)));
 
 		}
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'groups', 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('groups'), 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.groups.change', array('id' => $group_id))),
-			array('name' => 'app', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.groups.addApp', array('id' => $group_id))));
+			array('name' => $_('app'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.groups.addApp', array('id' => $group_id))));
 		$this->menu->activateAdmin('Groups');
 		return $this->view->render($response, 'admin/groupAddApp.twig', [
 				'group_id'	=> $group_id,
@@ -292,13 +297,14 @@ order by name asc');
 	}
 
 	public function addTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id = $request->getAttribute('id');
 		$u = $this->getGroup($group_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'groups', 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('groups'), 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.groups.change', array('id' => $group_id))),
-			array('name' => 'team', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.groups.addTeam', array('id' => $group_id))));
+			array('name' => $_('team'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.groups.addTeam', array('id' => $group_id))));
 		$this->menu->activateAdmin('Groups');
 		return $this->view->render($response, 'admin/groupAddTeam.twig', [
 				'group_id'	=> $group_id,
@@ -309,6 +315,7 @@ order by name asc');
 	}
 
 	public function team($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id	= $request->getAttribute('id');
 		$team_id	= $request->getAttribute('tid');
 		$team		= $this->getTeam($team_id);
@@ -317,10 +324,10 @@ order by name asc');
 		$alert		= $this->getAlert($group_id,$team_id, $role_id);
 		$u = $this->getGroup($group_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'groups', 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('groups'), 'icon' => 'fa fa-briefcase', 'url' => $this->router->pathFor('admin.groups.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.groups.change', array('id' => $group_id))),
-			array('name' => 'team', 'icon' => 'icon ion-person-stalker', 'url' => $this->router->pathFor('admin.groups.changeTeam', 
+			array('name' => $_('team'), 'icon' => 'icon ion-person-stalker', 'url' => $this->router->pathFor('admin.groups.changeTeam', 
 				array('id' => $group_id, 'tid' => $team_id, 'rid' => $role_id))
 			)
 		);
@@ -335,8 +342,9 @@ order by name asc');
 	}
 //////
 	public function addPost($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->addGroup($request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Group added successfully.');
+			$this->flash->addMessage('success', $_('Group added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to add group');
@@ -347,9 +355,10 @@ order by name asc');
 	}
 
 	public function change($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id = $request->getAttribute('id');
 		if ($this->changeGroup($group_id,$request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Group updated successfully.');
+			$this->flash->addMessage('success', $_('Group updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.list'));
 		} else {
 			$this->flash->addMessageNow('warning', 'Failed to update group');
@@ -358,27 +367,30 @@ order by name asc');
 	}
 
 	public function del($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->delete($request->getAttribute('id'))) {
-			$this->flash->addMessage('success', 'Group deleted successfully.');
+			$this->flash->addMessage('success', $_('Group deleted successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.list'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to delete group');
+			$this->flash->addMessage('error', $_('Failed to delete group'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.list'));
 		}
 	}
 
 	public function deleteApp($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id = $request->getAttribute('id');
 		if ($this->removeApp($group_id, $request->getAttribute('aid'))) {
-			$this->flash->addMessage('success', 'App removed successfully.');
+			$this->flash->addMessage('success', $_('App removed successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.change', array('id' => $group_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to remove app');
+			$this->flash->addMessage('error', $_('Failed to remove app'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.change', array('id' => $group_id)));
 		}
 	}
 
 	public function postApp($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id = $request->getAttribute('id');
 		if ($this->updateApp($group_id, $request->getParam('sid'))) {
 			$this->flash->addMessage('success', 'App added successfully.');
@@ -390,38 +402,41 @@ order by name asc');
 	}
 
 	public function postTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id = $request->getAttribute('id');
 		if ($this->addTeamRole($group_id, $request->getParam('tid'), $request->getParam('rid'), $request->getParam('alert'))) {
-			$this->flash->addMessage('success', 'Team added successfully.');
+			$this->flash->addMessage('success', $_('Team added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.change', array('id' => $group_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to add team');
+			$this->flash->addMessage('error', $_('Failed to add team'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.addTeam', array('id' => $group_id)));
 		}
 	}
 
 	public function deleteTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id = $request->getAttribute('id');
 		$team_id = $request->getAttribute('tid');
 		$role_id = $request->getAttribute('rid');
 		if ($this->removeteam($group_id, $team_id, $role_id)) {
-			$this->flash->addMessage('success', 'Team permission removed successfully.');
+			$this->flash->addMessage('success', $_('Team permission removed successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.change', array('id' => $group_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to remove team permission');
+			$this->flash->addMessage('error', $_('Failed to remove team permission'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.change', array('id' => $group_id)));
 		}
 	}
 
 	public function changeTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$group_id = $request->getAttribute('id');
 		$team_id = $request->getAttribute('tid');
 		$role_id = $request->getAttribute('rid');
 		if ($this->updateTeamRole($group_id, $team_id, $role_id, $request->getParam('alert'))) {
-			$this->flash->addMessage('success', 'Team alerting updated successfully.');
+			$this->flash->addMessage('success', $_('Team alerting updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.change', array('id' => $group_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to update team alerting');
+			$this->flash->addMessage('error', $_('Failed to update team alerting'));
 			return $response->withRedirect($this->router->pathFor('admin.groups.changeTeam', array('id' => $group_id, 'tid' => $team_id, 'rid' => $role_id)));
 		}
 	}

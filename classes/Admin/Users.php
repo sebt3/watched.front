@@ -217,9 +217,10 @@ class Users extends \CorePage {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'users', 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('users'), 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')));
 		$this->menu->activateAdmin('Users');
 		return $this->view->render($response, 'admin/userList.twig', [ 
 			'users'		=> $this->getList()
@@ -227,11 +228,12 @@ class Users extends \CorePage {
 	}
 
 	public function user($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		$u = $this->getUser($user_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'users', 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('users'), 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
 			array('name' => $u['username'], 'url' => $this->router->pathFor('admin.users.change', array('id' => $user_id))));
 		$this->menu->activateAdmin('Users');
 		return $this->view->render($response, 'admin/userChange.twig', [
@@ -245,27 +247,29 @@ class Users extends \CorePage {
 	}
 
 	public function add($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'users', 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
-			array('name' => 'add', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.users.add')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('users'), 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
+			array('name' => $_('add'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.users.add')));
 		$this->menu->activateAdmin('Users');
 		return $this->view->render($response, 'admin/userAdd.twig', $args);
 	}
 
 	public function addTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		$u = $this->getUser($user_id);
 		$t = $this->getAllTeams($user_id);
 		if (count($t)==0) {
-			$this->flash->addMessage('error', 'No other team to add');
+			$this->flash->addMessage('error', $_('No other team to add'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		}
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'users', 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('users'), 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
 			array('name' => $u['username'], 'url' => $this->router->pathFor('admin.users.change', array('id' => $user_id))),
-			array('name' => 'team', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.users.addTeam', array('id' => $user_id))));
+			array('name' => $_('team'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.users.addTeam', array('id' => $user_id))));
 		$this->menu->activateAdmin('Users');
 		return $this->view->render($response, 'admin/userAddTeam.twig', [
 				'user'		=> $u,
@@ -274,6 +278,7 @@ class Users extends \CorePage {
 	}
 
 	public function addProp($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		$u = $this->getUser($user_id);
 		$p = $this->getAllProp($user_id);
@@ -282,10 +287,10 @@ class Users extends \CorePage {
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		}
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'users', 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('users'), 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
 			array('name' => $u['username'], 'url' => $this->router->pathFor('admin.users.change', array('id' => $user_id))),
-			array('name' => 'property', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.users.addProp', array('id' => $user_id))));
+			array('name' => $_('property'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.users.addProp', array('id' => $user_id))));
 		$this->menu->activateAdmin('Users');
 		return $this->view->render($response, 'admin/userAddProp.twig', [
 				'user'		=> $u,
@@ -294,14 +299,15 @@ class Users extends \CorePage {
 	}
 
 	public function changeProp($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		$prop_id = $request->getAttribute('pid');
 		$prop    = $this->getProp($prop_id);
 		$value	 = $this->getPropValue($user_id, $prop_id);
 		$u = $this->getUser($user_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'users', 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('users'), 'icon' => 'fa fa-user', 'url' => $this->router->pathFor('admin.users.list')),
 			array('name' => $u['username'], 'url' => $this->router->pathFor('admin.users.change', array('id' => $user_id))),
 			array('name' => $prop['name'], 'icon' => 'fa fa-link', 'url' => $this->router->pathFor('admin.users.changeProp', array('id' => $user_id, 'pid' => $prop_id))));
 		$this->menu->activateAdmin('Users');
@@ -313,11 +319,12 @@ class Users extends \CorePage {
 	}
 
 	public function addPost($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->adduser($request->getParam('username'), $request->getParam('firstname'), $request->getParam('lastname'), $request->getParam('password'))) {
-			$this->flash->addMessage('info', 'User added successfully.');
+			$this->flash->addMessage('info', $_('User added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.users.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to add user');
+			$this->flash->addMessageNow('warning', $_('Failed to add user'));
 			return $this->add($request, $response, [
 				'username'  => $request->getParam('username'),
 				'firstname' => $request->getParam('firstname'),
@@ -328,85 +335,92 @@ class Users extends \CorePage {
 	}
 
 	public function change($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		if ($this->changeuser($user_id,$request->getParam('username'), $request->getParam('firstname'), $request->getParam('lastname'), $request->getParam('password'))) {
-			$this->flash->addMessage('info', 'User updated successfully.');
+			$this->flash->addMessage('info', $_('User updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.users.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to update user');
+			$this->flash->addMessageNow('warning', $_('Failed to update user'));
 			return $this->user($request, $response, []);
 		}
 	}
 
 	public function del($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->delete($request->getAttribute('id'))) {
-			$this->flash->addMessage('info', 'User deleted successfully.');
+			$this->flash->addMessage('info', $_('User deleted successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.users.list'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to delete user');
+			$this->flash->addMessage('error', $_('Failed to delete user'));
 			return $response->withRedirect($this->router->pathFor('admin.users.list'));
 		}
 	}
 
 	public function postTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		if ($this->addTeamModel($user_id, $request->getParam('tid'))) {
-			$this->flash->addMessage('success', 'Team added successfully.');
+			$this->flash->addMessage('success', $_('Team added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to add team');
+			$this->flash->addMessage('error', $_('Failed to add team'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		}
 	}
 
 	public function deleteTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		$team_id = $request->getAttribute('tid');
 		if ($this->auth->getUserId() == $user_id && $this->isLastAdmin($user_id, $team_id)) {
-			$this->flash->addMessage('error', 'Cannot remove your own last super admin team');
+			$this->flash->addMessage('error', $_('Cannot remove your own last super admin team'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		}
 		if ($this->delTeamModel($user_id, $team_id)) {
-			$this->flash->addMessage('success', 'Team removed successfully.');
+			$this->flash->addMessage('success', $_('Team removed successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to remove team');
+			$this->flash->addMessage('error', $_('Failed to remove team'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		}
 	}
 
 	public function postProp($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		if ($this->addProperty($user_id, $request->getParam('pid'), $request->getParam('value'))) {
-			$this->flash->addMessage('success', 'Property added successfully.');
+			$this->flash->addMessage('success', $_('Property added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to add property');
+			$this->flash->addMessage('error', $_('Failed to add property'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		}
 	}
 
 	public function deleteProp($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		$prop_id = $request->getAttribute('pid');
 		if ($this->delProperty($user_id, $prop_id)) {
-			$this->flash->addMessage('success', 'Property removed successfully.');
+			$this->flash->addMessage('success', $_('Property removed successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to remove property');
+			$this->flash->addMessage('error', $_('Failed to remove property'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		}
 	}
 
 	public function updateProp($request, $response, $args) {
+		$_ = $this->trans;
 		$user_id = $request->getAttribute('id');
 		$prop_id = $request->getAttribute('pid');
 		$value   = $request->getParam('value');
 		if ($this->updateProperty($user_id, $prop_id, $value)) {
-			$this->flash->addMessage('success', 'Property updated successfully.');
+			$this->flash->addMessage('success', $_('Property updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to update property');
+			$this->flash->addMessage('error', $_('Failed to update property'));
 			return $response->withRedirect($this->router->pathFor('admin.users.change', array('id' => $user_id)));
 		}
 	}

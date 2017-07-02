@@ -100,12 +100,14 @@ order by et.id asc,e.start_time asc');
 // Controlers
 
 	public function events (Request $request, Response $response) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'events', 'icon' => 'fa fa-calendar', 'url' => $this->router->pathFor('events')));
+			array('name' => $_('events'), 'icon' => 'fa fa-calendar', 'url' => $this->router->pathFor('events')));
 		return $this->view->render($response, 'events/events.twig', [ 'events' => $this->getEventList() ]);
 	}
 
 	public function event (Request $request, Response $response) {
+		$_ = $this->trans;
 		$id = $request->getAttribute('id');
 		$event = $this->getEvent($id);
 		if ($event == false)
@@ -114,7 +116,7 @@ order by et.id asc,e.start_time asc');
 
 		$this->menu->activateHost($event['host_name']);
 		$this->menu->breadcrumb = array(
-			array('name' => 'events', 'icon' => 'fa fa-calendar', 'url' => $this->router->pathFor('events')), 
+			array('name' => $_('events'), 'icon' => 'fa fa-calendar', 'url' => $this->router->pathFor('events')), 
 			array('name' => $event['id'], 'url' => $this->router->pathFor('event', array('id' => $id))));
 		return $this->view->render($response, 'events/event.twig', [ 'e' => $event, 'prop' => $this->getEventProperty($event) ]);
 	}

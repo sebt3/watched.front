@@ -7,6 +7,7 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(bs.row()
 	 .cell('col-lg-6',bs.union()
 		 .item(bs.form().url("{{ path_for('admin.domains.change', {'id': domain_id}) }}").body(bs.box()
@@ -59,5 +60,6 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.domai
 		.item("{{ _('Host') }}","{{ a.name }}")
 )));
 {% endfor %}
+});
 </script>
 {% endblock %}

@@ -85,9 +85,10 @@ order by superadmin desc, hosts desc, services desc, name asc');
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'teams', 'icon' => 'fa fa-users', 'url' => $this->router->pathFor('admin.teams.list')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('teams'), 'icon' => 'fa fa-users', 'url' => $this->router->pathFor('admin.teams.list')));
 		$this->menu->activateAdmin('Teams');
 		return $this->view->render($response, 'admin/teamList.twig', [ 
 			'teams'		=> $this->getList()
@@ -95,11 +96,12 @@ order by superadmin desc, hosts desc, services desc, name asc');
 	}
 
 	public function team($request, $response, $args) {
+		$_ = $this->trans;
 		$team_id = $request->getAttribute('id');
 		$u = $this->getTeam($team_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'teams', 'icon' => 'fa fa-users', 'url' => $this->router->pathFor('admin.teams.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('teams'), 'icon' => 'fa fa-users', 'url' => $this->router->pathFor('admin.teams.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.teams.change', array('id' => $team_id))));
 		$this->menu->activateAdmin('Teams');
 		return $this->view->render($response, 'admin/teamChange.twig', [
@@ -109,20 +111,22 @@ order by superadmin desc, hosts desc, services desc, name asc');
 	}
 
 	public function add($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'teams', 'icon' => 'fa fa-users', 'url' => $this->router->pathFor('admin.teams.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('teams'), 'icon' => 'fa fa-users', 'url' => $this->router->pathFor('admin.teams.list')),
 			array('name' => 'add', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.teams.add')));
 		$this->menu->activateAdmin('Teams');
 		return $this->view->render($response, 'admin/teamAdd.twig', $args);
 	}
 
 	public function addPost($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->addTeam($request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Team added successfully.');
+			$this->flash->addMessage('success', $_('Team added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.teams.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to add team');
+			$this->flash->addMessageNow('warning', $_('Failed to add team'));
 			return $this->add($request, $response, [
 				'name'  => $request->getParam('name')
 			]);
@@ -130,27 +134,29 @@ order by superadmin desc, hosts desc, services desc, name asc');
 	}
 
 	public function change($request, $response, $args) {
+		$_ = $this->trans;
 		$team_id = $request->getAttribute('id');
 		if ($this->changeTeam($team_id,$request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Team updated successfully.');
+			$this->flash->addMessage('success', $_('Team updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.teams.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to update team');
+			$this->flash->addMessageNow('warning', $_('Failed to update team'));
 			return $this->team($request, $response, []);
 		}
 	}
 
 	public function del($request, $response, $args) {
+		$_ = $this->trans;
 		$team_id = $request->getAttribute('id');
 		if($this->isLastAdmin($this->auth->getUserId(), $team_id)) {
-			$this->flash->addMessage('error', 'Cannot delete your last superadmin team');
+			$this->flash->addMessage('error', $_('Cannot delete your last superadmin team'));
 			return $response->withRedirect($this->router->pathFor('admin.teams.list'));
 		}
 		if ($this->delete($team_id)) {
-			$this->flash->addMessage('success', 'Team deleted successfully.');
+			$this->flash->addMessage('success', $_('Team deleted successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.teams.list'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to delete team');
+			$this->flash->addMessage('error', $_('Failed to delete team'));
 			return $response->withRedirect($this->router->pathFor('admin.teams.list'));
 		}
 	}

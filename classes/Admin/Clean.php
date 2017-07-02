@@ -64,9 +64,10 @@ class Clean extends \CorePage {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')),
-			array('name' => 'Clean', 'icon' => 'fa fa-eraser', 'url' => $this->router->pathFor('admin.clean'))); 
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')),
+			array('name' => $_('Clean'), 'icon' => 'fa fa-eraser', 'url' => $this->router->pathFor('admin.clean'))); 
 		$this->menu->activateAdmin('Clean');
 		return $this->view->render($response, 'admin/clean.twig', [ 
 			'services'	=> $this->getMissingServices(),
@@ -75,23 +76,25 @@ class Clean extends \CorePage {
 	}
 
 	public function deleteService($request, $response, $args) {
+		$_ = $this->trans;
 		$serv_id = $request->getAttribute('id');
 		if ($this->removeService($serv_id)) {
-			$this->flash->addMessage('success', 'Service successfully deleted.');
+			$this->flash->addMessage('success', $_('Service successfully deleted.'));
 			return $response->withRedirect($this->router->pathFor('admin.clean'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to delete service');
+			$this->flash->addMessage('error', $_('Failed to delete service'));
 			return $response->withRedirect($this->router->pathFor('admin.clean'));
 		}
 	}
 
 	public function deleteHost($request, $response, $args) {
+		$_ = $this->trans;
 		$host_id = $request->getAttribute('id');
 		if ($this->removeHost($host_id)) {
-			$this->flash->addMessage('success', 'Host successfully deleted.');
+			$this->flash->addMessage('success', $_('Host successfully deleted.'));
 			return $response->withRedirect($this->router->pathFor('admin.clean'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to delete host');
+			$this->flash->addMessage('error', $_('Failed to delete host'));
 			return $response->withRedirect($this->router->pathFor('admin.clean'));
 		}
 	}

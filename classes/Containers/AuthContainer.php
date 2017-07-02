@@ -336,10 +336,11 @@ class AuthContainer extends \core {
 	}
 
 	public function loginPost(Request $request, Response $response) {
+		$_ = $this->trans;
 		if ($this->authenticate($request->getParam('username'), $request->getParam('password'))) {
 			if ($request->getParam('remember')=='on')
 				$this->remember($request->getParam('username'));
-			$this->flash->addMessage('info', _('Welcome').' '.$this->getUserName());
+			$this->flash->addMessage('info', $_('Welcome').' '.$this->getUserName());
 			if(isset($_SERVER['HTTP_REFERER']) ) {
 				$t = explode('/', $_SERVER['HTTP_REFERER']);
 				if ($t[2] == $_SERVER['SERVER_NAME'])
@@ -347,14 +348,15 @@ class AuthContainer extends \core {
 			}
 			return $response->withRedirect($this->router->pathFor('home'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to login.');
+			$this->flash->addMessage('error', $_('Failed to login.'));
 			return $response->withRedirect($this->router->pathFor('auth.login'));
  		}
 	}
 
 	public function signout(Request $request, Response $response) {
+		$_ = $this->trans;
 		$this->disconnect();
-		$this->flash->addMessage('info', 'Succesfully signed out');
+		$this->flash->addMessage('info', $_('Succesfully signed out'));
  		return $response->withRedirect($this->router->pathFor('home'));
 	}
 }

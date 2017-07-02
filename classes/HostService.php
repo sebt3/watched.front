@@ -255,6 +255,7 @@ class HostService extends CorePage {
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function hostServices (Request $request, Response $response) {
+		$_ = $this->trans;
 		$id = $request->getAttribute('id');
 		//$this->logger->addInfo("HostServices $id");
 		$host = $this->getHost($id);
@@ -264,9 +265,9 @@ class HostService extends CorePage {
 
 		$this->menu->activateHost($host['host']);
 		$this->menu->breadcrumb = array(
-			array('name' => 'host', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
+			array('name' => $_('host'), 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
 			array('name' => $host['host'], 'url' => $this->router->pathFor('host', array('id' => $id))), 
-			array('name' => 'services', 'icon' => 'fa fa-building-o', 'url' => $this->router->pathFor('services', array('id' => $id))));
+			array('name' => $_('services'), 'icon' => 'fa fa-building-o', 'url' => $this->router->pathFor('services', array('id' => $id))));
 		return $this->view->render($response, 'hosts/hostServices.twig', [ 
 			'h'		=> $host,
 			'services'	=> $this->getHostServices($id)
@@ -274,6 +275,7 @@ class HostService extends CorePage {
 	}
 
 	public function hostService (Request $request, Response $response) {
+		$_ = $this->trans;
 		$hid = $request->getAttribute('hid');
 		$sid = $request->getAttribute('sid');
 		$host = $this->getHost($hid);
@@ -285,9 +287,9 @@ class HostService extends CorePage {
 
 		$this->menu->activateHost($host['host']);
 		$this->menu->breadcrumb = array(
-			array('name' => 'host', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
+			array('name' => $_('host'), 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
 			array('name' => $host['host'], 'url' => $this->router->pathFor('host', array('id' => $hid))), 
-			array('name' => 'services', 'icon' => 'fa fa-building-o', 'url' => $this->router->pathFor('services', array('id' => $hid))),
+			array('name' => $_('services'), 'icon' => 'fa fa-building-o', 'url' => $this->router->pathFor('services', array('id' => $hid))),
 			array('name' => $serv['name'], 'url' => $this->router->pathFor('service', array('hid' => $hid, 'sid' => $sid))));
 		return $this->view->render($response, 'hosts/hostService.twig', [ 
 			'h'		=> $host,
@@ -295,6 +297,7 @@ class HostService extends CorePage {
 		]);
 	}
 	public function serviceRessource (Request $request, Response $response) {
+		$_ = $this->trans;
 		$rid = $request->getAttribute('res_id');
 		$sid = $request->getAttribute('serv_id');
 		$serv = $this->getService($sid);
@@ -307,9 +310,9 @@ class HostService extends CorePage {
 
 		$this->menu->activateHost($host['host']);
 		$this->menu->breadcrumb = array(
-			array('name' => 'host', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
+			array('name' => $_('host'), 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
 			array('name' => $host['host'], 'url' => $this->router->pathFor('host', array('id' => $host['id']))), 
-			array('name' => 'services', 'icon' => 'fa fa-building-o', 'url' => $this->router->pathFor('services', array('id' => $host['id']))),
+			array('name' => $_('services'), 'icon' => 'fa fa-building-o', 'url' => $this->router->pathFor('services', array('id' => $host['id']))),
 			array('name' => $serv['name'], 'url' => $this->router->pathFor('service', array('hid' => $host['id'], 'sid' => $sid))),
 			array('name' => $res['name'], 'url' => $this->router->pathFor('services.ressource', array('serv_id' => $sid, 'res_id' => $rid)))
 		);

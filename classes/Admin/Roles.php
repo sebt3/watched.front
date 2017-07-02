@@ -69,9 +69,10 @@ order by name asc');
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'roles', 'icon' => 'icon ion-ios-body-outline', 'url' => $this->router->pathFor('admin.roles.list')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('roles'), 'icon' => 'icon ion-ios-body-outline', 'url' => $this->router->pathFor('admin.roles.list')));
 		$this->menu->activateAdmin('Roles');
 		return $this->view->render($response, 'admin/roleList.twig', [ 
 			'roles'		=> $this->getList()
@@ -79,11 +80,12 @@ order by name asc');
 	}
 
 	public function role($request, $response, $args) {
+		$_ = $this->trans;
 		$role_id = $request->getAttribute('id');
 		$u = $this->getRole($role_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'roles', 'icon' => 'icon ion-ios-body-outline', 'url' => $this->router->pathFor('admin.roles.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('roles'), 'icon' => 'icon ion-ios-body-outline', 'url' => $this->router->pathFor('admin.roles.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.roles.change', array('id' => $role_id))));
 		$this->menu->activateAdmin('Roles');
 		return $this->view->render($response, 'admin/roleChange.twig', [
@@ -93,20 +95,22 @@ order by name asc');
 	}
 
 	public function add($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'roles', 'icon' => 'icon ion-ios-body-outline', 'url' => $this->router->pathFor('admin.roles.list')),
-			array('name' => 'add', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.roles.add')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('roles'), 'icon' => 'icon ion-ios-body-outline', 'url' => $this->router->pathFor('admin.roles.list')),
+			array('name' => $_('add'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.roles.add')));
 		$this->menu->activateAdmin('Roles');
 		return $this->view->render($response, 'admin/roleAdd.twig', $args);
 	}
 
 	public function addPost($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->addRole($request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Role added successfully.');
+			$this->flash->addMessage('success', $_('Role added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.roles.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to add role');
+			$this->flash->addMessageNow('warning', $_('Failed to add role'));
 			return $this->add($request, $response, [
 				'name'  => $request->getParam('name')
 			]);
@@ -114,22 +118,24 @@ order by name asc');
 	}
 
 	public function change($request, $response, $args) {
+		$_ = $this->trans;
 		$role_id = $request->getAttribute('id');
 		if ($this->changeRole($role_id,$request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Role updated successfully.');
+			$this->flash->addMessage('success', $_('Role updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.roles.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to update role');
+			$this->flash->addMessageNow('warning', $_('Failed to update role'));
 			return $this->role($request, $response, []);
 		}
 	}
 
 	public function del($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->delete($request->getAttribute('id'))) {
-			$this->flash->addMessage('success', 'Role deleted successfully.');
+			$this->flash->addMessage('success', $_('Role deleted successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.roles.list'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to delete role');
+			$this->flash->addMessage('error', $_('Failed to delete role'));
 			return $response->withRedirect($this->router->pathFor('admin.roles.list'));
 		}
 	}

@@ -78,6 +78,7 @@ where a.id=:id');
 
 ///////
 	private function getTeams($aid) {
+		$_ = $this->trans;
 		$results = [];
 		$s = $this->db->prepare('select d.role_id, r.name as role_name, d.team_id, t.name as team_name, d.alert 
   from p$apps d, p$teams t, p$roles r 
@@ -88,11 +89,11 @@ where a.id=:id');
 		$s->execute();
 		while($row = $s->fetch()) {
 			if ($row['alert']==1) {
-				$row['send']  = 'yes';
-				$row['type']  = 'alerting';
+				$row['send']  = $_('yes');
+				$row['type']  = $_('alerting');
 			} else {
-				$row['send']  = 'no';
-				$row['type']  = 'permission';
+				$row['send']  = $_('no');
+				$row['type']  = $_('permission');
 			}
 			$results[] = $row;
 		}
@@ -265,9 +266,10 @@ order by name asc');
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'apps', 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('apps'), 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')));
 		$this->menu->activateAdmin('Apps');
 		return $this->view->render($response, 'admin/appList.twig', [ 
 			'apps'		=> $this->getList()
@@ -275,11 +277,12 @@ order by name asc');
 	}
 
 	public function app($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id = $request->getAttribute('id');
 		$u = $this->getApp($app_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'apps', 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('apps'), 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.apps.change', array('id' => $app_id))));
 		$this->menu->activateAdmin('Apps');
 		return $this->view->render($response, 'admin/appChange.twig', [
@@ -293,28 +296,30 @@ order by name asc');
 	}
 
 	public function add($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'apps', 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
-			array('name' => 'add', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.apps.add')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('apps'), 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
+			array('name' => $_('add'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.apps.add')));
 		$this->menu->activateAdmin('Apps');
 		return $this->view->render($response, 'admin/appAdd.twig', $args);
 	}
 //////
 	public function addService($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id = $request->getAttribute('id');
 		$u = $this->getApp($app_id);
 		$hl = $this->getAvailableServices();
 		if (count($hl)==0) {
-			$this->flash->addMessage('warning', 'No available service to add.');
+			$this->flash->addMessage('warning', $_('No available service to add.'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.change', array('id' => $app_id)));
 
 		}
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'apps', 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('apps'), 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.apps.change', array('id' => $app_id))),
-			array('name' => 'service', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.apps.addService', array('id' => $app_id))));
+			array('name' => $_('service'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.apps.addService', array('id' => $app_id))));
 		$this->menu->activateAdmin('Apps');
 		return $this->view->render($response, 'admin/appAddService.twig', [
 				'app_id'	=> $app_id,
@@ -324,13 +329,14 @@ order by name asc');
 	}
 
 	public function addTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id = $request->getAttribute('id');
 		$u = $this->getApp($app_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'apps', 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('apps'), 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.apps.change', array('id' => $app_id))),
-			array('name' => 'team', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.apps.addTeam', array('id' => $app_id))));
+			array('name' => $_('team'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.apps.addTeam', array('id' => $app_id))));
 		$this->menu->activateAdmin('Apps');
 		return $this->view->render($response, 'admin/appAddTeam.twig', [
 				'app_id'	=> $app_id,
@@ -341,6 +347,7 @@ order by name asc');
 	}
 
 	public function team($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id	= $request->getAttribute('id');
 		$team_id	= $request->getAttribute('tid');
 		$team		= $this->getTeam($team_id);
@@ -349,10 +356,10 @@ order by name asc');
 		$alert		= $this->getAlert($app_id,$team_id, $role_id);
 		$u = $this->getApp($app_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'apps', 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('apps'), 'icon' => 'fa fa-rocket', 'url' => $this->router->pathFor('admin.apps.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.apps.change', array('id' => $app_id))),
-			array('name' => 'team', 'icon' => 'icon ion-person-stalker', 'url' => $this->router->pathFor('admin.apps.changeTeam', 
+			array('name' => $_('team'), 'icon' => 'icon ion-person-stalker', 'url' => $this->router->pathFor('admin.apps.changeTeam', 
 				array('id' => $app_id, 'tid' => $team_id, 'rid' => $role_id))
 			)
 		);
@@ -367,11 +374,12 @@ order by name asc');
 	}
 //////
 	public function addPost($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->addApp($request->getParam('name'))) {
-			$this->flash->addMessage('success', 'App '.$request->getParam('name').' added successfully.');
+			$this->flash->addMessage('success', $_('App ').$request->getParam('name').$_(' added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to add app');
+			$this->flash->addMessageNow('warning', $_('Failed to add app'));
 			return $this->add($request, $response, [
 				'name'  => $request->getParam('name')
 			]);
@@ -379,81 +387,88 @@ order by name asc');
 	}
 
 	public function change($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id = $request->getAttribute('id');
 		if ($this->changeApp($app_id,$request->getParam('name'),$request->getParam('group_id'))) {
-			$this->flash->addMessage('success', 'App updated successfully.');
+			$this->flash->addMessage('success', $_('App updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to update app');
+			$this->flash->addMessageNow('warning', $_('Failed to update app'));
 			return $this->app($request, $response, []);
 		}
 	}
 
 	public function del($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->delete($request->getAttribute('id'))) {
-			$this->flash->addMessage('success', 'App deleted successfully.');
+			$this->flash->addMessage('success', $_('App deleted successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.list'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to delete app');
+			$this->flash->addMessage('error', $_('Failed to delete app'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.list'));
 		}
 	}
 
 	public function deleteService($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id = $request->getAttribute('id');
 		if ($this->removeService($app_id, $request->getAttribute('sid'))) {
-			$this->flash->addMessage('success', 'Service removed successfully.');
+			$this->flash->addMessage('success', $_('Service removed successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.change', array('id' => $app_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to remove service');
+			$this->flash->addMessage('error', $_('Failed to remove service'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.change', array('id' => $app_id)));
 		}
 	}
 
 	public function postService($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id = $request->getAttribute('id');
 		if ($this->updateService($app_id, $request->getParam('sid'))) {
-			$this->flash->addMessage('success', 'Service added successfully.');
+			$this->flash->addMessage('success', $_('Service added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.change', array('id' => $app_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to add service');
+			$this->flash->addMessage('error', $_('Failed to add service'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.change', array('id' => $app_id)));
 		}
 	}
 
 	public function postTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id = $request->getAttribute('id');
 		if ($this->addTeamRole($app_id, $request->getParam('tid'), $request->getParam('rid'), $request->getParam('alert'))) {
-			$this->flash->addMessage('success', 'Team added successfully.');
+			$this->flash->addMessage('success', $_('Team added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.change', array('id' => $app_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to add team');
+			$this->flash->addMessage('error', $_('Failed to add team'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.addTeam', array('id' => $app_id)));
 		}
 	}
 
 	public function deleteTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id = $request->getAttribute('id');
 		$team_id = $request->getAttribute('tid');
 		$role_id = $request->getAttribute('rid');
 		if ($this->removeteam($app_id, $team_id, $role_id)) {
-			$this->flash->addMessage('success', 'Team permission removed successfully.');
+			$this->flash->addMessage('success', $_('Team permission removed successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.change', array('id' => $app_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to remove team permission');
+			$this->flash->addMessage('error', $_('Failed to remove team permission'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.change', array('id' => $app_id)));
 		}
 	}
 
 	public function changeTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$app_id = $request->getAttribute('id');
 		$team_id = $request->getAttribute('tid');
 		$role_id = $request->getAttribute('rid');
 		if ($this->updateTeamRole($app_id, $team_id, $role_id, $request->getParam('alert'))) {
-			$this->flash->addMessage('success', 'Team alerting updated successfully.');
+			$this->flash->addMessage('success', $_('Team alerting updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.change', array('id' => $app_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to update team alerting');
+			$this->flash->addMessage('error', $_('Failed to update team alerting'));
 			return $response->withRedirect($this->router->pathFor('admin.apps.changeTeam', array('id' => $app_id, 'tid' => $team_id, 'rid' => $role_id)));
 		}
 	}

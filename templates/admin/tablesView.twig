@@ -7,6 +7,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(bs.row()
 	  .cell('col-md-4', bs.box().title("{{ _('Storage informations') }}").body(bs.descTable()
     {% for s in sizes %}
@@ -42,5 +43,6 @@ d3.select('section.content').call(bs.row()
 			.right(bs.button.form().text("{{ _('update') }}").icon("fa fa-pencil").class('btn-info'))
 	)
 )));
+});
 </script>
 {% endblock %}

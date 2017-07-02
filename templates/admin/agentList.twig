@@ -7,6 +7,7 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
+wd.dispatch.on('ready', function() {
 {% for a in agents %}
 d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.agents.delete', { 'id': a.id }) }}").id("delete{{ a.id }}").title("{{ _('Delete agent') }}").text("{{ _('Confirm') }}").body(bs.union()
 	.item(bs.p("{{ _('Are you sure you want to delete this agent :') }}"))
@@ -32,5 +33,6 @@ d3.select('section.content').call(bs.box().body(wd.chart.table()
 		   { icon:"fa fa-trash",  target: "#delete{{ a.id }}" } ]
 	}, {% endfor %}
 ])));
+});
 </script>
 {% endblock %}

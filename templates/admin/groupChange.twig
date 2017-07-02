@@ -6,6 +6,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(bs.row()
 	  .cell('col-lg-6',bs.union()
 		.item(bs.form().url("{{ path_for('admin.groups.change', {'id': group_id}) }}").body(bs.box()
@@ -60,5 +61,6 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.group
 		.item("{{ _('Role') }}","{{ a.role_name }}")
 )));
 {% endfor %}
+});
 </script>
 {% endblock %}

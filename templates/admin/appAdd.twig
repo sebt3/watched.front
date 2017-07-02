@@ -6,6 +6,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(bs.row()
 	.cell('col-lg-8 col-lg-offset-2', bs.form().url("{{ path_for('admin.apps.add') }}").body(bs.box().class('box-info')
 		.title("{{ _('Create an application') }}").body(bs.union()
@@ -14,5 +15,6 @@ d3.select('section.content').call(bs.row()
 			.left(bs.button.a().text("{{ _('Cancel') }}").icon("fa fa-arrow-left").url("{{ path_for('admin.apps.list') }}"))
 			.right(bs.button.form().text("{{ _('Add') }}").icon("fa fa-plus").class('btn-info'))
 ))));
+});
 </script>
 {% endblock %}

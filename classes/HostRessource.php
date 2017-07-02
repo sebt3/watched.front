@@ -199,6 +199,7 @@ select et.name, et.id, count(e.id) as cnt
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function ressource (Request $request, Response $response) {
+		$_ = $this->trans;
 		$aid = $request->getAttribute('aid');
 		$rid = $request->getAttribute('rid');
 		//$this->logger->addInfo("Ressource $aid - $rid");
@@ -212,9 +213,9 @@ select et.name, et.id, count(e.id) as cnt
 
 		$this->menu->activateHost($agent["host"]);
 		$this->menu->breadcrumb = array(
-			array('name' => 'host', 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
+			array('name' => $_('host'), 'icon' => 'fa fa-server', 'url' => $this->router->pathFor('hosts')), 
 			array('name' => $agent['host'], 'url' => $this->router->pathFor('host', array('id' => $aid))), 
-			array('name' => 'resources', 'icon' => 'fa fa-area-chart', 'url' => $this->router->pathFor('ressources', array('id' => $aid))),
+			array('name' => $_('resources'), 'icon' => 'fa fa-area-chart', 'url' => $this->router->pathFor('ressources', array('id' => $aid))),
 			array('name' => urldecode($res['name']), 'url' => $this->router->pathFor('ressource', array('aid' => $aid, 'rid' => $rid))));
 		return $this->view->render($response, 'hosts/ressource.twig', [ 
 			'a'		=> $agent,

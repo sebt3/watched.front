@@ -7,6 +7,7 @@
 {% block scripts %}
 <script src="/js/watched.tables.js"></script>
 <script>
+wd.dispatch.on('ready', function() {
 d3.select('section.content').call(bs.row()
 	 .cell('col-lg-6',bs.union()
 		 .item(bs.form().url("{{ path_for('admin.users.change', {'id': user_id}) }}").body(bs.box()
@@ -61,5 +62,6 @@ d3.select('section.content').call(bs.modalDelete().url("{{ path_for('admin.users
 		.item("{{ _('Value') }}","{{ a.value }}")
 )));
 {% endfor %}
+});
 </script>
 {% endblock %}

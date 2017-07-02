@@ -30,6 +30,7 @@ order by name asc');
 	}
 
 	private function getTeams($domainid) {
+		$_ = $this->trans;
 		$results = [];
 		$s = $this->db->prepare('select d.role_id, r.name as role_name, d.team_id, t.name as team_name, d.alert 
   from p$domains d, p$teams t, p$roles r 
@@ -40,11 +41,11 @@ order by name asc');
 		$s->execute();
 		while($row = $s->fetch()) {
 			if ($row['alert']==1) {
-				$row['send']  = 'yes';
-				$row['type']  = 'alerting';
+				$row['send']  = $_('yes');
+				$row['type']  = $_('alerting');
 			} else {
-				$row['send']  = 'no';
-				$row['type']  = 'permission';
+				$row['send']  = $_('no');
+				$row['type']  = $_('permission');
 			}
 			$results[] = $row;
 		}
@@ -234,9 +235,10 @@ order by name asc');
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Controlers
 	public function listAll($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'domains', 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('domains'), 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')));
 		$this->menu->activateAdmin('Domains');
 		return $this->view->render($response, 'admin/domainList.twig', [ 
 			'domains'		=> $this->getList()
@@ -244,11 +246,12 @@ order by name asc');
 	}
 
 	public function domain($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id = $request->getAttribute('id');
 		$u = $this->getDomain($domain_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'domains', 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('domains'), 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.domains.change', array('id' => $domain_id))));
 		$this->menu->activateAdmin('Domains');
 		return $this->view->render($response, 'admin/domainChange.twig', [
@@ -260,15 +263,17 @@ order by name asc');
 	}
 
 	public function add($request, $response, $args) {
+		$_ = $this->trans;
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'domains', 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
-			array('name' => 'add', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.domains.add')));
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('domains'), 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
+			array('name' => $_('add'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.domains.add')));
 		$this->menu->activateAdmin('Domains');
 		return $this->view->render($response, 'admin/domainAdd.twig', $args);
 	}
 
 	public function addHost($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id = $request->getAttribute('id');
 		$u = $this->getDomain($domain_id);
 		$hl = $this->getAvailableHosts();
@@ -278,10 +283,10 @@ order by name asc');
 
 		}
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'domains', 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('domains'), 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.domains.change', array('id' => $domain_id))),
-			array('name' => 'host', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.domains.addHost', array('id' => $domain_id))));
+			array('name' => $_('host'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.domains.addHost', array('id' => $domain_id))));
 		$this->menu->activateAdmin('Domains');
 		return $this->view->render($response, 'admin/domainAddHost.twig', [
 				'domain_id'	=> $domain_id,
@@ -291,13 +296,14 @@ order by name asc');
 	}
 
 	public function addTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id = $request->getAttribute('id');
 		$u = $this->getDomain($domain_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'domains', 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('domains'), 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.domains.change', array('id' => $domain_id))),
-			array('name' => 'team', 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.domains.addTeam', array('id' => $domain_id))));
+			array('name' => $_('team'), 'icon' => 'fa fa-plus-circle', 'url' => $this->router->pathFor('admin.domains.addTeam', array('id' => $domain_id))));
 		$this->menu->activateAdmin('Domains');
 		return $this->view->render($response, 'admin/domainAddTeam.twig', [
 				'domain_id'	=> $domain_id,
@@ -308,6 +314,7 @@ order by name asc');
 	}
 
 	public function team($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id	= $request->getAttribute('id');
 		$team_id	= $request->getAttribute('tid');
 		$team		= $this->getTeam($team_id);
@@ -316,10 +323,10 @@ order by name asc');
 		$alert		= $this->getAlert($domain_id,$team_id, $role_id);
 		$u = $this->getDomain($domain_id);
 		$this->menu->breadcrumb = array(
-			array('name' => 'admin', 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
-			array('name' => 'domains', 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
+			array('name' => $_('admin'), 'icon' => 'fa fa-lock', 'url' => $this->router->pathFor('admin')), 
+			array('name' => $_('domains'), 'icon' => 'fa fa-object-group', 'url' => $this->router->pathFor('admin.domains.list')),
 			array('name' => $u['name'], 'url' => $this->router->pathFor('admin.domains.change', array('id' => $domain_id))),
-			array('name' => 'team', 'icon' => 'icon ion-person-stalker', 'url' => $this->router->pathFor('admin.domains.changeTeam', 
+			array('name' => $_('team'), 'icon' => 'icon ion-person-stalker', 'url' => $this->router->pathFor('admin.domains.changeTeam', 
 				array('id' => $domain_id, 'tid' => $team_id, 'rid' => $role_id))
 			)
 		);
@@ -334,11 +341,12 @@ order by name asc');
 	}
 
 	public function addPost($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->addDomain($request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Domain added successfully.');
+			$this->flash->addMessage('success', $_('Domain added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to add domain');
+			$this->flash->addMessageNow('warning', $_('Failed to add domain'));
 			return $this->add($request, $response, [
 				'name'  => $request->getParam('name')
 			]);
@@ -346,30 +354,33 @@ order by name asc');
 	}
 
 	public function change($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id = $request->getAttribute('id');
 		if ($this->changeDomain($domain_id,$request->getParam('name'))) {
-			$this->flash->addMessage('success', 'Domain updated successfully.');
+			$this->flash->addMessage('success', $_('Domain updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.list'));
 		} else {
-			$this->flash->addMessageNow('warning', 'Failed to update domain');
+			$this->flash->addMessageNow('warning', $_('Failed to update domain'));
 			return $this->domain($request, $response, []);
 		}
 	}
 
 	public function del($request, $response, $args) {
+		$_ = $this->trans;
 		if ($this->delete($request->getAttribute('id'))) {
-			$this->flash->addMessage('success', 'Domain deleted successfully.');
+			$this->flash->addMessage('success', $_('Domain deleted successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.list'));
 		} else {
-			$this->flash->addMessage('error', 'Failed to delete domain');
+			$this->flash->addMessage('error', $_('Failed to delete domain'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.list'));
 		}
 	}
 
 	public function deleteHost($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id = $request->getAttribute('id');
 		if ($this->removeHost($domain_id, $request->getAttribute('hid'))) {
-			$this->flash->addMessage('success', 'Host removed successfully.');
+			$this->flash->addMessage('success', $_('Host removed successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.change', array('id' => $domain_id)));
 		} else {
 			$this->flash->addMessage('error', 'Failed to remove host');
@@ -378,49 +389,53 @@ order by name asc');
 	}
 
 	public function postHost($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id = $request->getAttribute('id');
 		if ($this->updateHost($domain_id, $request->getParam('hid'))) {
-			$this->flash->addMessage('success', 'Host added successfully.');
+			$this->flash->addMessage('success', $_('Host added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.change', array('id' => $domain_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to add host');
+			$this->flash->addMessage('error', $_('Failed to add host'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.change', array('id' => $domain_id)));
 		}
 	}
 
 	public function postTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id = $request->getAttribute('id');
 		if ($this->addTeamRole($domain_id, $request->getParam('tid'), $request->getParam('rid'), $request->getParam('alert'))) {
-			$this->flash->addMessage('success', 'Team added successfully.');
+			$this->flash->addMessage('success', $_('Team added successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.change', array('id' => $domain_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to add team');
+			$this->flash->addMessage('error', $_('Failed to add team'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.addTeam', array('id' => $domain_id)));
 		}
 	}
 
 	public function deleteTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id = $request->getAttribute('id');
 		$team_id = $request->getAttribute('tid');
 		$role_id = $request->getAttribute('rid');
 		if ($this->removeteam($domain_id, $team_id, $role_id)) {
-			$this->flash->addMessage('success', 'Team permission removed successfully.');
+			$this->flash->addMessage('success', $_('Team permission removed successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.change', array('id' => $domain_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to remove team permission');
+			$this->flash->addMessage('error', $_('Failed to remove team permission'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.change', array('id' => $domain_id)));
 		}
 	}
 
 	public function changeTeam($request, $response, $args) {
+		$_ = $this->trans;
 		$domain_id = $request->getAttribute('id');
 		$team_id = $request->getAttribute('tid');
 		$role_id = $request->getAttribute('rid');
 		if ($this->updateTeamRole($domain_id, $team_id, $role_id, $request->getParam('alert'))) {
-			$this->flash->addMessage('success', 'Team alerting updated successfully.');
+			$this->flash->addMessage('success', $_('Team alerting updated successfully.'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.change', array('id' => $domain_id)));
 		} else {
-			$this->flash->addMessage('error', 'Failed to update team alerting');
+			$this->flash->addMessage('error', $_('Failed to update team alerting'));
 			return $response->withRedirect($this->router->pathFor('admin.domains.changeTeam', array('id' => $domain_id, 'tid' => $team_id, 'rid' => $role_id)));
 		}
 	}
