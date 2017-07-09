@@ -25,9 +25,9 @@ wd.chart.gfxLegend = function() {
 		chart.data().forEach(function(d) {
 			if(! chart.root().select('#enable_'+d).classed('activated')) return;
 			switch(chart.root().select('#select_'+d).node().value) {
-				case "Min": chart.setValue(d, v["min_"+d]);break;
-				case "Avg": chart.setValue(d, v["avg_"+d]);break;
-				case "Max": chart.setValue(d, v["max_"+d]);break;
+				case wd.lang.tr('Min'): chart.setValue(d, v["min_"+d]);break;
+				case wd.lang.tr('Avg'): chart.setValue(d, v["avg_"+d]);break;
+				case wd.lang.tr('Max'): chart.setValue(d, v["max_"+d]);break;
 			}
 		})
 		return chart;
@@ -38,9 +38,9 @@ wd.chart.gfxLegend = function() {
 			chart.data().forEach(function(d) {
 			if (chart.root().select('#enable_'+d).classed('activated')) {
 				switch(chart.root().select('#select_'+d).node().value) {
-					case "Min": ret.push("min_"+d);break;
-					case "Avg": ret.push("avg_"+d);break;
-					case "Max": ret.push("max_"+d);break;
+					case wd.lang.tr('Min'): ret.push("min_"+d);break;
+					case wd.lang.tr('Avg'): ret.push("avg_"+d);break;
+					case wd.lang.tr('Max'): ret.push("max_"+d);break;
 				}
 			}
 		})
@@ -430,7 +430,7 @@ wd.chart.gfx = function() {
 				x:	chart.xAxis(v.timestamp),
 				y:	chart.yAxis(useArea?stack([v])[i][0][1]:v[d])
 			};
-		}), update = svg.selectAll(".dot2s").data(dots);
+		}), update = svg.selectAll(".dots").data(dots);
 		update.enter().append('g').attr('class','dots')
 			.attr("transform", "translate("+margin.left+", " + (margin.top) + ")")
 			.append('circle').attr('cx', function(d){return d.x})
